@@ -6,6 +6,10 @@ var browserify = require('browserify');
 var watchify = require('watchify');
 var babel = require('babelify');
 
+var gutil = require('gulp-util');
+var exhaustively = require('stream-exhaust');
+
+
 function html()
 {
         gulp.src('src/*.html').pipe(gulp.dest('bin/client'));
@@ -13,25 +17,37 @@ function html()
 
 
 function compile(watch) {
-  var bundler = watchify(
-                            browserify('./src/index.js', { debug: true }).transform(
+
+  var opts = watchify.args;
+      opts.entries = ['./src/index.js'];
+      opts.debug = true;
+
+  function dob(){
+    return  browserify(opts).transform(
                                     babel.configure({
                                             // Use all of the ES2015 spec
                                             presets: ["es2015"]
                                         })
                                   )
-                  
-                            
-                        );
+  }
+
+  function dow(){return watchify(dob())}
+
+  var bundler = (watch)?dow():dob();                 
+                       
+
+  bundler.on('log', gutil.log);
 
   function rebundle() {
-    bundler.bundle()
+      var b = bundler.bundle()
       .on('error', function(err) { console.error(err); this.emit('end'); })
       .pipe(source('app.js'))
       .pipe(buffer())
       .pipe(sourcemaps.init({ loadMaps: true }))
       .pipe(sourcemaps.write('./'))
       .pipe(gulp.dest('./bin/client/js'));
+
+      return b;
   }
 
   if (watch) {
@@ -49,7 +65,7 @@ function watch() {
 };
 
 gulp.task('html', function() { html(); });
-gulp.task('browserify', function() { return compile(false); });
+gulp.task('browserify', function() { return exhaustively( compile(false) ); });
 gulp.task('watch', function() { return watch(); });
 
 gulp.task('build', ['html', 'browserify']);
