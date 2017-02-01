@@ -8,18 +8,18 @@ var babel = require('babelify');
 
 var gutil = require('gulp-util');
 var exhaustively = require('stream-exhaust');
-
+var gubabel = require("gulp-babel");
 
 function html()
 {
-        gulp.src('src/*.html').pipe(gulp.dest('bin/client'));
+        gulp.src('src/client/**/*.html').pipe(gulp.dest('bin/client'));
 }
 
 
 function compile(watch) {
 
   var opts = watchify.args;
-      opts.entries = ['./src/index.js'];
+      opts.entries = ['./src/client/index.js'];
       opts.debug = true;
 
   function dob(){
@@ -64,8 +64,21 @@ function watch() {
   return compile(true);
 };
 
+function server(){
+    
+          return gulp.src(["src/**/*.js", '!src/**/client/*'])
+            .pipe(sourcemaps.init())
+            .pipe(gubabel( {presets: ["es2015"]} ))
+            .pipe(sourcemaps.write("."))
+            .pipe(gulp.dest("bin"));
+
+};
+
 gulp.task('html', function() { html(); });
 gulp.task('browserify', function() { return exhaustively( compile(false) ); });
+
+gulp.task('server', function() { server(); });
+
 gulp.task('watch', function() { return watch(); });
 
 gulp.task('build', ['html', 'browserify']);

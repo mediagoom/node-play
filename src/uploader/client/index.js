@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
+import httprequest from '../../core/httprequest';
 
- 
+
 /**
 * Utility method to format bytes into the most logical magnitude (KB, MB,
 * or GB).
