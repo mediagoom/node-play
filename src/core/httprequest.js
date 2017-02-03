@@ -89,7 +89,7 @@ function request(options, worker, request_body = null)
         });
 }
 
-function handle_promise(prom, http_options, options, worker, request_body = null)
+function handle_promise(prom, options, worker, request_body = null)
 {
         return new Promise( (resolve, reject) => {
 
@@ -102,7 +102,7 @@ function handle_promise(prom, http_options, options, worker, request_body = null
                                 //console.log("prom_filled " + res.statusCode);
                                 if(
                                         (res.statusCode == 302 || res.statusCode == 301)
-                                        && http_options.followredirect
+                                        && options.followredirect
                                   )
                                 {
                                         //console.log(JSON.stringify(res.headers));
@@ -153,7 +153,21 @@ function handle_promise(prom, http_options, options, worker, request_body = null
         });
 }
 
+function _req(r, method, request_body)
+{
+            // Return a new promise.
+            let opt = get_options(url);
+                opt.method = method;
 
+            let options = Object.assign(this._opt, opt.options);
+            
+            let prom = request(options
+                            , opt.worker, request_body);
+
+            
+            return  handle_promise(prom, options
+                            , opt.worker, null);
+}
 
 export default class httprequest {
   
@@ -169,16 +183,10 @@ export default class httprequest {
     }
     
     get(url) {
-    // Return a new promise.
-            let opt = get_options(url);
-                opt.method = 'GET';
-            
-            let prom = request(opt.options
-                            , opt.worker);
+        return _req(this, 'GET');    
+    }
 
-            
-            return  handle_promise(prom, this._opt, opt.options
-                            , opt.worker, null);
-    
+    put(url, body){
+        return _req(this, 'PUT', body);
     }
 }
