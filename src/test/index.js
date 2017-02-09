@@ -5,7 +5,26 @@ import Uploader from '../uploader/index.js'
 
 describe("HTTP REQUEST", () => {
 
-        it("return 200 for google.com", (done) => {
+        describe("UPLOADER" , () => {
+
+                it("upload a file", (done) => {
+                   
+                        let t = new TestFile('package.json');
+                        
+                        let opt = {
+                                url : 'http://localhost:3000/upload'
+                              , name : 'mocha-upload.bin'
+                        };
+                        let u = new Uploader(t, opt);
+                            u.on('compleated', () => {done();});
+                            u.on('error', (err) => {console.log(err.message); expect(true).to.not.be.false; done();});
+                            u.start();
+
+                });
+        });
+
+
+     it("return 200 for google.com", (done) => {
 
                 let r = new httprequest();
                     
@@ -32,21 +51,6 @@ describe("HTTP REQUEST", () => {
                     );
         });//return 200
 
-        describe("UPLOADER" , () => {
-
-                it("upload a file", (done) => {
-                   
-                        let t = new TestFile('package.json');
-                        
-                        let opt = {
-                                url : 'http://localhost:3000/upload'
-                        };
-                        let u = new Uploader(t, opt);
-                            u.on('compleated', () => {done();});
-                            u.on('error', (err) => {console.log(err.message); expect(true).to.not.be.false; done();});
-                            u.start();
-
-                });
-        });
+   
 
 });//http request

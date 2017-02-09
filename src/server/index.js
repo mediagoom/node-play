@@ -6,7 +6,7 @@ var app = express()
 var port = 3000;
 
 app.use(express.static('../client'));
-app.use('/upload', uploader);
+app.use('/upload', uploader());
 
 /*
 app.get('/', function (req, res) {

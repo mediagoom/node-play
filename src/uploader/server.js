@@ -44,111 +44,126 @@ function createError (status, message, type, props) {
 }
 
 
-export default function uplaoder(req, res, next)
-{
-    let stream    = req;
-    let complete = false;
-    let sync      = true;
+export default function uplaoder(options){
+        
+         let opt = {
+              base_path : './'
+            , limit : (10 * 1024 * 1024)
+    };
 
-    let received  = 0;
-    let buffer    = [];
+    if(null != options)
+        opt = Object.assign(opt, options);
 
-    let limit     = 10 * 1024 * 1024; //10MB
-    let length    = 0; 
+        
+        return (req, res, next) =>
+        {
+            let stream    = req;
+            let complete = false;
+            let sync      = true;
 
-    // attach listeners
-    stream.on('aborted', onAborted)
-    stream.on('close', cleanup)
-    stream.on('data', onData)
-    stream.on('end', onEnd)
-    stream.on('error', onEnd)
+            let received  = 0;
+            let buffer    = [];
 
-    //If you pass anything to the done() function (except the string 'route'), Express regards the current request as being in error and will skip any remaining non-error handling routing and middleware functions.
+            let limit     = opt.limit; //10MB
+            let length    = 0; 
 
+            // attach listeners
+            stream.on('aborted', onAborted)
+            stream.on('close', cleanup)
+            stream.on('data', onData)
+            stream.on('end', onEnd)
+            stream.on('error', onEnd)
 
-  function done(err)
-  {
-          cleanup();
-          complete = true;
-
-          if(err != null)
-                  next(err);
-          else
-                  next();
+            //If you pass anything to the done() function (except the string 'route'), Express regards the current request as being in error and will skip any remaining non-error handling routing and middleware functions.
 
 
-  }
-  
-  function onAborted () {
-    if (complete) return;
+          function done(err)
+          {
+                  cleanup();
+                  complete = true;
 
-    done(createError(400, 'request aborted', 'request.aborted', {
-      code: 'ECONNABORTED',
-      expected: length,
-      length: length,
-      received: received
-    }))
-  }
+                  if(err != null)
+                          next(err);
+                  else
+                          next();
 
-  function onData (chunk) {
-    if (complete) return;
 
-    received += chunk.length
-    buffer.push(chunk);
+          }
+          
+          function onAborted () {
+            if (complete) return;
 
-    if (limit !== null && received > limit) {
-      done(createError(413, 'request entity too large', 'entity.too.large', {
-        limit: limit,
-        received: received
-      }))
+            done(createError(400, 'request aborted', 'request.aborted', {
+              code: 'ECONNABORTED',
+              expected: length,
+              length: length,
+              received: received
+            }))
+          }
+
+          function onData (chunk) {
+            if (complete) return;
+
+            received += chunk.length
+            buffer.push(chunk);
+
+            if (limit !== null && received > limit) {
+              done(createError(413, 'request entity too large', 'entity.too.large', {
+                limit: limit,
+                received: received
+              }))
+            }
+          }
+
+          function onEnd (err) {
+            if (complete) return
+            if (err) return done(err)
+
+            if(false){
+            //if (length !== null && received !== length) {
+              done(createError(400, 'request size did not match content length', 'request.size.invalid', {
+                expected: length,
+                length: length,
+                received: received
+              }))
+            } else {
+              /*var string = decoder
+                ? buffer + (decoder.end() || '')
+                : Buffer.concat(buffer)
+              done(null, string)
+              */
+
+              let path = opt.base_path;
+
+              console.log(JSON.stringify(req.headers));
+
+              if(null != req.headers.owner)
+              {
+                      path += req.headers.owner;
+                      path += '/';
+              }
+
+              if(null != req.headers['file-name'])
+                      path +=  req.headers['file-name'];
+
+              console.log(path);
+
+              fs.appendFile(path, buffer, (err) => {done(err);});
+              
+              
+            }
+          }
+
+          function cleanup () {
+           // buffer = null
+
+            stream.removeListener('aborted', onAborted);
+            stream.removeListener('data', onData);
+            stream.removeListener('end', onEnd);
+            stream.removeListener('error', onEnd);
+            stream.removeListener('close', cleanup);
+          }
+        
     }
-  }
-
-  function onEnd (err) {
-    if (complete) return
-    if (err) return done(err)
-
-    if(false){
-    //if (length !== null && received !== length) {
-      done(createError(400, 'request size did not match content length', 'request.size.invalid', {
-        expected: length,
-        length: length,
-        received: received
-      }))
-    } else {
-      /*var string = decoder
-        ? buffer + (decoder.end() || '')
-        : Buffer.concat(buffer)
-      done(null, string)
-      */
-
-      let path = './jj';
-
-      if(null != req.headers.OWNER)
-      {
-              path += req.headers.OWNER;
-              path += '/';
-      }
-
-      if(null != req.headers['File-Name'])
-              path +=  req.headers['File-Name'];
-
-      console.log(path);
-
-      fs.appendFile(path, buffer, (err) => {done(err);});
-      
-      
-    }
-  }
-
-  function cleanup () {
-   // buffer = null
-
-    stream.removeListener('aborted', onAborted);
-    stream.removeListener('data', onData);
-    stream.removeListener('end', onEnd);
-    stream.removeListener('error', onEnd);
-    stream.removeListener('close', cleanup);
-  }
 }
 

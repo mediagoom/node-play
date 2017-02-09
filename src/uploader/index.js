@@ -42,13 +42,14 @@ function upload(upl)
                                     'Content-Type' : 'application/octet-stream'
                                   , 'Content-Range': 'bytes ' + self._range_start 
                                         + '-' + self._range_end + '/' + self._file.size
-                                  , 'File-Name': self._opt.name
-                                  , 'CHUNKID' : chunk_id.toString()
+                                  , 'file-name': self._opt.name
+                                  , 'chunkid' : chunk_id.toString()
+                                  , 'owner'   : self._opt.owner
                             }
             }
 
             if (null != self._opt.id) {
-               opt.headers['FILEID'] = self._opt.id;
+               opt.headers['fileid'] = self._opt.id;
             } 
                            
             let http = new httprequest(opt);
@@ -65,22 +66,27 @@ function upload(upl)
                                             // can assume that our last chunk has been processed and exit
                                             // out of the function.
                                             if (self._range_end === self._file.size) {
-                                                self._onUploadComplete();
-
-                                            // Update our ranges
-                                            self._range_start = self._range_end;
-                                            self._range_end = self._range_start + self._opt.chunk_size;
-
-                                            // Prevent range overflow
-                                            if (self._range_end > self._file.size) {
-                                                self._range_end = self._file.size;
+                                                    console.log("upload completed"); 
+                                                    self._onUploadComplete();
                                             }
+                                            else
+                                            {
 
-                                            // Continue as long as we aren't paused
-                                            if (!self._is_paused) {
-                                                upload(self);
-                                            }                                
-                                
+                                                    // Update our ranges
+                                                    self._range_start = self._range_end;
+                                                    self._range_end = self._range_start + self._opt.chunk_size;
+
+                                                    // Prevent range overflow
+                                                    if (self._range_end > self._file.size) {
+                                                        self._range_end = self._file.size;
+                                                    }
+
+                                                    // Continue as long as we aren't paused
+                                                    if (!self._is_paused) {
+                                                        upload(self);
+                                                    }                                
+                                        
+                                            
                                             }
                                 }
                                 ,  (err) => {self._raise_error(err);}
@@ -105,6 +111,7 @@ export default class Uploader extends EventEmitter {
             , id : null
             , tag : null
             , name : file.name
+            , owner: null
             , chunk_size : (1024 * 8) * 10
             , start_position : 0
     };
@@ -133,6 +140,7 @@ export default class Uploader extends EventEmitter {
   }
 
    _raise_error(err){
+           console.log("uploader error: " + err.message);
            this._is_paused = true;
            this.emit('error', err);
    }
