@@ -1,5 +1,7 @@
 import {expect} from 'chai'
 import httprequest from '../core/httprequest.js'
+import TestFile from './file.js'
+import Uploader from '../uploader/index.js'
 
 describe("HTTP REQUEST", () => {
 
@@ -20,13 +22,31 @@ describe("HTTP REQUEST", () => {
                                 done();
                         }
                         , (err) => {
-                                //console.log(err.message);
-                                //console.log(JSON.stringify(err));
+                                console.log(err.message);
+                                console.log(JSON.stringify(err));
                                 
                                 //just fail
                                 expect(true).to.not.be.false;
+                                done();
                         }
                     );
         });//return 200
+
+        describe("UPLOADER" , () => {
+
+                it("upload a file", (done) => {
+                   
+                        let t = new TestFile('package.json');
+                        
+                        let opt = {
+                                url : 'http://localhost:3000/upload'
+                        };
+                        let u = new Uploader(t, opt);
+                            u.on('compleated', () => {done();});
+                            u.on('error', (err) => {console.log(err.message); expect(true).to.not.be.false; done();});
+                            u.start();
+
+                });
+        });
 
 });//http request

@@ -1,0 +1,154 @@
+import fs from 'fs'
+
+/**
+ * Make a serializable error object.
+ *
+ * To create serializable errors you must re-set message so
+ * that it is enumerable and you must re configure the type
+ * property so that is writable and enumerable.
+ *
+ * @param {number} status
+ * @param {string} message
+ * @param {string} type
+ * @param {object} props
+ * @private
+ */
+
+function createError (status, message, type, props) {
+  var error = new Error()
+
+  // capture stack trace
+  Error.captureStackTrace(error, createError)
+
+  // set free-form properties
+  for (var prop in props) {
+    error[prop] = props[prop]
+  }
+
+  // set message
+  error.message = message
+
+  // set status
+  error.status = status
+  error.statusCode = status
+
+  // set type
+  Object.defineProperty(error, 'type', {
+    value: type,
+    enumerable: true,
+    writable: true,
+    configurable: true
+  })
+
+  return error
+}
+
+
+export default function uplaoder(req, res, next)
+{
+    let stream    = req;
+    let complete = false;
+    let sync      = true;
+
+    let received  = 0;
+    let buffer    = [];
+
+    let limit     = 10 * 1024 * 1024; //10MB
+    let length    = 0; 
+
+    // attach listeners
+    stream.on('aborted', onAborted)
+    stream.on('close', cleanup)
+    stream.on('data', onData)
+    stream.on('end', onEnd)
+    stream.on('error', onEnd)
+
+    //If you pass anything to the done() function (except the string 'route'), Express regards the current request as being in error and will skip any remaining non-error handling routing and middleware functions.
+
+
+  function done(err)
+  {
+          cleanup();
+          complete = true;
+
+          if(err != null)
+                  next(err);
+          else
+                  next();
+
+
+  }
+  
+  function onAborted () {
+    if (complete) return;
+
+    done(createError(400, 'request aborted', 'request.aborted', {
+      code: 'ECONNABORTED',
+      expected: length,
+      length: length,
+      received: received
+    }))
+  }
+
+  function onData (chunk) {
+    if (complete) return;
+
+    received += chunk.length
+    buffer.push(chunk);
+
+    if (limit !== null && received > limit) {
+      done(createError(413, 'request entity too large', 'entity.too.large', {
+        limit: limit,
+        received: received
+      }))
+    }
+  }
+
+  function onEnd (err) {
+    if (complete) return
+    if (err) return done(err)
+
+    if(false){
+    //if (length !== null && received !== length) {
+      done(createError(400, 'request size did not match content length', 'request.size.invalid', {
+        expected: length,
+        length: length,
+        received: received
+      }))
+    } else {
+      /*var string = decoder
+        ? buffer + (decoder.end() || '')
+        : Buffer.concat(buffer)
+      done(null, string)
+      */
+
+      let path = './jj';
+
+      if(null != req.headers.OWNER)
+      {
+              path += req.headers.OWNER;
+              path += '/';
+      }
+
+      if(null != req.headers['File-Name'])
+              path +=  req.headers['File-Name'];
+
+      console.log(path);
+
+      fs.appendFile(path, buffer, (err) => {done(err);});
+      
+      
+    }
+  }
+
+  function cleanup () {
+   // buffer = null
+
+    stream.removeListener('aborted', onAborted);
+    stream.removeListener('data', onData);
+    stream.removeListener('end', onEnd);
+    stream.removeListener('error', onEnd);
+    stream.removeListener('close', cleanup);
+  }
+}
+

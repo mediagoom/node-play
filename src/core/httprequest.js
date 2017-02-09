@@ -28,24 +28,24 @@ function request(options, worker, request_body = null)
         return new Promise( (resolve, reject) => {
             
             
-            //console.log("sending " + JSON.stringify(options));
+            console.log("sending " + JSON.stringify(options));
 
             let res = worker.request(options, (request) => {
                 
                 let body = '';
 
-                //console.log("request!");
+                console.log("request!");
 
                 request.on('data', (chunk) => {
                     
                     body += chunk;
 
-                    //console.log("data! [" + body.length + "] ");
+                    console.log("data! [" + body.length + "] ");
                 });
                 
                 request.on('end'  , () => 
                         {
-                                //console.log("end! [" + body.length + "]");
+                                console.log("end! [" + body.length + "]");
                                 resolve( { request: request, body : body} );
 
                         }
@@ -55,7 +55,7 @@ function request(options, worker, request_body = null)
                 const statusCode = request.statusCode;
                 const contentType = request.headers['content-type'];
    
-                //console.log(statusCode);
+                console.log(statusCode);
 
                   let error;
                   if (statusCode !== 200) {
@@ -64,7 +64,7 @@ function request(options, worker, request_body = null)
                   }
                   
                   if (error) {
-                    //console.log(error.message);
+                    console.log(error.message);
                     // consume response data to free up memory
                     request.resume();
                     
@@ -76,7 +76,7 @@ function request(options, worker, request_body = null)
 
             res.on('error', (err) => 
                             {
-                                    //console.log("error " + JSON.stringify(err));
+                                    console.log("error " + JSON.stringify(err));
                                     reject(err);
                             });
             
@@ -93,34 +93,34 @@ function handle_promise(prom, options, worker, request_body = null)
 {
         return new Promise( (resolve, reject) => {
 
-                //console.log(JSON.stringify(http_options));
+                console.log(JSON.stringify(options));
         
                 prom.then(
                         (k) => {
                                 let res = k.request;
-                                //console.log("then ok");
-                                //console.log("prom_filled " + res.statusCode);
+                                console.log("then ok");
+                                console.log("prom_filled " + res.statusCode);
                                 if(
                                         (res.statusCode == 302 || res.statusCode == 301)
                                         && options.followredirect
                                   )
                                 {
-                                        //console.log(JSON.stringify(res.headers));
+                                        console.log(JSON.stringify(res.headers));
                                        
                                         let url =  res.headers['location']
                                         
-                                        //console.log('redirect: ' + url);
+                                        console.log('redirect: ' + url);
 
                                         let opt =  get_options(url);
 
                                         Object.assign(options, opt.options);
 
-                                        //console.log("redirect " + url);
+                                        console.log("redirect " + url);
 
                                         request(options, opt.worker, request_body)
                                         .then(
                                               (k) => {
-                                                      //console.log("forward [" + k.body.length + "]");
+                                                      console.log("forward [" + k.body.length + "]");
                                                       resolve(k);
                                               }
                                             , (err) => {reject(err);}
@@ -153,18 +153,19 @@ function handle_promise(prom, options, worker, request_body = null)
         });
 }
 
-function _req(r, method, request_body)
+function _req(url, r, method, request_body)
 {
+            //console.log(url);
             // Return a new promise.
             let opt = get_options(url);
-                opt.method = method;
+                opt.options.method = method;
 
-            let options = Object.assign(this._opt, opt.options);
+            let options = Object.assign(r._opt, opt.options);
             
             let prom = request(options
                             , opt.worker, request_body);
 
-            
+            console.log("-------"); 
             return  handle_promise(prom, options
                             , opt.worker, null);
 }
@@ -183,10 +184,10 @@ export default class httprequest {
     }
     
     get(url) {
-        return _req(this, 'GET');    
+        return _req(url, this, 'GET');    
     }
 
     put(url, body){
-        return _req(this, 'PUT', body);
+        return _req(url, this, 'PUT', body);
     }
 }

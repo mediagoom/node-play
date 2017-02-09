@@ -32,6 +32,8 @@ function upload(upl)
                 throw "Invalid Range On Upload!";
             }
 
+            console.log("re2 " + self._range_end + " " + self._range_start + " " + self._opt.chunk_size);
+
             let chunk = self._file[self._slice_method](self._range_start, self._range_end);
             let chunk_id = Math.ceil(self._range_start / self._opt.chunk_size);
             
@@ -52,8 +54,9 @@ function upload(upl)
             let http = new httprequest(opt);
                 http.put(self._opt.url, chunk).then(
                                 (res) => {
+                                            console.log("re3 " + self._range_end + " " + self._range_start + " " + self._opt.chunk_size);
 
-                                            let n = new Number((self._range_start / self._chunk_size) / (self._file.size / self._opt.chunk_size) * 100);
+                                            let n = new Number((self._range_start / self._opt.chunk_size) / (self._file.size / self._opt.chunk_size) * 100);
 
                                             let sn = n.toFixed(2);
                                             self._onProgress(sn);
@@ -121,10 +124,12 @@ export default class Uploader extends EventEmitter {
             this._slice_method = 'slice';
         }
     
-     this._range_start = options._start_position;
-     this._range_end   = this._range_start + this._chunk_size;
-     it(this._range_end > this._file.size)
+     this._range_start = this._opt.start_position;
+     this._range_end   = this._range_start + this._opt.chunk_size;
+     if(this._range_end > this._file.size)
              this._range_end = this._file.size;
+
+     console.log("re1 " + this._range_end + " " + this._range_start + " " + this._opt.chunk_size);
   }
 
    _raise_error(err){

@@ -1,10 +1,12 @@
+import express from 'express'
+import uploader from '../uploader/server.js'
 
-var express = require('express')
 var app = express()
 
 var port = 3000;
 
-app.use(express.static('bin/client'));
+app.use(express.static('../client'));
+app.use('/upload', uploader);
 
 /*
 app.get('/', function (req, res) {
@@ -12,8 +14,16 @@ app.get('/', function (req, res) {
 })
 */
 
+
+app.put('/upload', (req, res) => {
+    
+       console.log(JSON.stringify(req.headers));
+
+    
+});
+
 app.listen(port, function () {
-  console.log('app listening on port' + port + '!');
+  console.log('app listening on port ' + port + '!');
 })
 
 
