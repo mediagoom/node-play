@@ -1,23 +1,46 @@
-import {expect} from 'chai'
+import chai from 'chai'
 import httprequest from '../core/httprequest.js'
 import TestFile from './file.js'
 import Uploader from '../uploader/index.js'
+import chaiFiles from 'chai-files';
+ 
+chai.use(chaiFiles);
+var expect = chai.expect;
 
+function check( done, f ) {
+  try {
+    f();
+    done();
+  } catch( e ) {
+    done( e );
+  }
+}
+
+ 
 describe("HTTP REQUEST", () => {
 
         describe("UPLOADER" , () => {
 
                 it("upload a file", (done) => {
-                   
-                        let t = new TestFile('package.json');
+                  
+                        let forig = 'package.json';
+                        let fdest = 'test-file-output.tmp';
+
+                        let t = new TestFile(forig);
                         
                         let opt = {
                                 url : 'http://localhost:3000/upload'
-                              , name : 'mocha-upload.bin'
+                              , name : fdest
+                              , chunk_size: 500
                         };
                         let u = new Uploader(t, opt);
-                            u.on('compleated', () => {done();});
-                            u.on('error', (err) => {console.log(err.message); expect(true).to.not.be.false; done();});
+                            u.on('completed', () => {
+                                    
+                                    check(done, () => {
+                                        expect(chaiFiles.file(forig)).to.equal(chaiFiles.file(fdest));                        
+                                    });
+                            });
+                            u.on('error', (err) => {done(err);});
                             u.start();
 
                 });
@@ -35,18 +58,14 @@ describe("HTTP REQUEST", () => {
                                 //console.log(JSON.stringify(res.request.headers));
                                 //console.log('----------------');
                                 //console.log(res.body);
-                                //console.log('----------------');
+                                console.log('----------------');
                                 //
-                                expect(res.request.statusCode).to.equal(200);
-                                done();
+                                check(done, () =>{
+                                    expect(res.request.statusCode).to.equal(200);
+                                });
                         }
                         , (err) => {
-                                console.log(err.message);
-                                console.log(JSON.stringify(err));
-                                
-                                //just fail
-                                expect(true).to.not.be.false;
-                                done();
+                                done(err);
                         }
                     );
         });//return 200

@@ -44,11 +44,13 @@ function upload(upl)
                                         + '-' + self._range_end + '/' + self._file.size
                                   , 'file-name': self._opt.name
                                   , 'chunkid' : chunk_id.toString()
-                                  , 'owner'   : self._opt.owner
                             }
             }
 
-            if (null != self._opt.id) {
+            if(null != self._opt.owner){
+                    opt.headers['owner'] = self._opt.owner;
+            }
+            if(null != self._opt.id) {
                opt.headers['fileid'] = self._opt.id;
             } 
                            

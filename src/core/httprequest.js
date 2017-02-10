@@ -131,7 +131,7 @@ function handle_promise(prom, options, worker, request_body = null)
                                         let statusCode = res.statusCode;
                                         if(res.statusCode >= 200 && res.statusCode < 300)
                                         {
-                                                resolve(res, body);
+                                                resolve(k);
                                         }
                                         else
                                         {

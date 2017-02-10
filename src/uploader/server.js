@@ -83,9 +83,15 @@ export default function uplaoder(options){
                   complete = true;
 
                   if(err != null)
+                  {
+                          console.log("next with error " + err.message);
                           next(err);
+                  }
                   else
+                  {
+                          console.log("next OK");
                           next();
+                  }
 
 
           }
@@ -143,14 +149,19 @@ export default function uplaoder(options){
                       path += '/';
               }
 
-              if(null != req.headers['file-name'])
-                      path +=  req.headers['file-name'];
+              fs.mkdir(path, (e) => {
+                    if(!e || (e && e.code === 'EEXIST')){
+                              if(null != req.headers['file-name'])
+                                      path +=  req.headers['file-name'];
 
-              console.log(path);
+                              //console.log(path);
 
-              fs.appendFile(path, buffer, (err) => {done(err);});
-              
-              
+                              fs.appendFile(path, buffer, (err) => {done(err);});           //do something with contents
+                    } else {
+                        //debug
+                        done(e);
+                    }
+                });
             }
           }
 
