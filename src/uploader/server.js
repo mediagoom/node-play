@@ -84,12 +84,12 @@ export default function uplaoder(options){
 
                   if(err != null)
                   {
-                          console.log("next with error " + err.message);
+                          //console.log("next with error " + err.message);
                           next(err);
                   }
                   else
                   {
-                          console.log("next OK");
+                          //console.log("next OK");
                           next();
                   }
 
@@ -141,7 +141,7 @@ export default function uplaoder(options){
 
               let path = opt.base_path;
 
-              console.log(JSON.stringify(req.headers));
+              //console.log(JSON.stringify(req.headers));
 
               if(null != req.headers.owner)
               {
@@ -187,13 +187,13 @@ export default function uplaoder(options){
                       let end   = RegExp.$2;
                       let total = RegExp.$3;
 
-                      console.log("=======>", cr, regexp, m, start, end, total);
+                      //console.log("=======>", cr, regexp, m, start, end, total);
 
                       let fend = nodone;
 
                       if(end == total)
                                {
-                                    console.log("process end");
+                                    //console.log("process end");
                                     fend = done;
                                }
 
@@ -201,12 +201,12 @@ export default function uplaoder(options){
 
                       if(0 == start)
                       {
-                              console.log("new file");
+                              //console.log("new file");
 
                                 fs.stat(filepath, (err, stat) => {
                                     if(err == null) {
                                         //'File exists'
-                                        console.log('removing', filepath);
+                                        //console.log('removing', filepath);
                                         fs.unlink(filepath, (err) => {
                                             if(err != null)
                                                 done(err);
@@ -227,7 +227,7 @@ export default function uplaoder(options){
                       }
                       else
                       {
-                              console.log("process file");
+                              //console.log("process file");
                                append(path, filepath, buffer, fend);
 
                                

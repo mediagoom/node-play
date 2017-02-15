@@ -32,7 +32,7 @@ function upload(upl)
                 throw "Invalid Range On Upload!";
             }
 
-            console.log("re2 " + self._range_end + " " + self._range_start + " " + self._opt.chunk_size);
+            //console.log("re2 " + self._range_end + " " + self._range_start + " " + self._opt.chunk_size);
 
             let chunk = self._file[self._slice_method](self._range_start, self._range_end);
             let chunk_id = Math.ceil(self._range_start / self._opt.chunk_size);
@@ -57,7 +57,7 @@ function upload(upl)
             let http = new httprequest(opt);
                 http.put(self._opt.url, chunk).then(
                                 (res) => {
-                                            console.log("re3 " + self._range_end + " " + self._range_start + " " + self._opt.chunk_size);
+                                            //console.log("re3 " + self._range_end + " " + self._range_start + " " + self._opt.chunk_size);
 
                                             let n = new Number((self._range_start / self._opt.chunk_size) / (self._file.size / self._opt.chunk_size) * 100);
 
@@ -68,7 +68,7 @@ function upload(upl)
                                             // can assume that our last chunk has been processed and exit
                                             // out of the function.
                                             if (self._range_end === self._file.size) {
-                                                    console.log("upload completed"); 
+                                                    //console.log("upload completed"); 
                                                     self._onUploadComplete();
                                             }
                                             else
@@ -138,11 +138,11 @@ export default class Uploader extends EventEmitter {
      if(this._range_end > this._file.size)
              this._range_end = this._file.size;
 
-     console.log("re1 " + this._range_end + " " + this._range_start + " " + this._opt.chunk_size);
+     //console.log("re1 " + this._range_end + " " + this._range_start + " " + this._opt.chunk_size);
   }
 
    _raise_error(err){
-           console.log("uploader error: " + err.message);
+           //console.log("uploader error: " + err.message);
            this._is_paused = true;
            this.emit('error', err);
    }
