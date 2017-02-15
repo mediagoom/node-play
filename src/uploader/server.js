@@ -149,19 +149,92 @@ export default function uplaoder(options){
                       path += '/';
               }
 
-              fs.mkdir(path, (e) => {
+              let filepath = path;
+
+              if(null != req.headers['file-name'])
+                            filepath +=  req.headers['file-name'];
+             
+
+              function nodone(err)
+              {
+                  if(err == null)
+                      res.end();
+                  else
+                      done(err);
+              }
+
+              function append(p, f, b, complete)
+              {
+                fs.mkdir(p, (e) => {
                     if(!e || (e && e.code === 'EEXIST')){
-                              if(null != req.headers['file-name'])
-                                      path +=  req.headers['file-name'];
-
-                              //console.log(path);
-
-                              fs.appendFile(path, buffer, (err) => {done(err);});           //do something with contents
+                              fs.appendFile(f, b, (err) => {complete(err);});           //do something with contents
                     } else {
                         //debug
-                        done(e);
+                        complete(e);
                     }
                 });
+              }
+
+
+
+              let cr = req.headers['content-range'];
+              let cont = true;
+              if(null != cr)
+              {
+                      let regexp = /bytes (\d+)-(\d+)\/(\d+)/gi;
+                      let m =  cr.match(regexp);
+                      let start = RegExp.$1;
+                      let end   = RegExp.$2;
+                      let total = RegExp.$3;
+
+                      console.log("=======>", cr, regexp, m, start, end, total);
+
+                      let fend = nodone;
+
+                      if(end == total)
+                               {
+                                    console.log("process end");
+                                    fend = done;
+                               }
+
+
+
+                      if(0 == start)
+                      {
+                              console.log("new file");
+
+                                fs.stat(filepath, (err, stat) => {
+                                    if(err == null) {
+                                        //'File exists'
+                                        console.log('removing', filepath);
+                                        fs.unlink(filepath, (err) => {
+                                            if(err != null)
+                                                done(err);
+                                            else
+                                            {
+                                                    append(path, filepath, buffer, fend);
+                                            }
+                                        });
+                                    } else if(err.code == 'ENOENT') {
+                                        // file does not exist
+                                         append(path, filepath, buffer, fend);
+                                    } else {
+                                            done(err);
+                                           
+                                    }
+                                });
+                              
+                      }
+                      else
+                      {
+                              console.log("process file");
+                               append(path, filepath, buffer, fend);
+
+                               
+                      }
+              }
+
+              
             }
           }
 

@@ -8,16 +8,19 @@ var port = 3000;
 app.use(express.static('../client'));
 app.use('/upload', uploader());
 
-
+/*
 app.get('/', function (req, res) {
   res.send('Hello World!')
 })
+*/
 
 
 
 app.put('/upload', (req, res) => {
     
+       console.log("-------------****");
        console.log(JSON.stringify(req.headers));
+       console.log("-------------**--");
 
        res.send('OK');
 

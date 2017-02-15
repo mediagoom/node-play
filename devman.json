@@ -1,0 +1,26 @@
+{
+    "proc" : [
+        {
+              "name"  : "server"
+            , "watch" : ["src/**/*.js", "!src/**/client/*"]
+            , "exec"  : ["npm run buildserver"]
+            , "cmd"   : {"proc": "node", "args": ["./bin/server/index.js"]}
+            , "debug" : false 
+            , "break" : false
+        }
+        ,
+        {
+             "name"    : "test"
+           , "watch"   : ["src/**/*.js"]
+           , "exec"    : ["npm run build"]
+           , "cmd"     : {"proc": "node", "args": [
+                                "./node_modules/mocha/bin/mocha"
+                                , "--reporter" 
+                                , "spec"
+                                , "./bin/test/index.js"
+                                ]
+                         }
+        }
+
+    ]
+}
