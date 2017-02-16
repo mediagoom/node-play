@@ -103,7 +103,7 @@ function request(options, worker, request_body = null)
             
             if(null != request_body)
             {
-                    if(!(request_body instanceof Blob))
+                    if(Blob === undefined || (!(request_body instanceof Blob)))
                     {
                         res.write(request_body);
                         res.end();

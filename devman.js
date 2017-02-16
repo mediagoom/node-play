@@ -1,7 +1,9 @@
-var config = require('./devman.json');
+
 var chokidar = require('chokidar');
-var cp = require('child_process');
-var express = require('express');
+var cp       = require('child_process');
+var express  = require('express');
+
+var config   = require('./devman.json');
 
 var app = express()
 
@@ -14,14 +16,22 @@ app.get('/', function (req, res) {
       res.json(g);
 })
 
-app.get('/restart/:idx', (req, res) => {
+app.get('/restart/:idx/:debug', (req, res) => {
 
         let idx = req.params.idx;
         console.log('restart ', idx);
+        let ret = 'restarting';
+        let debug = false;
 
-        exec(idx);
+        if(req.params.debug != null && req.params.debug == 'true')
+        {
+                debug = true;
+                ret   = 'debug';
+        }
 
-        res.send('restarting');
+        exec(idx, debug);
+
+        res.send(ret);
 })
 
 var g = [];
@@ -40,7 +50,7 @@ function clear_child(child)
         child
 }
 
-function execnotexisting(idx)
+function execnotexisting(idx, debug)
 {  
 
    let p = g[idx];
@@ -72,7 +82,22 @@ function execnotexisting(idx)
 
            console.log('spawing:', p.cmd.proc, p.cmd.args);
 
-           s[idx].child = cp.spawn(p.cmd.proc, p.cmd.args);
+           let args = p.cmd.args;
+
+           if(debug)
+           {
+                  for(let jj = (p.dbg_arg.length - 1); jj >= 0; jj--)
+                  {
+                          console.log(p.dbg_idx, p.dbg_arg[jj], args);
+                    args = args.splice(p.dbg_idx, 0, p.dbg_arg[jj]);
+                  }
+                
+               console.log('spawing-debug:', p.cmd.proc, args);
+           }
+
+
+
+           s[idx].child = cp.spawn(p.cmd.proc, args);
            let k = idx;
 
            g[k]['status'] = "running";
@@ -103,6 +128,18 @@ function execnotexisting(idx)
           //console.log(`stdout: ${data}`);
             g[k].output += data;
             console.log(data.toString());
+
+            if(debug)
+            {
+
+                      let regexp = p.dbg_url;
+                      let m =  g[k].output.match(regexp);
+                      if(null != m)
+                      {
+                        console.log('****************', m, '******************');
+                      }
+            }
+
         });
 
          s[idx].child.stderr.on('data', (data) => {
@@ -118,7 +155,7 @@ function execnotexisting(idx)
 
 }
 
-function exec(idx)
+function exec(idx, debug)
 {
    if(s[idx].child != null)
    {
@@ -134,7 +171,7 @@ function exec(idx)
    }
    else
    {
-           execnotexisting(idx);
+           execnotexisting(idx, debug);
    }
 }
 
@@ -148,7 +185,10 @@ function proc(p, next, idx)
             , "debug" : false 
             , "break" : false
             , "index" : idx
-            , "timeout" : 15000
+            , "timeout" : 35000
+            , "dbg_idx" : 0
+            , "dbg_arg" : ['--inspect', '--debug-brk']
+            , "dbg_url" : /chrome-devtools:\/\/[\s\n\r]+/g
    };
 
    var p = Object.assign(d, p);
@@ -168,6 +208,8 @@ function proc(p, next, idx)
            chokidar.watch(p.watch).on('all', (event, path) => {
                    
                    console.log('watch ' + idx, event, path);
+                   if('change' == event)
+                       exec(idx);
                    //console.log(event, path);
 
                 }); 

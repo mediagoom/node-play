@@ -10,9 +10,14 @@
         }
         ,
         {
+             "name"    : "client"
+           , "watch"   : ["src/**/*.js", "!src/**/server/*"]
+           , "cmd"     : {"proc": "npm", "args" : ["run", "build"]}
+           
+        }
+        ,
+        {
              "name"    : "test"
-           , "watch"   : ["src/**/*.js"]
-           , "exec"    : ["npm run build"]
            , "cmd"     : {"proc": "node", "args": [
                                 "./node_modules/mocha/bin/mocha"
                                 , "--reporter" 
@@ -20,6 +25,7 @@
                                 , "./bin/test/index.js"
                                 ]
                          }
+           , "dbg_idx" : 1
         }
 
     ]
