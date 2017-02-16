@@ -23,6 +23,27 @@ function get_options(url)
         
 }
 
+function blobToBuffer (blob, cb) {
+  if (typeof Blob === 'undefined' || !(blob instanceof Blob)) {
+    throw new Error('first argument must be a Blob')
+  }
+  if (typeof cb !== 'function') {
+    throw new Error('second argument must be a function')
+  }
+
+  var reader = new FileReader()
+
+  function onLoadEnd (e) {
+    reader.removeEventListener('loadend', onLoadEnd, false)
+    if (e.error) cb(e.error)
+    else cb(null, new Buffer(reader.result))
+  }
+
+  reader.addEventListener('loadend', onLoadEnd, false)
+  reader.readAsArrayBuffer(blob)
+}
+
+
 function request(options, worker, request_body = null)
 {
         return new Promise( (resolve, reject) => {
@@ -82,9 +103,26 @@ function request(options, worker, request_body = null)
             
             if(null != request_body)
             {
-                    res.write(request_body);
+                    if(!(request_body instanceof Blob))
+                    {
+                        res.write(request_body);
+                        res.end();
+                    }
+                    else
+                    {
+                         blobToBuffer(request_body, (err, buffer) =>{
+                            if(null != err)
+                                 reject(err);
+                            else
+                             {
+                                     res.write(buffer);
+                                     res.end();
+                             }
+                         });
+                    }
             }
-            res.end();
+            else
+                res.end();
 
         });
 }

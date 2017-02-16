@@ -19,7 +19,7 @@ function html()
 function compile(watch) {
 
   var opts = watchify.args;
-      opts.entries = ['./src/client/index.js'];
+      opts.entries = ['./src/client/js/index.js'];
       opts.debug = true;
 
   function dob(){

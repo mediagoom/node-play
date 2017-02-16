@@ -5,7 +5,7 @@ var app = express()
 
 var port = 3000;
 
-app.use(express.static('../client'));
+app.use(express.static('bin/client'));
 app.use('/upload', uploader());
 
 /*
