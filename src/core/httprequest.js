@@ -103,23 +103,27 @@ function request(options, worker, request_body = null)
             
             if(null != request_body)
             {
-                    if(Blob === undefined || (!(request_body instanceof Blob)))
-                    {
-                        res.write(request_body);
-                        res.end();
-                    }
-                    else
-                    {
-                         blobToBuffer(request_body, (err, buffer) =>{
-                            if(null != err)
-                                 reject(err);
+                    let def = true;
+                    try{undefined === Blob}catch(err){def = false;}
+
+                            if(!def || (!(request_body instanceof Blob)) )
+                            {
+                                res.write(request_body);
+                                res.end();
+                            }
                             else
-                             {
-                                     res.write(buffer);
-                                     res.end();
-                             }
-                         });
-                    }
+                            {
+                                 blobToBuffer(request_body, (err, buffer) =>{
+                                    if(null != err)
+                                         reject(err);
+                                    else
+                                     {
+                                             res.write(buffer);
+                                             res.end();
+                                     }
+                                 });
+                            }
+                    
             }
             else
                 res.end();

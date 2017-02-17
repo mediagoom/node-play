@@ -89,7 +89,7 @@ function execnotexisting(idx, debug)
                   for(let jj = (p.dbg_arg.length - 1); jj >= 0; jj--)
                   {
                           console.log(p.dbg_idx, p.dbg_arg[jj], args);
-                    args = args.splice(p.dbg_idx, 0, p.dbg_arg[jj]);
+                          args.splice(p.dbg_idx, 0, p.dbg_arg[jj]);
                   }
                 
                console.log('spawing-debug:', p.cmd.proc, args);
@@ -188,7 +188,7 @@ function proc(p, next, idx)
             , "timeout" : 35000
             , "dbg_idx" : 0
             , "dbg_arg" : ['--inspect', '--debug-brk']
-            , "dbg_url" : /chrome-devtools:\/\/[\s\n\r]+/g
+            , "dbg_url" : /chrome-devtools:\/\/[^\s\n\r]+/g
    };
 
    var p = Object.assign(d, p);
