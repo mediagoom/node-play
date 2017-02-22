@@ -80,7 +80,7 @@ function execnotexisting(idx, debug)
            g[idx].output = '';
            g[idx].outerr = '';
 
-           console.log('spawing:', p.cmd.proc, p.cmd.args);
+           console.log('spawing:', p.cmd.proc, p.cmd.args, debug);
 
            let args = p.cmd.args;
 
@@ -163,7 +163,7 @@ function exec(idx, debug)
          let k = idx;
          s[idx].child.on('close', (code, signal) => {
                  let j = k;
-                 setTimeout(() => {execnotexisting(j);}, 50);
+                 setTimeout(() => {execnotexisting(j, debug);}, 50);
          });
 
         s[idx].child.kill();

@@ -12,7 +12,7 @@
         {
              "name"    : "client"
            , "watch"   : ["src/**/*.js", "!src/**/server/*"]
-           , "cmd"     : {"proc": "npm", "args" : ["run", "build"]}
+           , "exec"    : ["npm run build"]
            
         }
         ,
@@ -20,6 +20,8 @@
              "name"    : "test"
            , "cmd"     : {"proc": "node", "args": [
                                 "./node_modules/mocha/bin/mocha"
+                                , "-t"
+                                , "10000"
                                 , "--reporter" 
                                 , "spec"
                                 , "./bin/test/index.js"

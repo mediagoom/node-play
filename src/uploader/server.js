@@ -62,7 +62,7 @@ export default function uplaoder(options){
             let sync      = true;
 
             let received  = 0;
-            let buffer    = [];
+            let buffer    = null;
 
             let limit     = opt.limit; //10MB
             let length    = 0; 
@@ -73,6 +73,29 @@ export default function uplaoder(options){
             stream.on('data', onData)
             stream.on('end', onEnd)
             stream.on('error', onEnd)
+
+              let cr = req.headers['content-range'];
+              let cont = true;
+
+               let regexp = /bytes (\d+)-(\d+)\/(\d+)/gi;
+                      let start = 0;
+                      let end   = 0;
+                      let total = 0;
+                      let size = 0;
+              
+              if(null != cr)
+              {
+                     let m      =  cr.match(regexp);
+                     start = RegExp.$1;
+                     end   = RegExp.$2;
+                     total = RegExp.$3;
+
+                      size  = end - start;
+
+                      console.log("=======>", cr, regexp, m, start, end, total)
+
+                      buffer = Buffer.alloc(size);
+              }
 
             //If you pass anything to the done() function (except the string 'route'), Express regards the current request as being in error and will skip any remaining non-error handling routing and middleware functions.
 
@@ -110,8 +133,13 @@ export default function uplaoder(options){
           function onData (chunk) {
             if (complete) return;
 
-            received += chunk.length
-            buffer.push(chunk);
+
+            //console.log("------- chunk buffer -> ", Buffer.isBuffer(chunk));
+
+           
+            //buffer.push(chunk);
+            chunk.copy(buffer, received);
+             received += chunk.length;
 
             if (limit !== null && received > limit) {
               done(createError(413, 'request entity too large', 'entity.too.large', {
@@ -163,11 +191,49 @@ export default function uplaoder(options){
                       done(err);
               }
 
-              function append(p, f, b, complete)
+              function append(p, f, b, complete, start)
               {
+                console.log("------- chunk buffer -> ", Buffer.isBuffer(b), b.length);
+
                 fs.mkdir(p, (e) => {
                     if(!e || (e && e.code === 'EEXIST')){
-                              fs.appendFile(f, b, (err) => {complete(err);});           //do something with contents
+                              fs.appendFile(f, b, {encoding : null}, (err) => {complete(err);});           //do something with contents
+                              /* 
+                              console.log("append");
+
+                              fs.open(f, 'a', (err, fd) => {
+                                
+                                      if(null != err)
+                                      {
+                                              console.log(err);
+                                              compleate(err);
+                                      }
+                                      else
+                                      {
+                                              console.log("write", start);
+                                              fs.write(fd, b, start, (err, written, buffer) => {
+                                                      
+                                                        console.log("writeback", start);
+
+                                                        if(null != err)
+                                                        {
+                                                                console.log(err);
+                                                                compleate(err);
+                                                        }
+                                                        else
+                                                        {
+                                                                console.log("WRITTEN: ", written);
+                                                                fs.close(fd, (err) => {
+                                                                        console.log("closed", err);
+                                                                        complete(err);
+                                                                });
+                                                        }
+                                              });
+                                      }
+                              
+                              });
+                              */
+
                     } else {
                         //debug
                         complete(e);
@@ -177,23 +243,45 @@ export default function uplaoder(options){
 
 
 
-              let cr = req.headers['content-range'];
+              //let cr = req.headers['content-range'];
               let cont = true;
-              if(null != cr)
+              if(null == cr)
               {
-                      let regexp = /bytes (\d+)-(\d+)\/(\d+)/gi;
-                      let m =  cr.match(regexp);
-                      let start = RegExp.$1;
-                      let end   = RegExp.$2;
-                      let total = RegExp.$3;
+                 console.log('NO HEADERS');
+                                      done(createError(400, 'request has invalid headers', 'request.size.invalid', {
+                                                expected: size,
+                                                length: buffer.length,
+                                                received: received
+                                      }))
+              }
+                      //let regexp = /bytes (\d+)-(\d+)\/(\d+)/gi;
+                     // let m =  cr.match(regexp);
+                      //let start = RegExp.$1;
+                      //let end   = RegExp.$2;
+                      //let total = RegExp.$3;
 
-                      //console.log("=======>", cr, regexp, m, start, end, total);
+                      //let size  = end - start;
+
+                      //console.log("=======>", cr, regexp, m, start, end, total, received);
+
+                      if(size != received)
+                      {
+                              console.log('ERROR INVALID SIZE', size, buffer.length);
+                                      done(createError(400, 'request content-size did not match content length', 'request.size.invalid', {
+                                                expected: size,
+                                                length: buffer.length,
+                                                received: received
+                                      }))
+                      }
+
+                      
 
                       let fend = nodone;
 
                       if(end == total)
                                {
-                                    //console.log("process end");
+
+                                    console.log("process end");
                                     fend = done;
                                }
 
@@ -201,18 +289,18 @@ export default function uplaoder(options){
 
                       if(0 == start)
                       {
-                              //console.log("new file");
+                              console.log("new file");
 
                                 fs.stat(filepath, (err, stat) => {
                                     if(err == null) {
                                         //'File exists'
-                                        //console.log('removing', filepath);
+                                        console.log('removing', filepath);
                                         fs.unlink(filepath, (err) => {
                                             if(err != null)
                                                 done(err);
                                             else
                                             {
-                                                    append(path, filepath, buffer, fend);
+                                                    append(path, filepath, buffer, fend, start);
                                             }
                                         });
                                     } else if(err.code == 'ENOENT') {
@@ -227,15 +315,15 @@ export default function uplaoder(options){
                       }
                       else
                       {
-                              //console.log("process file");
-                               append(path, filepath, buffer, fend);
+                              console.log("process file");
+                               append(path, filepath, buffer, fend, start);
 
                                
                       }
               }
 
               
-            }
+           
           }
 
           function cleanup () {

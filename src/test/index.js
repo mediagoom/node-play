@@ -7,6 +7,17 @@ import chaiFiles from 'chai-files';
 chai.use(chaiFiles);
 var expect = chai.expect;
 
+function tval(name, def)
+{
+        if(null == process.env[name])
+        {
+                return def;
+        }
+
+        return process.env[name];
+}
+
+
 function check( done, f ) {
   try {
     f();
@@ -23,13 +34,13 @@ describe("HTTP REQUEST", () => {
 
                 it("upload a file", (done) => {
                   
-                        let forig = 'package.json';
+                        let forig = tval('TESTFILE', 'package.json');
                         let fdest = 'test-file-output.tmp';
-
+                       
                         let t = new TestFile(forig);
                         
                         let opt = {
-                                url : 'http://localhost:3000/upload'
+                                url : tval('TESTURL', 'http://localhost:3000/upload')
                               , name : fdest
                               , chunk_size: 500
                         };
