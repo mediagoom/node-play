@@ -5,7 +5,23 @@ var express  = require('express');
 
 var config   = require('./devman.json');
 
-var app = express()
+
+const Reset = "\x1b[0m"
+
+
+const FgBlack = "\x1b[30m"
+const FgRed = "\x1b[31m"
+const FgGreen = "\x1b[32m"
+const FgYellow = "\x1b[33m"
+const FgBlue = "\x1b[34m"
+const FgMagenta = "\x1b[35m"
+const FgCyan = "\x1b[36m"
+const FgWhite = "\x1b[37m"
+
+
+
+
+var app = express();
 
 var port = 2999;
 
@@ -54,21 +70,28 @@ function execnotexisting(idx, debug)
 {  
 
    let p = g[idx];
+
+    if(g[idx]['status'] == 'executing')
+    {
+
+         console.log(FgMagenta, 'Process is executing ', g[idx].name, Reset);
+    }
+
    g[idx]['status'] = 'executing';
    
    for(i = 0; i < p.exec.length; i++)
    {
         try{
            
-                console.log("executing: ", p.exec[i]);
+                console.log(FgGreen, "executing: ", p.exec[i], Reset);
                 var b = cp.execSync(p.exec[i], {timeout : p.timeout}).toString();
-                    g[idx].exec_output[i] = b;
+                    s[idx].exec_output[i] = b;
 
                 console.log(b);
 
         }catch(err)
         {
-            g[idx]['err'] = err;
+            s[idx]['err'] = err;
             g[idx]['status'] = 'error';
             console.log(p.exec[i], ' error ', err.message);
             break;
@@ -80,7 +103,7 @@ function execnotexisting(idx, debug)
            g[idx].output = '';
            g[idx].outerr = '';
 
-           console.log('spawing:', p.cmd.proc, p.cmd.args, debug);
+           console.log(FgGreen, 'spawing:', p.cmd.proc, p.cmd.args, debug, Reset);
 
            let args = p.cmd.args;
 
@@ -110,23 +133,26 @@ function execnotexisting(idx, debug)
                 if(0 != code)
                    g[k]['status'] = 'error';
 
-                console.log('child end: ', k, code, g[k]['status']);
+                console.log(
+                        (code == 0)?FgGreen:FgRed,
+                        'child end: ', k, code, g[k]['status'], g[k].name
+                        ,Reset);
            });
 
            s[idx].child.on('error', (err) => {
                 g[k]['info']   = "err " + err.message;
-                g[k]['err']    = err;
+                s[k]['err']    = err;
                 g[k]['status'] = "error";
                 s[k].child = null;
 
-                console.log('child error: ', k, err.message);
+                console.log(FgRed, 'child error: ', g[k].name, k, err.message);
 
 
            });
 
          s[idx].child.stdout.on('data', (data) => {
           //console.log(`stdout: ${data}`);
-            g[k].output += data;
+            s[k].output += data;
             console.log(data.toString());
 
             if(debug)
@@ -144,22 +170,31 @@ function execnotexisting(idx, debug)
 
          s[idx].child.stderr.on('data', (data) => {
           //console.log(`stderr: ${data}`);
-            g[k].outerr += data;
+            s[k].outerr += data;
             console.log(data.toString());
         });
    }
    else
    {
-           console.log('skip spawn on error', g[idx].exec_output);
+        if(null != p.cmd)
+           console.log(FgRed, '------>', g[k].name, ' skip spawn on error', s[idx].exec_output);
+        
    }
 
 }
 
 function exec(idx, debug)
 {
+   if( g[idx]['status'] == 'closing')
+   {
+         console.log(FgMagenta, 'Process is exiting ', g[idx].name, Reset);
+         return;
+   }
+
    if(s[idx].child != null)
    {
-        console.log('killing: ', g[idx].name);
+        g[idx]['status'] = 'closing';
+        console.log(FgYellow, 'killing: ', g[idx].name, Reset);
          let k = idx;
          s[idx].child.on('close', (code, signal) => {
                  let j = k;
@@ -188,7 +223,7 @@ function proc(p, next, idx)
             , "timeout" : 35000
             , "dbg_idx" : 0
             , "dbg_arg" : ['--inspect', '--debug-brk']
-            , "dbg_url" : /chrome-devtools:\/\/[^\s\n\r]+/g
+            , "dbg_url" : 'chrome-devtools:\/\/[^\s\n\r]+'
    };
 
    var p = Object.assign(d, p);
@@ -197,10 +232,10 @@ function proc(p, next, idx)
 
    console.log("-----------");
    
-   p.exec_output = [];
    g[idx] = p;
-   s[idx] = {};
-  
+   s[idx] = {
+           "exec_output" : []
+   };
    
    if(null != p.watch && 0 < p.watch.length)
    {

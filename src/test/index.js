@@ -34,7 +34,7 @@ describe("HTTP REQUEST", () => {
 
                 it("upload a file", (done) => {
                   
-                        let forig = tval('TESTFILE', 'package.json');
+                        let forig = tval('TESTFILE', './src/test/mediagoom.jpg');
                         let fdest = 'test-file-output.tmp';
                        
                         let t = new TestFile(forig);
