@@ -106,7 +106,7 @@ function execnotexisting(idx, debug)
 
            console.log(FgGreen, 'spawing:', p.cmd.proc, p.cmd.args, debug, Reset);
 
-           let args = p.cmd.args;
+           let args = p.cmd.args.slice();
 
            if(debug)
            {
@@ -116,10 +116,10 @@ function execnotexisting(idx, debug)
                           args.splice(p.dbg_idx, 0, p.dbg_arg[jj]);
                   }
                 
-               console.log('spawing-debug:', p.cmd.proc, args);
+               console.log(FgYellow, 
+                               'spawing-debug:', p.cmd.proc, args
+                               , Reset);
            }
-
-
 
            s[idx].child = cp.spawn(p.cmd.proc, args);
            let k = idx;
@@ -133,7 +133,10 @@ function execnotexisting(idx, debug)
                 g[k]['status'] = "closed";
                 g[k]['lastexitcode'] = code;
 
-                let pid = s[k].child.pid;
+                let pid = null;
+                
+                if(s[k].child != null)
+                   pid = s[k].child.pid;
 
                 s[k].child = null;
 
@@ -141,7 +144,7 @@ function execnotexisting(idx, debug)
                    g[k]['status'] = 'error';
                 */
                 console.log(
-                        (code == 0)?FgGreen:FgRed,
+                        (code == 0 || null == code)?FgGreen:FgRed,
                         'child end: ', pid, k, code, g[k]['status'], g[k].name
                         ,Reset);
            });
@@ -162,23 +165,26 @@ function execnotexisting(idx, debug)
             s[k].output += data;
             console.log(data.toString());
 
-            if(debug)
-            {
-
-                      let regexp = new RegExp(p.dbg_url);
-                      let m =  s[k].output.match(regexp);
-                      if(null != m)
-                      {
-                        console.log('****************', m, '******************');
-                      }
-            }
-
+            
         });
 
          s[idx].child.stderr.on('data', (data) => {
           //console.log(`stderr: ${data}`);
             s[k].outerr += data;
             console.log(FgRed, data.toString(), Reset);
+
+            if(debug)
+            {
+
+                      let regexp = new RegExp(p.dbg_url, 'g');
+                      let m =  s[k].outerr.match(regexp);
+                      g[idx].debug = m;
+                      if(null != m)
+                      {
+                        console.log('****************', m[0], '******************');
+                      }
+            }
+
         });
    }
    else
@@ -192,21 +198,23 @@ function execnotexisting(idx, debug)
 
 function exec(idx, debug)
 {
-   if( g[idx]['status'] == 'closing')
+   if( g[idx]['status'] == 'closing'
+     || g[idx]['status'] == 'executing')
    {
-         console.log(FgMagenta, 'Process is exiting ', g[idx].name, Reset);
+         console.log(FgMagenta, 'Process is exiting ', g[idx].status, g[idx].name, Reset);
          return;
    }
 
+   g[idx]['status'] = 'closing';
+
    if(s[idx].child != null)
    {
-        g[idx]['status'] = 'closing';
         let pid = s[idx].child.pid;
         console.log(FgYellow, 'killing: ', pid, g[idx].name, Reset);
          let k = idx;
          s[idx].child.on('close', (code, signal) => {
                  
-                 console.log(FgMagenta, 'kill close', pid, g[idx].name, Reset);
+                 console.log(FgMagenta, 'kill close', pid, g[idx].name, g[idx].status, Reset);
                  
                  let j = k;
                  setTimeout(() => {execnotexisting(j, debug);}, 50);
@@ -234,7 +242,7 @@ function proc(p, next, idx)
             , "timeout" : 35000
             , "dbg_idx" : 0
             , "dbg_arg" : ['--inspect', '--debug-brk']
-            , "dbg_url" : 'chrome-devtools:\/\/[^\s\n\r]+'
+            , "dbg_url" : 'chrome-devtools:\/\/[^\\s\\n\\r]+'
    };
 
    var p = Object.assign(d, p);

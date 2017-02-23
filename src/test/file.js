@@ -12,7 +12,11 @@ export default class TestFile
 
     slice(start, end)
     {
-            return this._content.slice(start, end);
+            let n = this._content.slice(start, end);
+            
+            //console.log('***>' , (typeof n), n.constructor.name);
+
+            return n;
     }
 
     

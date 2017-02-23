@@ -2,7 +2,7 @@
     "proc" : [
         {
               "name"  : "server"
-            , "watch" : ["src/**/*.js", "!src/**/client/*"]
+            , "watch" : ["src/**/*.js", "!src/**/client/*", "!src/test/*"]
             , "exec"  : ["npm run buildserver"]
             , "cmd"   : {"proc": "node", "args": ["./bin/server/index.js"]}
             , "debug" : false 
@@ -11,13 +11,14 @@
         ,
         {
              "name"    : "client"
-           , "watch"   : ["src/**/*.js", "!src/**/server/*", "!src/**/server.js"]
+           , "watch"   : ["src/**/*.js", "!src/**/server/*", "!src/**/server.js", "!src/test/*"]
            , "exec"    : ["npm run build"]
            
         }
         ,
         {
              "name"    : "test"
+           , "watch"   : ["src/test/**/*.js"]
            , "cmd"     : {"proc": "node", "args": [
                                 "./node_modules/mocha/bin/mocha"
                                 , "-t"

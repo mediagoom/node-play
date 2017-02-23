@@ -44,6 +44,7 @@ describe("HTTP REQUEST", () => {
                               , name : fdest
                               , chunk_size: 500
                         };
+                        
                         let u = new Uploader(t, opt);
                             u.on('completed', () => {
                                     
@@ -69,10 +70,10 @@ describe("HTTP REQUEST", () => {
                                 //console.log(JSON.stringify(res.request.headers));
                                 //console.log('----------------');
                                 //console.log(res.body);
-                                console.log('----------------');
+                                //console.log('----------------');
                                 //
                                 check(done, () =>{
-                                    expect(res.request.statusCode).to.equal(200);
+                                    expect(res.response.statusCode).to.equal(200);
                                 });
                         }
                         , (err) => {
