@@ -192,7 +192,7 @@ function execnotexisting(idx, debug)
    else
    {
         if(null != p.cmd)
-           console.log(FgRed, '------>', g[k].name, ' skip spawn on error', s[idx].exec_output);
+           console.log(FgRed, '------>', g[idx].name, ' skip spawn on error', s[idx].exec_output);
         else
            g[idx]['status'] = "closed";
    }
@@ -256,6 +256,7 @@ function proc(p, next, idx)
    g[idx] = p;
    s[idx] = {
            "exec_output" : []
+                   , "change" : false
    };
    
    if(null != p.watch && 0 < p.watch.length)
@@ -265,7 +266,18 @@ function proc(p, next, idx)
                    
                    console.log('watch ' + idx, event, path);
                    if('change' == event)
-                       exec(idx);
+                   {
+                       if(s[idx].change)
+                       {
+                               console.log(FgYellow, "Discard Duplicated Change", idx, g[idx].name, Reset);
+                               return;
+                       }
+                   
+                        s[idx].change = true;
+                            exec(idx);
+
+                        setTimeout(() => {s[idx].change = false}, 5000);
+                   }
                    //console.log(event, path);
 
                 }); 

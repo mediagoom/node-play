@@ -11,7 +11,7 @@
         ,
         {
              "name"    : "client"
-           , "watch"   : ["src/**/*.js", "!src/**/server/*", "!src/**/server.js", "!src/test/*"]
+           , "watch"   : ["src/**/*.js", "src/**/*.html", "!src/**/server/*", "!src/**/server.js", "!src/test/*"]
            , "exec"    : ["npm run build"]
            
         }

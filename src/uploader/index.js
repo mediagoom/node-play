@@ -107,6 +107,7 @@ export default class Uploader extends EventEmitter {
         this._range_end   = 0;
         this._range_start = 0;
         this._is_paused   = true;
+        
 
         let opt = {
             url : "/upload"
@@ -139,34 +140,164 @@ export default class Uploader extends EventEmitter {
             this._range_end = this._file.size;
 
      //console.log("re1 " + this._range_end + " " + this._range_start + " " + this._opt.chunk_size);
+     //
+     this.status       = "inizialized";
     }
+
+    name() {return this._opt.name;}
 
     _raise_error(err){
            //console.log("uploader error: " + err.message);
         this._is_paused = true;
+        this.status = "error";
         this.emit("error", err);
     }
 
     _onProgress(sn){this.emit("progress", sn);}
-    _onUploadComplete(){this.emit("completed");}
+    _onUploadComplete(){
+        this.status = "completed";
+        this.emit("completed");
+    }
   
     start() {
         this._is_paused = false;
         this.emit("start");
+        this.status = "started";
         upload(this);
     }
 
     pause() {
         this._is_paused = true;
+
+        this.status = "paused";
     }
+
+    paused() { return this._is_paused;}
 
     resume() {
         this._is_paused = false;
+
+        this.status = "started";
         upload(this);
     }
 
 }
 
 
+export class UploadManager extends EventEmitter {
+    constructor(options) {
+ 
+        super();
+    
+
+        let opt = {
+              url : "/upload"
+            , chunk_size : (1024 * 8) * 10
+            , start_position : 0
+        };
+
+        if(null != options)
+            this._opt = Object.assign(opt, options);
+        else
+        this._opt = opt;
+
+        this.uploader = {};
+    }
+
+    setOptions(options)
+    {
+         this._opt = Object.assign(this._opt, options);
+    }
+
+     _raise_error(err, kid){this.emit("error", err, kid);}
+     _onProgress(sn, kid){this.emit("progress", sn, kid);}
+     _onUploadComplete(kid){this.emit("completed", kid);}
+
+    add(file, id, options)
+    {
+        if(null != this.uploader[id])
+        {
+            throw 'uploader alredy exist';
+        }
+
+        let op = Object.assign(this._opt, options);
+        let kid = id;
+        let up = new Uploader(file, op);
+            up.on('completed', () => {this._onUploadComplete(kid);});
+            up.on('error', (err) => {this._raise_error(err, kid)});
+            up.on('progress', (n) => { this._onProgress(n, kid);});
+
+
+        this.uploader[id] = up;
+
+        return up;
+    }
+
+    start(id){
+
+        if(null != this.uploader[id])
+        {
+            throw 'invalid id';
+        }
+
+        this.uploader[id].start();
+
+    }
+
+    pause(id){
+
+        if(null != this.uploader[id])
+        {
+            throw 'invalid id';
+        }
+
+        this.uploader[id].pause();
+
+    }
+
+    resume(id){
+
+        if(null != this.uploader[id])
+        {
+            throw 'invalid id';
+        }
+
+        this.uploader[id].resume();
+
+    }
+
+    status(id)
+    {
+        if(null != this.uploader[id])
+        {
+            throw 'invalid id';
+        }
+
+        return this.uploader[id].status;
+    }
+
+    selectFiles(e)
+    {
+        let files = e.files;
+        
+
+                for (var i = 0; i < files.length; i++) {
+                    let file = files[i];
+                    
+                    let id = file.name;
+                        id = id.replace(".", "_");
+                        id = id.replace(" ", "_");
+                        id = id.replace("&", "_");
+                        
+                        this.add(file, id);
+                        this.emit("new", id);
+
+                }
+        
+     }
+
+
+
+}
 
 
