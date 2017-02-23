@@ -78,7 +78,20 @@
                 }
                 );
 
+                myself.on('completed', function() { alert("done " + myself.name()); });
+
                 txt.text(myself.name());
+
+                myself.on('progress', function (num) {
+
+                    var d = new Number(num);
+                    var x = new String(d.toFixed(0)) + '%';
+                    var s = new String(d.toFixed(2)) + '%';
+
+                    progress.find(":first-child").css('width', x);
+                    progress.find(":first-child :first-child").text(s);
+
+                });
 
 
 
