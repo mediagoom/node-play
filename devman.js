@@ -75,6 +75,7 @@ function execnotexisting(idx, debug)
     {
 
          console.log(FgMagenta, 'Process is executing ', g[idx].name, Reset);
+         return;
     }
 
    g[idx]['status'] = 'executing';
@@ -100,8 +101,8 @@ function execnotexisting(idx, debug)
 
    if(null != p.cmd && g[idx]['status'] != 'error')
    {
-           g[idx].output = '';
-           g[idx].outerr = '';
+           s[idx].output = '';
+           s[idx].outerr = '';
 
            console.log(FgGreen, 'spawing:', p.cmd.proc, p.cmd.args, debug, Reset);
 
@@ -123,19 +124,25 @@ function execnotexisting(idx, debug)
            s[idx].child = cp.spawn(p.cmd.proc, args);
            let k = idx;
 
+
+
            g[k]['status'] = "running";
 
            s[idx].child.on('close', (code, signal) => {
                 g[k]['info']   = "close " + code;
                 g[k]['status'] = "closed";
+                g[k]['lastexitcode'] = code;
+
+                let pid = s[k].child.pid;
+
                 s[k].child = null;
 
-                if(0 != code)
+                /*if(0 != code)
                    g[k]['status'] = 'error';
-
+                */
                 console.log(
                         (code == 0)?FgGreen:FgRed,
-                        'child end: ', k, code, g[k]['status'], g[k].name
+                        'child end: ', pid, k, code, g[k]['status'], g[k].name
                         ,Reset);
            });
 
@@ -158,8 +165,8 @@ function execnotexisting(idx, debug)
             if(debug)
             {
 
-                      let regexp = p.dbg_url;
-                      let m =  g[k].output.match(regexp);
+                      let regexp = new RegExp(p.dbg_url);
+                      let m =  s[k].output.match(regexp);
                       if(null != m)
                       {
                         console.log('****************', m, '******************');
@@ -171,16 +178,16 @@ function execnotexisting(idx, debug)
          s[idx].child.stderr.on('data', (data) => {
           //console.log(`stderr: ${data}`);
             s[k].outerr += data;
-            console.log(data.toString());
+            console.log(FgRed, data.toString(), Reset);
         });
    }
    else
    {
         if(null != p.cmd)
            console.log(FgRed, '------>', g[k].name, ' skip spawn on error', s[idx].exec_output);
-        
+        else
+           g[idx]['status'] = "closed";
    }
-
 }
 
 function exec(idx, debug)
@@ -194,9 +201,13 @@ function exec(idx, debug)
    if(s[idx].child != null)
    {
         g[idx]['status'] = 'closing';
-        console.log(FgYellow, 'killing: ', g[idx].name, Reset);
+        let pid = s[idx].child.pid;
+        console.log(FgYellow, 'killing: ', pid, g[idx].name, Reset);
          let k = idx;
          s[idx].child.on('close', (code, signal) => {
+                 
+                 console.log(FgMagenta, 'kill close', pid, g[idx].name, Reset);
+                 
                  let j = k;
                  setTimeout(() => {execnotexisting(j, debug);}, 50);
          });
