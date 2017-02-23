@@ -213,7 +213,7 @@ export default function uplaoder(options){
             //if(false){
             if (size !== null && received !== size) {
 
-                console.log("---->Invalid Size", size, received, length);
+                //console.log("---->Invalid Size", size, received, length);
 
                 done(createError(400, "request size did not match content length", "request.size.invalid", {
                     expected: length,

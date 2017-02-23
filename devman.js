@@ -124,9 +124,9 @@ function execnotexisting(idx, debug)
            s[idx].child = cp.spawn(p.cmd.proc, args);
            let k = idx;
 
+           
 
-
-           g[k]['status'] = "running";
+          
 
            s[idx].child.on('close', (code, signal) => {
                 g[k]['info']   = "close " + code;
@@ -186,6 +186,8 @@ function execnotexisting(idx, debug)
             }
 
         });
+
+        g[k]['status'] = "running";
    }
    else
    {
@@ -225,7 +227,7 @@ function exec(idx, debug)
    }
    else
    {
-           execnotexisting(idx, debug);
+                 setTimeout(() => {execnotexisting(idx, debug);}, 50);
    }
 }
 
