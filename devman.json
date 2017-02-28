@@ -18,14 +18,14 @@
         ,
         {
              "name"    : "test"
-           , "watch"   : ["src/test/**/*.js"]
+           , "watch"   : ["src//**/test/*.js"]
            , "cmd"     : {"proc": "node", "args": [
                                 "./node_modules/mocha/bin/mocha"
                                 , "-t"
                                 , "10000"
                                 , "--reporter" 
                                 , "spec"
-                                , "./bin/test/index.js"
+                                , "bin//**/test/index.js"
                                 ]
                          }
            , "dbg_idx" : 1

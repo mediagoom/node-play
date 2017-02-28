@@ -1,7 +1,6 @@
 import chai from 'chai'
-import httprequest from '../core/httprequest.js'
 import TestFile from './file.js'
-import Uploader from '../uploader/index.js'
+import Uploader from '../index.js'
 import chaiFiles from 'chai-files';
  
 chai.use(chaiFiles);
@@ -34,7 +33,7 @@ describe("HTTP REQUEST", () => {
 
                 it("upload a file", (done) => {
                   
-                        let forig = tval('TESTFILE', './src/test/mediagoom.jpg');
+                        let forig = tval('TESTFILE', './src/uploader/test/mediagoom.jpg');
                         let fdest = 'test-file-output.tmp';
                        
                         let t = new TestFile(forig);
@@ -59,28 +58,6 @@ describe("HTTP REQUEST", () => {
         });
 
 
-     it("return 200 for google.com", (done) => {
-
-                let r = new httprequest();
-                    
-                    r.get('https://www.google.com').then(
-                        (res) => {
-                                //console.log('*----------------');
-                                //console.log(res.request.statusCode);
-                                //console.log(JSON.stringify(res.request.headers));
-                                //console.log('----------------');
-                                //console.log(res.body);
-                                //console.log('----------------');
-                                //
-                                check(done, () =>{
-                                    expect(res.response.statusCode).to.equal(200);
-                                });
-                        }
-                        , (err) => {
-                                done(err);
-                        }
-                    );
-        });//return 200
 
    
 
