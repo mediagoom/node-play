@@ -2,7 +2,7 @@
     "proc" : [
         {
               "name"  : "server"
-            , "watch" : ["src/**/*.js", "!src/**/client/*", "!src/test/*"]
+            , "watch" : ["src/**/*.js", "!src/**/client/*", "!src/**/test/*"]
             , "exec"  : ["npm run buildserver"]
             , "cmd"   : {"proc": "node", "args": ["./bin/server/index.js"]}
             , "debug" : false 
