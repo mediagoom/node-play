@@ -32,7 +32,7 @@ app.get('/', function (req, res) {
       res.json(g);
 })
 
-app.get('/restart/:idx/:debug', (req, res) => {
+app.get('/restart/:idx/:debug?', (req, res) => {
 
         let idx = req.params.idx;
         console.log('restart ', idx);

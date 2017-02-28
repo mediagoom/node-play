@@ -156,6 +156,7 @@ export default class Uploader extends EventEmitter {
     _onProgress(sn){this.emit("progress", sn);}
     _onUploadComplete(){
         this.status = "completed";
+
         this.emit("completed");
     }
   

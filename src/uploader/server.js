@@ -13,7 +13,6 @@ import fs from "fs";
  * @param {object} props
  * @private
  */
-
 function createError (status, message, type, props) {
     var error = new Error();
 
@@ -243,7 +242,7 @@ export default function uplaoder(options){
                     filepath +=  req.headers["file-name"];
              
 
-                
+               req['uploader'] = filepath; 
 
 
               //let cr = req.headers['content-range'];
@@ -288,7 +287,7 @@ export default function uplaoder(options){
                     fend = done;
                 }
 
-
+                
 
                 if(0 == start)
                 {

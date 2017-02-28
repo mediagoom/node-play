@@ -19,8 +19,11 @@ app.get('/', function (req, res) {
 app.put('/upload', (req, res) => {
     
        console.log("-------------****");
-       console.log(JSON.stringify(req.headers));
+       //console.log(JSON.stringify(req.headers));
+       console.log(req.uploader);
        console.log("-------------**--");
+
+       
 
        res.send('OK');
 

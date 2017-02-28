@@ -9,12 +9,82 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
+<style>
+        html,
+        body {
+            height: 100%;
+            background-color: white;
+            margin: 0px;
+            padding: 0px;
+
+            color: #1e1e1e; 
+            
+        }
+
+        .owner
+        {
+            margin: auto;
+            width: 50%;
+            min-width: 18em;
+            text-align: center;
+        }
+
+        .vspace
+        {
+            padding-bottom: 2em;
+            padding-top: 2em;
+        }
+        
+        .info
+        {
+            text-align: center;
+            color: #2a6496;
+        }
+
+        .progressview
+        {
+            background-repeat:no-repeat;
+            background-position:center;
+            background-size: 80px 10px;
+        }
+
+</style>
 </head>
 
 
-  <body>
-          <script src="js/app.js"></script>
-          <script>
+<body>
+          
+  </body>
+
+  <div class="owner vspace">
+      <h2>Uploader Sample</h2>
+  </div>
+
+
+    <div class="owner vspace">
+        <input id="file_input" multiple type="file" onchange='$upm.selectFiles(this)' class="hidden">
+
+        <p class="lead">
+                <a id="styled_file_input" href="#" class="btn btn-lg btn-default"><span class="glyphicon glyphicon-folder-open "></span> &nbsp; Select Files &nbsp; >> </a>
+            </p>
+    
+    </div>
+
+
+    <div id="file_list" class="owner">
+    </div>
+
+
+
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"
+            integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+            crossorigin="anonymous"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="js/app.js"></script>
+<script>
 
 
                 var _file_ui_template
@@ -29,9 +99,32 @@
                 _file_ui_template += '  <div class="progress-bar" style="width: 0%;"><span></span></div>';
                 _file_ui_template += '</div>';
 
-            _file_ui_template += '</div>';
+                _file_ui_template += '</div>';
 
-              $upm.setOptions({"url" : "http://localhost:3000/upload"});
+                $upm.setOptions({"url" : "http://localhost:3000/upload", "owner" : "uploader"});
+
+                $upm.on('completed', function(id) { //
+                    //alert("done " + myself.name()); 
+                
+                //var id = uploader.options.uiid;
+                var div = jQuery("#" + id);
+
+                var info = div.children().first();
+                info.addClass('hidden');
+
+                var txt = info.children().first();
+
+                var buttons = div.find(':nth-child(2)').first();
+                buttons.addClass('hidden');
+
+                var progress = div.children(':nth-child(3)');
+                progress.addClass('hidden');
+
+                div.append('<div class="alert alert-success"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>Success!</strong> Your file ' + $upm.uploader[id].name() + ' has been sent successfully.</div>');
+
+                
+                });
+
 
 
               $upm.on('new', (id) => {
@@ -78,8 +171,7 @@
                 }
                 );
 
-                myself.on('completed', function() { alert("done " + myself.name()); });
-
+               
                 txt.text(myself.name());
 
                 myself.on('progress', function (num) {
@@ -96,31 +188,16 @@
 
 
 
-              }); 
+            }); 
 
-          </script>
-  </body>
+            $(function(){
 
+                var styled_file_input = $('#styled_file_input');
+                styled_file_input.click(function () { $('#file_input').click(); });
+            
+            });
 
-  <div>
-        <input id="file_input" multiple type="file" onchange='$upm.selectFiles(this)'>
-    
-    </div>
-
-
-    <div id="file_list">
-    </div>
-
-
-
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"
-            integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
-            crossorigin="anonymous"></script>
-
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
-
+</script>
 
 </html>
 
