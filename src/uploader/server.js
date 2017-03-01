@@ -242,7 +242,7 @@ export default function uplaoder(options){
                     filepath +=  req.headers["file-name"];
              
 
-               req['uploader'] = filepath; 
+                req["uploader"] = filepath; 
 
 
               //let cr = req.headers['content-range'];

@@ -7,8 +7,8 @@
     "extends": "eslint:recommended",
     "parserOptions": {
         "sourceType": "module"
-    },
-    "rules": {
+    }
+    , "rules": {
         "indent": [
             "error",
             4
@@ -25,5 +25,19 @@
             "warn",
             "always"
         ]
+        , "no-console" : [
+            "off"
+        ]
     }
+
+    , "globals"   : {
+        /* MOCHA */
+        "describe"   : false,
+        "it"         : false,
+        "before"     : false,
+        "beforeEach" : false,
+        "after"      : false,
+        "afterEach"  : false
+    }
+    
 }

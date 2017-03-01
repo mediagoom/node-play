@@ -30,7 +30,7 @@ missing
 COPYING
 INSTALL
 /tmp*
-
+/uploader
 #generated files
 *.sln
 *.vcxproj

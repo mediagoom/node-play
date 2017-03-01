@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
-import path from 'path';
-import cp   from 'child_process';
-import fs   from 'fs';
+import path from "path";
+import cp   from "child_process";
+import fs   from "fs";
 
 function pad(num, size) {
     var s = "000000000000" + num;
@@ -11,11 +11,11 @@ function pad(num, size) {
 
 export default class Processor extends EventEmitter {
 
-     constructor(name, opt) {
+    constructor(name, opt) {
         super();
 
         let defop = {
-            destination : './'
+            destination : "./"
             , cmd_img : "ffmpeg -t 100 -i \"$(file)\" -vf fps=1/10 \"$(dir)/img%03d.jpg\""
             , stream_rx : "Stream\\s#0:(\\d+)\\((\\w+)\\):\\s(Audio|Video):.*?(?:(?:,\\s(\\d+)x(\\d+))|(?:(\\d+) Hz)).*?, (\\d+) kb/s([^\\n]+)"
         };
@@ -25,36 +25,36 @@ export default class Processor extends EventEmitter {
         else
             this.options = defop;
 
-
+        
 
         this._anchor = new Date(2100, 0, 0).getTime();
         this._create = Date.now();
         this.name    = name;
 
-     }
+    }
 
-     get_full_name()
-     {
-         let seconds = (this._anchor - this._create) / 1000;
-         let n = pad(seconds.toFixed(0), 12);
+    get_full_name()
+    {
+        let seconds = (this._anchor - this._create) / 1000;
+        let n = pad(seconds.toFixed(0), 12);
 
-         return n + "_" + this.name;
-     }
+        return n + "_" + this.name;
+    }
 
-     get_target_dir()
-     {
-         let target = path.join(this.options.destination, this.get_full_name());
-             return path.resolve(target);
-     }
+    get_target_dir()
+    {
+        let target = path.join(this.options.destination, this.get_full_name());
+        return path.resolve(target);
+    }
 
-     get_streams(output)
-     {
+    get_streams(output){
+
          //console.log(output);
 
-         let regexp = new RegExp(this.options.stream_rx, 'g');
-         let m = null;
-         let streams = [];
-         while ((m = regexp.exec(output)) !== null) {
+        let regexp = new RegExp(this.options.stream_rx, "g");
+        let m = null;
+        let streams = [];
+        while ((m = regexp.exec(output)) !== null) {
             let s = { index : m[1]
                     , lang  : m[2]
                     , kind  : m[3]
@@ -66,52 +66,133 @@ export default class Processor extends EventEmitter {
 
             streams.push(s);
 
-         }
+        }
          //return { raw : output, match : m };
          //
          //
         
-         streams.splice(-1, 1);
+        streams.splice(-1, 1);
 
 
-         return { raw : output, streams : streams };
-     }
+        return { raw : output, streams : streams };
+    }
 
-     read_stream_info(filepath)
-     {
-          return new Promise( (resolve, reject) => {
+    mkdirr(cpath, callback)
+    {
+        let dirs = [];
+
+        let ld = path.basename(cpath);
+
+        let dir  = path.dirname(cpath);
+
+        let last = ''
+
+        console.log(cpath, ld, dir);
+
+        while(ld != last)
+        {
+            if(ld != '')
+                dirs.push(ld);
+
+            last = ld;
+            ld   = path.basename(dir);
+            dir  = path.dirname(dir);
+
+            console.log("--", dir, ld, last);
+        }
+
+        console.log("--->", dirs);
+
+        dirs.reverse();
+
+        console.log("+++>", dirs);
+
+        function mk(dirc, dd, idx, rback)
+        {
+            console.log("mk", dirc, dd, idx);
+
+            fs.mkdir(dirc, (e) => {
+                if(!e || (e && e.code === "EEXIST")){
+                    
+                    if(idx < (dd.length - 1))
+                    {
+
+
+                        let m = path.join(dirc, dd[idx + 1]);
+
+                            mk(m, dd, idx + 1, rback);
+                    }
+                    else
+                    {
+                        rback(null);
+                    }
+
+                }
+                else
+                {rback(e);}
+            });
+        }
+
+        mk(path.join(dir, dirs[0])
+                , dirs, 0, callback);
+    }
+
+    read_stream_info(filepath){
+
+        return new Promise( (resolve, reject) => {
                 
-                let dir     = this.get_target_dir();
-                let cmdline = this.options.cmd_img;
-                    cmdline = cmdline.replace('$(file)', filepath);
-                    cmdline = cmdline.replace('$(dir)' , dir);
+            let dir     = this.get_target_dir();
+            let cmdline = this.options.cmd_img;
+            cmdline = cmdline.replace("$(file)", filepath);
+            cmdline = cmdline.replace("$(dir)" , dir);
 
-                    console.log(cmdline);
+            //console.log(cmdline);
 
-                     fs.mkdir(dir, (e) => {
-                        if(!e || (e && e.code === "EEXIST")){
+            /*
+            fs.mkdir(dir, (e) => {
+                if(!e || (e && e.code === "EEXIST")){
           
-                                cp.exec(cmdline, (err, stdout, stderr) =>{
+                    cp.exec(cmdline, (err, stdout, stderr) =>{
                                     
-                                    if(null != err)
+                        if(null != err)
                                     {
-                                        reject(err);
-                                    }
-                                    else
+                            reject(err);
+                        }
+                        else
                                     {
-                                        resolve(this.get_streams(stdout + '\n' + stderr));
-                                    }
+                            resolve(this.get_streams(stdout + "\n" + stderr));
+                        }
 
                                     
-                                });
-                        }else
+                    });
+                }else
                         {reject(e);}
-                     });
+            });
+            */
 
+            this.mkdirr(dir, (e) => {
+                 if(null != e)
+                 {
+                     reject(e);
+                 }
+                 else
+                 {
+                    cp.exec(cmdline, (err, stdout, stderr) =>{
+                                    
+                        if(null != err)
+                         {
+                            reject(err);
+                        }
+                        else
+                        {
+                            resolve(this.get_streams(stdout + "\n" + stderr));
+                        }
+                    });
+                 }
+             });
           
-          
-          });
-     }
+        });
+    }
 
 
 }

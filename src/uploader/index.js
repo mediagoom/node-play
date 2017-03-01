@@ -141,7 +141,7 @@ export default class Uploader extends EventEmitter {
 
      //console.log("re1 " + this._range_end + " " + this._range_start + " " + this._opt.chunk_size);
      //
-     this.status       = "inizialized";
+        this.status       = "inizialized";
     }
 
     name() {return this._opt.name;}
@@ -192,7 +192,7 @@ export class UploadManager extends EventEmitter {
     
 
         let opt = {
-              url : "/upload"
+            url : "/upload"
             , chunk_size : (1024 * 8) * 10
             , start_position : 0
         };
@@ -207,26 +207,26 @@ export class UploadManager extends EventEmitter {
 
     setOptions(options)
     {
-         this._opt = Object.assign(this._opt, options);
+        this._opt = Object.assign(this._opt, options);
     }
 
-     _raise_error(err, kid){this.emit("error", err, kid);}
-     _onProgress(sn, kid){this.emit("progress", sn, kid);}
-     _onUploadComplete(kid){this.emit("completed", kid);}
+    _raise_error(err, kid){this.emit("error", err, kid);}
+    _onProgress(sn, kid){this.emit("progress", sn, kid);}
+    _onUploadComplete(kid){this.emit("completed", kid);}
 
     add(file, id, options)
     {
         if(null != this.uploader[id])
         {
-            throw 'uploader alredy exist';
+            throw "uploader alredy exist";
         }
 
         let op = Object.assign(this._opt, options);
         let kid = id;
         let up = new Uploader(file, op);
-            up.on('completed', () => {this._onUploadComplete(kid);});
-            up.on('error', (err) => {this._raise_error(err, kid)});
-            up.on('progress', (n) => { this._onProgress(n, kid);});
+        up.on("completed", () => {this._onUploadComplete(kid);});
+        up.on("error", (err) => {this._raise_error(err, kid);});
+        up.on("progress", (n) => { this._onProgress(n, kid);});
 
 
         this.uploader[id] = up;
@@ -238,7 +238,7 @@ export class UploadManager extends EventEmitter {
 
         if(null != this.uploader[id])
         {
-            throw 'invalid id';
+            throw "invalid id";
         }
 
         this.uploader[id].start();
@@ -249,7 +249,7 @@ export class UploadManager extends EventEmitter {
 
         if(null != this.uploader[id])
         {
-            throw 'invalid id';
+            throw "invalid id";
         }
 
         this.uploader[id].pause();
@@ -260,7 +260,7 @@ export class UploadManager extends EventEmitter {
 
         if(null != this.uploader[id])
         {
-            throw 'invalid id';
+            throw "invalid id";
         }
 
         this.uploader[id].resume();
@@ -271,7 +271,7 @@ export class UploadManager extends EventEmitter {
     {
         if(null != this.uploader[id])
         {
-            throw 'invalid id';
+            throw "invalid id";
         }
 
         return this.uploader[id].status;
@@ -282,20 +282,20 @@ export class UploadManager extends EventEmitter {
         let files = e.files;
         
 
-                for (var i = 0; i < files.length; i++) {
-                    let file = files[i];
+        for (var i = 0; i < files.length; i++) {
+            let file = files[i];
                     
-                    let id = file.name;
-                        id = id.replace(".", "_");
-                        id = id.replace(" ", "_");
-                        id = id.replace("&", "_");
+            let id = file.name;
+            id = id.replace(".", "_");
+            id = id.replace(" ", "_");
+            id = id.replace("&", "_");
                         
-                        this.add(file, id);
-                        this.emit("new", id);
+            this.add(file, id);
+            this.emit("new", id);
 
-                }
+        }
         
-     }
+    }
 
 
 
