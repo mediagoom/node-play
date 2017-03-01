@@ -27,7 +27,7 @@ function check( done, f ) {
  
 describe("PROCESSOR", () => {
 
-    it("check enviroment", (done) => {
+    it("has the right enviroment", (done) => {
             
         cp.exec("ffmpeg -version", (err/*, stdout, stderr*/) =>{
                 
@@ -54,7 +54,7 @@ describe("PROCESSOR", () => {
         });
     });
 
-    it("set up processor", (done) => {
+    it("set up correctly", (done) => {
                     
         expect(Processor).to.be.a("function");
                   
@@ -65,55 +65,71 @@ describe("PROCESSOR", () => {
 
         check(done, ()=> {
 
-            console.log(p.get_full_name());
-            console.log(p.get_target_dir());
+            //console.log(p.get_full_name());
+            //console.log(p.get_target_dir());
 
         });
 
 
     });//return 200
 
-    it("get streams", (done) => {
-     
-            
-        let n = tval("TESTNAME", "TEST");
-        let p = new Processor(n, {destination: './uploader'});
+    describe("Elaborate", () => {
+
+
+        let n    = tval("TESTNAME", "TEST");
+        let p    = new Processor(n, {destination: "./uploader"});
         let file = tval("TESTMEDIAFILE", "./src/processor/test/MEDIA1.MP4");
 
-        p.read_stream_info(file).then((streams) => {
-            check(done, () => {
-                    
-                expect(streams).to.be.a("object");
+        let result = [ { index: "0"
+                                   ,  lang: "und"
+                                   ,  kind: "Video"
+                                   ,  width: "1024"
+                                   ,  height: "576"
+                                   ,  kz: undefined
+                                   ,  bps: "674" }
+                                  , { index: "1"
+                                    , lang: "und"
+                                    , kind: "Audio"
+                                    , width: undefined
+                                    , height: undefined
+                                    , kz: "48000"
+                                    , bps: "96" } 
+        ];
 
-                    //console.log(streams);
-                    //
 
-                let result = [ { index: "0"
-                           ,  lang: "und"
-                           ,  kind: "Video"
-                           ,  width: "1024"
-                           ,  height: "576"
-                           ,  kz: undefined
-                           ,  bps: "674" }
-                          , { index: "1"
-                            , lang: "und"
-                            , kind: "Audio"
-                            , width: undefined
-                            , height: undefined
-                            , kz: "48000"
-                            , bps: "96" } 
-                ];
+        it("get streams", (done) => {
+               
+            p.read_stream_info(file).then((streams) => {
 
-                expect(streams.streams).to.be.deep.equal(result);
-                    
-                
-            });
-        }
+                check(done, () => {
+                            
+                    expect(streams).to.be.a("object");
+
+                            //console.log(streams);
+                            //
+
+                   expect(streams.streams).to.be.deep.equal(result);
+                            
+                        
+                });
+            }
             , (err) => {
-            done(err);
-        }
-            );
+                done(err);
+            });
+
+        });
+
+
+
+        it("encode", (/*done*/) => {
+            
+            expect(result.length).to.be.equal(2);
+
+            return p.encode(file, result);
+                
+
+        });
 
     });
 
-});//http request
+});

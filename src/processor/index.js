@@ -18,13 +18,26 @@ export default class Processor extends EventEmitter {
             destination : "./"
             , cmd_img : "ffmpeg -t 100 -i \"$(file)\" -vf fps=1/10 \"$(dir)/img%03d.jpg\""
             , stream_rx : "Stream\\s#0:(\\d+)\\((\\w+)\\):\\s(Audio|Video):.*?(?:(?:,\\s(\\d+)x(\\d+))|(?:(\\d+) Hz)).*?, (\\d+) kb/s([^\\n]+)"
+            , cmd_encode : "ffmpeg -i \"$(file)\" -vf \"scale=w=$(width):h=$(height)\" -codec:v libx264 -profile:v high -level 31 -b:v $(vb)k -r 25 -g 50 -sc_threshold 0 -x264opts ratetol=0.1 -minrate $(vb)k -maxrate $(vb)k -bufsize $(vb)k -b:a $(ab)k -codec:a aac -profile:a aac_low -ar 44100 -ac 2 -y $(outputfile)"
+            , quality : [
+                              {videobitrate: 120  , height : 144 }
+                            , {videobitrate: 320  , height : 288 }
+                            , {videobitrate: 750  , height : 576 }
+                            , {videobitrate: 1200 , height : 720 }
+                            , {videobitrate: 2000 , height : 720 }
+                            , {videobitrate: 3500 , height : 720 }
+
+            ]  
+
+             , outputfile : "$(name)_$(width)_$(height)_$(vb).mp4"
+             , audiobitrate : 96
+            
         };
 
         if(null != opt)
             this.options = Object.assign(defop, opt);
         else
             this.options = defop;
-
         
 
         this._anchor = new Date(2100, 0, 0).getTime();
@@ -49,7 +62,7 @@ export default class Processor extends EventEmitter {
 
     get_streams(output){
 
-         //console.log(output);
+         ////console.log(output);
 
         let regexp = new RegExp(this.options.stream_rx, "g");
         let m = null;
@@ -85,31 +98,31 @@ export default class Processor extends EventEmitter {
 
         let dir  = path.dirname(cpath);
 
-        let last = ''
+        let last = "";
 
-        console.log(cpath, ld, dir);
+        //console.log(cpath, ld, dir);
 
         while(ld != last)
         {
-            if(ld != '')
+            if(ld != "")
                 dirs.push(ld);
 
             last = ld;
             ld   = path.basename(dir);
             dir  = path.dirname(dir);
 
-            console.log("--", dir, ld, last);
+            //console.log("--", dir, ld, last);
         }
 
-        console.log("--->", dirs);
+        //console.log("--->", dirs);
 
         dirs.reverse();
 
-        console.log("+++>", dirs);
+        //console.log("+++>", dirs);
 
         function mk(dirc, dd, idx, rback)
         {
-            console.log("mk", dirc, dd, idx);
+            //console.log("mk", dirc, dd, idx);
 
             fs.mkdir(dirc, (e) => {
                 if(!e || (e && e.code === "EEXIST")){
@@ -120,7 +133,7 @@ export default class Processor extends EventEmitter {
 
                         let m = path.join(dirc, dd[idx + 1]);
 
-                            mk(m, dd, idx + 1, rback);
+                        mk(m, dd, idx + 1, rback);
                     }
                     else
                     {
@@ -146,7 +159,7 @@ export default class Processor extends EventEmitter {
             cmdline = cmdline.replace("$(file)", filepath);
             cmdline = cmdline.replace("$(dir)" , dir);
 
-            //console.log(cmdline);
+            ////console.log(cmdline);
 
             /*
             fs.mkdir(dir, (e) => {
@@ -171,28 +184,153 @@ export default class Processor extends EventEmitter {
             */
 
             this.mkdirr(dir, (e) => {
-                 if(null != e)
-                 {
-                     reject(e);
-                 }
-                 else
-                 {
+                if(null != e)
+            {
+                    reject(e);
+                }
+                else
+            {
                     cp.exec(cmdline, (err, stdout, stderr) =>{
                                     
                         if(null != err)
-                         {
+                    {
                             reject(err);
                         }
                         else
-                        {
+                    {
                             resolve(this.get_streams(stdout + "\n" + stderr));
                         }
                     });
-                 }
-             });
+                }
+
+            });
           
         });
     }
+
+    encode(filepath, streams)
+    {
+        return new Promise( (resolve, reject) => {
+        
+                
+            if(streams.length != 2)
+            {
+                reject("at the moment only audio / video supported");
+                return;
+            }
+
+            let video = null;
+            let max   = 10000;
+
+            for(let i = 0; i < streams.length; i++)
+                {
+                if(streams[i].kind === "Video")
+                    {
+                    if(video != null)
+                        {
+                        reject("more than one video stream unsupported");
+                        return;
+                    }
+
+                    video = streams[i];
+                    max   = video.bps + 100;
+                }
+            }
+
+            console.log(video);
+            console.log(max);
+
+            let quality = this.options.quality.slice();
+            let ratio   = video.width / video.height;
+            let finished = false;
+
+            //console.log(this.options.quality);
+            console.log(quality);
+
+            for(let i = 0; i < quality.length; i++){
+                
+                if(quality[i].videobitrate > max)
+                    quality[i].videobitrate = 0;
+
+                quality[i].width = (quality[i].height * ratio).toFixed(0);
+                quality[i].done  = false;
+
+                if(quality[i].videobitrate > 0){
+
+                    let outputf = this.options.outputfile.replace("$(name)", this.name);
+                    let cmdline = this.options.cmd_encode.replace("$(file)", filepath);
+                                                    
+                    cmdline = cmdline.replace("$(width)", quality[i].width);
+                    outputf = outputf.replace("$(width)", quality[i].width);
+
+                    cmdline = cmdline.replace("$(height)", quality[i].height);
+                    outputf = outputf.replace("$(height)", quality[i].height);
+
+                    cmdline = cmdline.replace(/\$\(vb\)/g, quality[i].videobitrate);
+                    outputf = outputf.replace(/\$\(vb\)/g, quality[i].videobitrate);
+
+                    cmdline = cmdline.replace("$(ab)", this.options.audiobitrate);
+                    outputf = outputf.replace("$(ab)", this.options.audiobitrate);
+
+                    outputf = path.join(this.get_target_dir(), outputf);
+
+                    cmdline = cmdline.replace("$(outputfile)", outputf);
+
+                    quality[i].file = outputf;
+
+                    console.log(cmdline);
+
+                    let idx = i;
+
+                    cp.exec(cmdline, (err, stdout, stderr) =>{
+
+                        if(finished)
+                            return;
+                                    
+                        quality[idx].done  = true;
+
+                        if(err)
+                                {
+                            finished = true;
+                            console.log(stdout + stderr);
+                            reject(err);
+                                    
+                        }
+                        else
+                                {
+                            let completed = true;
+
+                            for(let k = 0; k < quality.length; k++)
+                                    {                                        
+                                if(!quality[k].done)
+                                        {
+                                    completed = false;
+                                }
+                            }
+
+                            if(completed)
+                                    {
+                                resolve(quality);
+                            }
+                        }
+
+
+
+                    });
+                }
+                else
+                    {
+                    quality[i].done = true;
+                }
+
+            }
+        
+        });
+    }
+
+
+
+
 
 
 }
