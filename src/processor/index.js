@@ -15,10 +15,11 @@ export default class Processor extends EventEmitter {
         super();
 
         let defop = {
+
             destination : "./"
             , cmd_img : "ffmpeg -t 100 -i \"$(file)\" -vf fps=1/10 \"$(dir)/img%03d.jpg\""
             , stream_rx : "Stream\\s#0:(\\d+)\\((\\w+)\\):\\s(Audio|Video):.*?(?:(?:,\\s(\\d+)x(\\d+))|(?:(\\d+) Hz)).*?, (\\d+) kb/s([^\\n]+)"
-            , cmd_encode : "ffmpeg -i \"$(file)\" -vf \"scale=w=$(width):h=$(height)\" -codec:v libx264 -profile:v high -level 31 -b:v $(vb)k -r 25 -g 50 -sc_threshold 0 -x264opts ratetol=0.1 -minrate $(vb)k -maxrate $(vb)k -bufsize $(vb)k -b:a $(ab)k -codec:a aac -profile:a aac_low -ar 44100 -ac 2 -y $(outputfile)"
+            , cmd_encode : "ffmpeg -i \"$(file)\" -vf \"scale=w=$(width):h=$(height)\" -codec:v libx264 -profile:v high -level 31 -b:v $(vb)k -r 25 -g 50 -sc_threshold 0 -x264opts ratetol=0.1 -minrate $(vb)k -maxrate $(vb)k -bufsize $(vb)k -b:a $(ab)k -codec:a aac -profile:a aac_low -ar 44100 -ac 2 -y \"$(outputfile)\""
             , quality : [
                               {videobitrate: 120  , height : 144 }
                             , {videobitrate: 320  , height : 288 }
@@ -44,14 +45,24 @@ export default class Processor extends EventEmitter {
         this._create = Date.now();
         this.name    = name;
 
+        if(null == this.options.id)
+        {
+
+            let seconds = (this._anchor - this._create) / 1000;
+            let n = pad(seconds.toFixed(0), 12);
+
+            this.id = n + "_" + this.name;
+        }
+        else
+        {
+            this.id = this.options.id;
+        }
+
     }
 
     get_full_name()
     {
-        let seconds = (this._anchor - this._create) / 1000;
-        let n = pad(seconds.toFixed(0), 12);
-
-        return n + "_" + this.name;
+        return this.id;
     }
 
     get_target_dir()
@@ -184,20 +195,17 @@ export default class Processor extends EventEmitter {
             */
 
             this.mkdirr(dir, (e) => {
-                if(null != e)
-            {
+                if(null != e){
                     reject(e);
                 }
-                else
-            {
+                else{
+
                     cp.exec(cmdline, (err, stdout, stderr) =>{
                                     
-                        if(null != err)
-                    {
+                        if(null != err){
                             reject(err);
                         }
-                        else
-                    {
+                        else{
                             resolve(this.get_streams(stdout + "\n" + stderr));
                         }
                     });
@@ -222,30 +230,28 @@ export default class Processor extends EventEmitter {
             let video = null;
             let max   = 10000;
 
-            for(let i = 0; i < streams.length; i++)
-                {
-                if(streams[i].kind === "Video")
-                    {
-                    if(video != null)
-                        {
+            for(let i = 0; i < streams.length; i++){
+                if(streams[i].kind === "Video"){
+                    if(video != null){
                         reject("more than one video stream unsupported");
                         return;
                     }
 
                     video = streams[i];
-                    max   = video.bps + 100;
+                    max   = new Number(video.bps);
+                    max   += 100;
                 }
             }
 
-            console.log(video);
-            console.log(max);
+            //console.log(video);
+            //console.log(max);
 
             let quality = this.options.quality.slice();
             let ratio   = video.width / video.height;
             let finished = false;
 
             //console.log(this.options.quality);
-            console.log(quality);
+            //console.log(quality);
 
             for(let i = 0; i < quality.length; i++){
                 
@@ -269,8 +275,10 @@ export default class Processor extends EventEmitter {
                     cmdline = cmdline.replace(/\$\(vb\)/g, quality[i].videobitrate);
                     outputf = outputf.replace(/\$\(vb\)/g, quality[i].videobitrate);
 
-                    cmdline = cmdline.replace("$(ab)", this.options.audiobitrate);
-                    outputf = outputf.replace("$(ab)", this.options.audiobitrate);
+                    quality[i].audiobitrate = this.options.audiobitrate;
+
+                    cmdline = cmdline.replace("$(ab)", quality[i].audiobitrate);
+                    outputf = outputf.replace("$(ab)", quality[i].audiobitrate);
 
                     outputf = path.join(this.get_target_dir(), outputf);
 
@@ -289,27 +297,28 @@ export default class Processor extends EventEmitter {
                                     
                         quality[idx].done  = true;
 
-                        if(err)
-                                {
+                        if(err){
+
                             finished = true;
                             console.log(stdout + stderr);
                             reject(err);
                                     
                         }
-                        else
-                                {
+                        else{
+
                             let completed = true;
 
-                            for(let k = 0; k < quality.length; k++)
-                                    {                                        
-                                if(!quality[k].done)
-                                        {
+                            for(let k = 0; k < quality.length; k++){                                        
+                                if(!quality[k].done){
+
                                     completed = false;
                                 }
                             }
 
-                            if(completed)
-                                    {
+                            if(completed){
+                                
+                                console.log("--QUALITY-->", quality);
+
                                 resolve(quality);
                             }
                         }
@@ -318,13 +327,70 @@ export default class Processor extends EventEmitter {
 
                     });
                 }
-                else
-                    {
+                else{
                     quality[i].done = true;
                 }
 
             }
         
+        });
+    }
+
+    package(quality, subdir)
+    {
+        return new Promise( (resolve, reject) => {
+
+            let outdir = path.join(this.get_target_dir(), subdir);
+
+            this.mkdirr(outdir, (err) => {
+
+                if(null != err){
+                    reject(err);
+                    return;
+                }
+            
+
+                let cmdline = "mg -k:adaptive \"-o:" + outdir + "\" ";
+                let first   = true;
+
+                for(let i = 0; i < quality.length; i++){
+                    if(null != quality[i].file){
+            
+
+                        if(first){
+                            cmdline += "\"-i:";
+                        }
+                        else{
+                            cmdline += "\"-j:";
+                        }
+
+
+                        cmdline += quality[i].file;
+                        cmdline += "\" -b:" + quality[i].videobitrate + " ";
+                        
+                        if(first){
+                            cmdline += "-s:0 -e:0 ";
+                        }
+                        
+                        first = false;
+                    }
+                }
+
+                console.log(cmdline);
+
+                cp.exec(cmdline, (err, stdout, stderr) =>{
+                 
+                    if(null != err){
+                        console.log(stdout + "\n" + stderr);
+                        reject(err);
+                        return;
+                    }
+
+                    resolve();
+                 
+                });
+
+            });
         });
     }
 

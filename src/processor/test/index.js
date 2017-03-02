@@ -1,6 +1,7 @@
 import chai from "chai";
 import Processor from "../../processor/index.js";
 import cp   from "child_process";
+import path from "path";
 
 var expect = chai.expect;
 
@@ -77,8 +78,12 @@ describe("PROCESSOR", () => {
 
 
         let n    = tval("TESTNAME", "TEST");
-        let p    = new Processor(n, {destination: "./uploader"});
+        let tid  = tval("TESTID"  , "9999999999_" + n);
+
+        let p    = new Processor(n, {destination: "./uploader", id : tid});
         let file = tval("TESTMEDIAFILE", "./src/processor/test/MEDIA1.MP4");
+
+        let dir  = path.resolve(path.join(p.options.destination, p.get_full_name()));
 
         let result = [ { index: "0"
                                    ,  lang: "und"
@@ -96,6 +101,30 @@ describe("PROCESSOR", () => {
                                     , bps: "96" } 
         ];
 
+        let quality = [   { audiobitrate: 96,
+            videobitrate: 120,
+            height: 144,
+            width: "256",
+            done: true,
+            file: path.join(dir, "TEST_256_144_120.mp4") },
+        { audiobitrate: 96,
+            videobitrate: 320,
+            height: 288,
+            width: "512",
+            done: true,
+            file: path.join(dir, "TEST_512_288_320.mp4") },
+        { audiobitrate: 96,
+            videobitrate: 750,
+            height: 576,
+            width: "1024",
+            done: true,
+            file: path.join(dir, "TEST_1024_576_750.mp4") },
+                          { videobitrate: 0, height: 720, width: "1280", done: true },
+                          { videobitrate: 0, height: 720, width: "1280", done: true },
+                          { videobitrate: 0, height: 720, width: "1280", done: true } 
+        ];                           
+                         
+
 
         it("get streams", (done) => {
                
@@ -108,7 +137,7 @@ describe("PROCESSOR", () => {
                             //console.log(streams);
                             //
 
-                   expect(streams.streams).to.be.deep.equal(result);
+                    expect(streams.streams).to.be.deep.equal(result);
                             
                         
                 });
@@ -121,11 +150,28 @@ describe("PROCESSOR", () => {
 
 
 
-        it("encode", (/*done*/) => {
+        it("encode", (done) => {
             
             expect(result.length).to.be.equal(2);
 
-            return p.encode(file, result);
+            p.encode(file, result).then((rquality) => {
+                
+                check(done, () => {
+
+                    expect(rquality).to.be.deep.equal(quality);
+                });
+            }
+            , (err) => { done(err); }
+            );
+                
+
+        });
+
+        it("package", (/*done*/) => {
+            
+            //expect(quality).to.be.a("Array(6)");
+
+            return p.package(quality, "STATIC");
                 
 
         });
