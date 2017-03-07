@@ -231,7 +231,8 @@ function execnotexisting(idx, debug)
 function exec(idx, debug)
 {
    if( g[idx]['status'] == 'closing'
-     || g[idx]['status'] == 'closed')
+     //|| g[idx]['status'] == 'closed'
+     )
    {
          console.log(FgMagenta, 'Process is exiting ', g[idx].status, g[idx].name, Reset);
          return;
