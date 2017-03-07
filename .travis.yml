@@ -1,0 +1,15 @@
+language: node_js
+node_js: 
+    - 6
+    - 5
+branches:
+  except:
+  - dev-win
+script:
+- npm install
+- npm run build
+- npm start
+- npm test
+after_script:
+- npm stop
+

@@ -1,3 +1,4 @@
+#!/usr/bin/env
 
 var chokidar = require('chokidar');
 var cp       = require('child_process');
@@ -18,7 +19,21 @@ const FgMagenta = "\x1b[35m"
 const FgCyan = "\x1b[36m"
 const FgWhite = "\x1b[37m"
 
+var action = "run";
+var target = ".*";
 
+
+if(process.argv.length > 2)
+{
+    console.log("argv", process.argv, process.argv.length);
+
+    action = process.argv[2];
+
+    if(process.argv.length > 3)
+    {
+        target = process.argv[3];
+    }
+}
 
 
 var app = express();
@@ -34,10 +49,10 @@ app.get('/', function (req, res) {
 
 app.get('/restart/:idx/:debug?', (req, res) => {
 
-        let idx = req.params.idx;
+        var idx = req.params.idx;
         console.log('restart ', idx);
-        let ret = 'restarting';
-        let debug = false;
+        var ret = 'restarting';
+        var debug = false;
 
         if(req.params.debug != null && req.params.debug == 'true')
         {
@@ -48,7 +63,22 @@ app.get('/restart/:idx/:debug?', (req, res) => {
         exec(idx, debug);
 
         res.send(ret);
-})
+});
+
+app.get('/stop', (req, res) => {
+
+    for(var i = 0; i < s.length; i++)
+    {
+        if(null != s[i].child)
+            s[i].child.kill();
+    }
+
+    setTimeout(() => { process.exit();}, 1000);
+
+    res.send("stopped");
+    
+
+});
 
 var g = [];
 var s = [];
@@ -69,7 +99,7 @@ function clear_child(child)
 function execnotexisting(idx, debug)
 {  
 
-   let p = g[idx];
+   var p = g[idx];
 
     if(g[idx]['status'] == 'executing')
     {
@@ -106,11 +136,11 @@ function execnotexisting(idx, debug)
 
            console.log(FgGreen, 'spawing:', p.cmd.proc, p.cmd.args, debug, Reset);
 
-           let args = p.cmd.args.slice();
+           var args = p.cmd.args.slice();
 
            if(debug)
            {
-                  for(let jj = (p.dbg_arg.length - 1); jj >= 0; jj--)
+                  for(var jj = (p.dbg_arg.length - 1); jj >= 0; jj--)
                   {
                           console.log(p.dbg_idx, p.dbg_arg[jj], args);
                           args.splice(p.dbg_idx, 0, p.dbg_arg[jj]);
@@ -122,7 +152,7 @@ function execnotexisting(idx, debug)
            }
 
            s[idx].child = cp.spawn(p.cmd.proc, args);
-           let k = idx;
+           var k = idx;
 
            
 
@@ -133,7 +163,7 @@ function execnotexisting(idx, debug)
                 g[k]['status'] = "closed";
                 g[k]['lastexitcode'] = code;
 
-                let pid = null;
+                var pid = null;
                 
                 if(s[k].child != null)
                    pid = s[k].child.pid;
@@ -176,8 +206,8 @@ function execnotexisting(idx, debug)
             if(debug)
             {
 
-                      let regexp = new RegExp(p.dbg_url, 'g');
-                      let m =  s[k].outerr.match(regexp);
+                      var regexp = new RegExp(p.dbg_url, 'g');
+                      var m =  s[k].outerr.match(regexp);
                       g[idx].debug = m;
                       if(null != m)
                       {
@@ -201,7 +231,7 @@ function execnotexisting(idx, debug)
 function exec(idx, debug)
 {
    if( g[idx]['status'] == 'closing'
-     || g[idx]['status'] == 'executing')
+     || g[idx]['status'] == 'closed')
    {
          console.log(FgMagenta, 'Process is exiting ', g[idx].status, g[idx].name, Reset);
          return;
@@ -211,14 +241,14 @@ function exec(idx, debug)
 
    if(s[idx].child != null)
    {
-        let pid = s[idx].child.pid;
+        var pid = s[idx].child.pid;
         console.log(FgYellow, 'killing: ', pid, g[idx].name, Reset);
-         let k = idx;
+         var k = idx;
          s[idx].child.on('close', (code, signal) => {
                  
                  console.log(FgMagenta, 'kill close', pid, g[idx].name, g[idx].status, Reset);
                  
-                 let j = k;
+                 var j = k;
                  setTimeout(() => {execnotexisting(j, debug);}, 50);
          });
 
@@ -261,7 +291,7 @@ function proc(p, next, idx)
    
    if(null != p.watch && 0 < p.watch.length)
    {
-           let idx = p.index;
+           var idx = p.index;
            chokidar.watch(p.watch).on('all', (event, path) => {
                    
                    console.log('watch ' + idx, event, path);
@@ -293,23 +323,62 @@ function empty(){}
 
 var next = empty
 
-for(i = (config.proc.length - 1); i >= 0; i--)
+var patt = new RegExp(target);
+
+if("run" === action)
 {
-    console.log(i);
-    let ff = next;
-    let pp = config.proc[i];
-    let idx = i;
-    let nn = () => {proc(pp, ff, idx);}
+    console.log("RUN", patt);
 
-    next = nn;
+    for(i = (config.proc.length - 1); i >= 0; i--)
+    {
+        console.log(i);
 
+        var ff = next;
+        var pp = config.proc[i];
+        
+        if(patt.test(pp.name))
+        {
+            console.log("\t", pp.name);
+
+            var idx = i;
+            var nn = () => {proc(pp, ff, idx);}
+
+            next = nn;
+        }
+
+    }
+
+    next();
+
+    app.listen(port, function () {
+        console.log('app listening on port ' + port + '!');
+    })
 }
 
-next();
+if("start" === action)
+{
+    console.log("START", target);
 
-app.listen(port, function () {
-  console.log('app listening on port ' + port + '!');
-})
+    var child = cp.spawn("node", ["./devman.js", "run", target]
+                , {
+                    detached: true
+                  , stdio: 'ignore'
+                  , cwd: process.cwd()
+                });
+
+    child.unref();
+                  
+}
+
+if("stop" === action)
+{
+    console.log("STOP", target);
+
+   require('http').get('http://localhost:' + port + '/stop', () => {console.log("exited")});
+                  
+}
+
+
 
         
 
