@@ -319,6 +319,31 @@ function proc(p, next, idx)
   next();
 }
 
+function http_get(url, callback)
+{
+    
+    require('http').get(url, (res) => {
+
+        const statusCode = res.statusCode;
+
+        if (statusCode !== 200) {
+                error = new Error(`Request Failed.\n` +
+                                  `Status Code: ${statusCode}`);
+                callback(error);
+                return;
+        }
+
+        res.setEncoding('utf8');
+        let rawData = '';
+        res.on('data', (chunk) => rawData += chunk);
+        res.on('end', () => {
+                callback(null, rawData);
+        });
+   }).on('error', (e) => {
+        callback(e); 
+   });
+}
+
 function empty(){}
 
 var next = empty
@@ -367,6 +392,22 @@ if("start" === action)
                 });
 
     child.unref();
+
+    setTimeout( () => {  
+        http_get("http://localhost:3000/", function(err, body){
+        
+            if(err)
+            {
+                console.log("cannot call 3000!");
+
+            }
+            else
+            {
+                console.log("3000 BODY-->", body);
+            }
+        
+        });
+    }, 10000);
                   
 }
 
@@ -374,7 +415,18 @@ if("stop" === action)
 {
     console.log("STOP", target);
 
-   require('http').get('http://localhost:' + port + '/stop', () => {console.log("exited")});
+   http_get('http://localhost:' + port + '/stop', function(err, body)
+           {   if(err)
+               {
+                   console.log("error", err);
+               }
+               else
+               {
+                  console.log("exited", body);
+               }
+                                                       
+           });
+
                   
 }
 
