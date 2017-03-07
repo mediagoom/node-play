@@ -393,21 +393,36 @@ if("start" === action)
 
     child.unref();
 
-    setTimeout( () => {  
-        http_get("http://localhost:3000/", function(err, body){
-        
-            if(err)
-            {
-                console.log("cannot call 3000!");
+    var info = config[target];
 
-            }
-            else
-            {
-                console.log("3000 BODY-->", body);
-            }
-        
-        });
-    }, 10000);
+    if(null != info)
+    {
+        if(null != info.url)
+        {
+            var timeout = 10000;
+
+            if(null != info.timeout)
+                timeout = info.timeout;
+
+            setTimeout( () => {  
+                
+                http_get(info.url, function(err, body){
+                
+                    if(err)
+                    {
+                        console.log("cannot call ", info.url);
+
+                    }
+                    else
+                    {
+                        console.log("GOT", info.url);//, body);
+                    }
+                
+                });
+            }, timeout);
+        }
+
+    }
                   
 }
 

@@ -7,7 +7,7 @@
             , "cmd"   : {"proc": "node", "args": ["./bin/server/index.js"]}
             , "debug" : false 
             , "break" : false
-        }
+         }
         ,
         {
              "name"    : "client"
@@ -32,4 +32,6 @@
         }
 
     ]
+
+    , "server" : { "url" : "http://localhost:3000", "timeout" : 8000 }
 }
