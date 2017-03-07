@@ -334,7 +334,7 @@ function http_get(url, callback)
         }
 
         res.setEncoding('utf8');
-        let rawData = '';
+        var rawData = '';
         res.on('data', (chunk) => rawData += chunk);
         res.on('end', () => {
                 callback(null, rawData);
@@ -384,7 +384,7 @@ if("start" === action)
 {
     console.log("START", target);
 
-    var child = cp.spawn("node", ["./devman.js", "run", target]
+    var child = cp.spawn("node", [ process.argv[1], "run", target]
                 , {
                     detached: true
                   , stdio: 'ignore'
