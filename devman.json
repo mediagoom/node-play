@@ -18,19 +18,20 @@
         ,
         {
              "name"    : "test"
-           , "watch"   : ["src//**/test/*.js"]
+           , "watch"   : ["src//**/test/*.js", "src/**/*.js", "!src/**/client/*"]
+           , "exec"    : ["npm run buildserver"]
            , "cmd"     : {"proc": "node", "args": [
                                 "./node_modules/mocha/bin/mocha"
                                 , "-t"
-                                , "10000"
+                                , "200000"
                                 , "--reporter" 
                                 , "spec"
-                                , "bin//**/test/index.js"
+                                , "./bin/processor/test/procman.test.js"
                                 ]
                          }
            , "dbg_idx" : 1
+           
         }
-
     ]
 
     , "server" : { "url" : "http://localhost:3000", "timeout" : 8000 }

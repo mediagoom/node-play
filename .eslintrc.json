@@ -28,6 +28,10 @@
         , "no-console" : [
             "off"
         ]
+        , "comma-style" : [
+              "warn"
+            , "first"
+        ]
     }
 
     , "globals"   : {

@@ -99,6 +99,8 @@ function clear_child(child)
 function execnotexisting(idx, debug)
 {  
 
+   console.log(FgCyan, 'execnotexisting', g[idx].name, idx, Reset);
+
    var p = g[idx];
 
     if(g[idx]['status'] == 'executing')
@@ -230,11 +232,13 @@ function execnotexisting(idx, debug)
 
 function exec(idx, debug)
 {
+   //console.log(FgMagenta, idx, g, g[idx], Reset);
+
    if( g[idx]['status'] == 'closing'
      //|| g[idx]['status'] == 'closed'
      )
    {
-         console.log(FgMagenta, 'Process is exiting ', g[idx].status, g[idx].name, Reset);
+         console.log(FgMagenta, 'Process is exiting ', idx, g[idx].status, g[idx].name, Reset);
          return;
    }
 
@@ -262,52 +266,31 @@ function exec(idx, debug)
    }
 }
 
-function proc(p, next, idx)
+function proc(next, idx)
 {
-   var d = {
-              "name"  : "none"
-            , "watch" : []
-            , "exec"  : []
-            , "cmd"   : null 
-            , "debug" : false 
-            , "break" : false
-            , "index" : idx
-            , "timeout" : 35000
-            , "dbg_idx" : 0
-            , "dbg_arg" : ['--inspect', '--debug-brk']
-            , "dbg_url" : 'chrome-devtools:\/\/[^\\s\\n\\r]+'
-   };
-
-   var p = Object.assign(d, p);
-
-   console.log(JSON.stringify(p));
-
-   console.log("-----------");
-   
-   g[idx] = p;
-   s[idx] = {
-           "exec_output" : []
-                   , "change" : false
-   };
+  
+    var p = g[idx];
    
    if(null != p.watch && 0 < p.watch.length)
    {
-           var idx = p.index;
+       console.log(FgGreen, idx, p.watch, Reset);
+
+           var kidx = idx;
            chokidar.watch(p.watch).on('all', (event, path) => {
                    
-                   console.log('watch ' + idx, event, path);
+                   console.log('watch ' + kidx, event, path);
                    if('change' == event)
                    {
                        if(s[idx].change)
                        {
-                               console.log(FgYellow, "Discard Duplicated Change", idx, g[idx].name, Reset);
+                               console.log(FgYellow, "Discard Duplicated Change", kidx, g[kidx].name, Reset);
                                return;
                        }
                    
                         s[idx].change = true;
-                            exec(idx);
+                            exec(kidx);
 
-                        setTimeout(() => {s[idx].change = false}, 5000);
+                        setTimeout(() => {s[kidx].change = false}, 5000);
                    }
                    //console.log(event, path);
 
@@ -353,7 +336,7 @@ var patt = new RegExp(target);
 
 if("run" === action)
 {
-    console.log("RUN", patt);
+    console.log("RUN", patt, config.proc.length);
 
     for(i = (config.proc.length - 1); i >= 0; i--)
     {
@@ -361,13 +344,39 @@ if("run" === action)
 
         var ff = next;
         var pp = config.proc[i];
-        
-        if(patt.test(pp.name))
-        {
-            console.log("\t", pp.name);
 
+         var d = {
+              "name"  : "none"
+            , "watch" : []
+            , "exec"  : []
+            , "cmd"   : null 
+            , "debug" : false 
+            , "break" : false
+            , "index" : idx
+            , "timeout" : 35000
+            , "dbg_idx" : 0
+            , "dbg_arg" : ['--inspect', '--debug-brk']
+            , "dbg_url" : 'chrome-devtools:\/\/[^\\s\\n\\r]+'
+         };
+
+   var pp = Object.assign(d, pp);
+   var dorun = patt.test(pp.name);
+  
+   console.log("]...------[...]------...[", JSON.stringify(pp), i, dorun);
+   
+   g[i] = pp;
+   s[i] = {
+           "exec_output" : []
+                   , "change" : false
+   };
+        
+        if(dorun)
+        {
+            console.log(FgGreen, "\t", pp.name, Reset);
+            var mf  = ff;
             var idx = i;
-            var nn = () => {proc(pp, ff, idx);}
+
+            var nn = () => {proc(mf, idx);}
 
             next = nn;
         }

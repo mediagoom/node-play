@@ -32,14 +32,11 @@ export default class ProcMan  {
         this.processor = es6req(this.options.processor);
         this.statman   = es6req(this.options.statusman);
 
-        
-
         let statopt    = Object.assign(this.options, {  });
 
         //console.log(statopt, this.processor, this.statman);
 
         this.state     = new this.statman(this.processor, statopt);
-        
 
     }
 

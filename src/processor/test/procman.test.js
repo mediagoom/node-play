@@ -23,11 +23,11 @@ function check( done, f ) {
     }
 }
 
-function test_proc_man(require_string)
+function test_proc_man(require_string, owner)
 {
     let p     = new ProcMan({statusman : require_string});
     let id    = "";
-    let owner = "uploader";
+    //let owner = "uploader";
     let name  = "TEST";
 
     it("reserve name", (done) => {
@@ -58,10 +58,14 @@ function test_proc_man(require_string)
 
         let file = tval("TESTMEDIAFILE", "./src/processor/test/MEDIA1.MP4");
 
-        expect(id).to.be.a("string");     
-        expect(id).to.be.equal("9999999999_TEST");
+        
 
-        return p.queue_job(owner, name, file);
+        p.queue_job(owner, name, file).then(
+            () => {check(done, ()=> {
+                    expect(id).to.be.a("string");     
+                    expect(id).to.be.match(/\d{10,12}_TEST/);
+            })
+            }, (err) => done(err))
                    
 
     });
@@ -102,7 +106,7 @@ function test_proc_man(require_string)
         let r = {
             status   : "ok"
                     , name   : "TEST"        
-                    , id     : "9999999999_TEST"
+                    , id     : id
                     , owner  : owner
                     , hls3   : "STATIC/main.m3u8"
                     , dash   : "STATIC/index.mpd"
@@ -150,13 +154,16 @@ describe("PROCESS MANAGER", () => {
 
         });
 
-
     });
 
+   
     describe("Fake StatMan", () => {
 
-        test_proc_man("./test/stateman.js");
+        test_proc_man("./test/stateman.js", "uploader");
         
     });
 
+    describe("Fs StatMan", () => {
+        test_proc_man("./statmanfs.js", "statman");
+    });
 });

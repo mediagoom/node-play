@@ -5,7 +5,7 @@ import ProcMan  from "../processor/procman.js";
 function optval(name, def)
 {
     if(null == process.env[name])
-        {
+    {
         return def;
     }
 
@@ -14,15 +14,23 @@ function optval(name, def)
 
 
 let status_man_use = optval("NODEPLAY-STATUSMAN", "../processor/test/stateman.js");
+let processor_use  = optval("NODEPLAY-PROCESSOR", "../processor/index.js");
 let def_owner      = optval("NODEPLAY-DEFOWNER", "uploader");
 
-let statusman = new ProcMan({statusman : status_man_use});
+
+
+let statusman = new ProcMan({statusman : status_man_use,  processor : processor_use});
+
+
+express.static.mime.define({'application/dash+xml': ['mpd']});
 
 var app = express();
 
 var port = 3000;
 
-app.use(express.static("bin/client"));
+//app.use(express.static("bin/client"));
+
+app.use("/play", express.static("./"));
 
 app.use("/upload", uploader());
 
@@ -32,7 +40,7 @@ app.get('/', function (req, res) {
 })
 */
 
-app.get("/list", (req, res, next) => {
+app.get("/api/list", (req, res, next) => {
 
     
     statusman.list(def_owner).then(
@@ -44,7 +52,7 @@ app.get("/list", (req, res, next) => {
 
 });
 
-app.get("/status/:id", (req, res, next) => {
+app.get("/api/status/:id", (req, res, next) => {
 
     let id = req.params.id;
 
