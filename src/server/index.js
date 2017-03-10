@@ -1,6 +1,7 @@
 import express from "express";
 import uploader from "../uploader/server.js";
 import ProcMan  from "../processor/procman.js";
+//import path from "path";
 
 function optval(name, def)
 {
@@ -13,9 +14,9 @@ function optval(name, def)
 }
 
 
-let status_man_use = optval("NODEPLAY-STATUSMAN", "../processor/test/stateman.js");
-let processor_use  = optval("NODEPLAY-PROCESSOR", "../processor/index.js");
-let def_owner      = optval("NODEPLAY-DEFOWNER", "uploader");
+let status_man_use = optval("NODEPLAYSTATUSMAN", "../processor/statmanfs.js");
+let processor_use  = optval("NODEPLAYPROCESSOR", "../processor/index.js");
+let def_owner      = optval("NODEPLAYDEFOWNER", "uploader");
 
 
 
@@ -63,14 +64,23 @@ app.get("/api/status/:id", (req, res, next) => {
 
 });
 
-app.put("/upload", (req, res) => {
+app.put("/upload/:id?", (req, res) => {
     
     console.log("-------------****");
        //console.log(JSON.stringify(req.headers));
     console.log(req.uploader);
     console.log("-------------**--");
 
-       
+    let id = req.params.id;
+
+    if(null != id)
+    {
+
+        statusman.queue_job(def_owner
+            , id //, path.basename(req.uploader)
+            , req.uploader
+            ).then(()=>{}, err => console.log("MUST RECORD QUEUE JOB ERROR", err));
+    }
 
     res.send("OK");
 

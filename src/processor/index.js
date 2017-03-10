@@ -218,12 +218,22 @@ export default class Processor extends EventEmitter {
 
     encode(filepath, streams)
     {
-        return new Promise( (resolve, reject) => {
         
+        return new Promise( (resolve, reject) => {
+            
+            if(!streams)
+            {
+                reject(new Error("invalid streams"));
+                return;
+            }
                 
             if(streams.length != 2)
             {
-                reject("at the moment only audio / video supported");
+
+                console.log("INVALID STREAMS", streams, streams.length);
+
+                let err = new Error("at the moment only audio / video supporte [" + streams.length.toString() + "]");
+                reject(err);
                 return;
             }
 
@@ -233,7 +243,7 @@ export default class Processor extends EventEmitter {
             for(let i = 0; i < streams.length; i++){
                 if(streams[i].kind === "Video"){
                     if(video != null){
-                        reject("more than one video stream unsupported");
+                        reject( new Error("more than one video stream unsupported"));
                         return;
                     }
 

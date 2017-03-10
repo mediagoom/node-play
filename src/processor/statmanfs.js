@@ -77,6 +77,19 @@ export default class StateManFs  {
         return path.join(p.get_target_dir(), this.options.statusfile);
     }
 
+    set_quick_status(p, status)
+    {
+        return new Promise( (resolve, reject) => {
+            
+            let stpath = this.status_path(p);
+            
+            let j = { status: status };
+
+            this.update_status(stpath, j, false).then(() => resolve(), err => reject(err));
+
+        });
+    }
+
     reserve_name(owner, name)
     {
         
@@ -84,27 +97,27 @@ export default class StateManFs  {
 
             let p = new this.processor(name, {destination: path.join(this.options.destination, owner)} );
 
-                p.mkdirr(p.get_target_dir(), (err) => {
+            p.mkdirr(p.get_target_dir(), (err) => {
                     
-                    if(err)
-                    {
-                        reject(err);
-                    }
-                    else
-                    {
+                if(err)
+                {
+                    reject(err);
+                }
+                else
+                {
 
-                        let j = { status: 'reserved'
-                            , name : name
-                            , id : p.id
-                        }
-
-                        this.update_status( 
-                            this.status_path(p), j, true
-                            ).then( (/*k*/) => {resolve(p.id);}
-                                , (err)=> {reject(err);}
-                                );
+                    let j = { status: 'reserved'
+                        , name : name
+                        , id : p.id
                     }
-                });
+
+                    this.update_status( 
+                        this.status_path(p), j, true
+                        ).then( (/*k*/) => {resolve(p.id);}
+                            , (err)=> {reject(err);}
+                            );
+                }
+            });
         
         });
     }
@@ -115,7 +128,7 @@ export default class StateManFs  {
         return new Promise( (resolve, reject) => {
 
             
-            let procopt = Object.assign(this.options, opt);
+            let procopt = Object.assign({}, this.options, opt);
 
             procopt.id = id;
             procopt.destination = path.join(procopt.destination, owner);
@@ -124,13 +137,20 @@ export default class StateManFs  {
 
             p.read_stream_info(file).then(
                     (st) => {
-                        let s = p.get_streams(st);
+                       
+                        console.log("STREAMS: ", st.streams, "\n--------\n", st);
 
-                        p.encode(file, s).then(
+                        this.set_quick_status(p, "analized").then(()=> {}, err => reject(err));
+
+                        p.encode(file, st.streams).then(
                                     (quality) => {
 
-                                        p.package(quality, procopt).then(
+                                        this.set_quick_status(p, "encoded").then(()=> {}, err => reject(err));
+
+                                        p.package(quality, procopt.subdir).then(
                                               ()=>{  
+
+                                                  //set_quick_status(p, "analized").then(()=> {}, err => reject(err));
                                               
                                                   let res = {
                                                       status   : "ok"
@@ -158,8 +178,6 @@ export default class StateManFs  {
                     }, (err)=> {reject(err);}
                     );
 
-            resolve();
-        
         });
     }
 
@@ -168,10 +186,14 @@ export default class StateManFs  {
         
         return new Promise( (resolve, reject) => {
 
-            let procopt = Object.assign(this.options, opt);
+            console.log(this.options, opt);
+
+            let procopt = Object.assign({}, this.options, opt);
 
             // procopt.id = id;
             procopt.destination = path.join(procopt.destination, owner);
+
+            console.log(procopt);
 
             // let p = new this.processor('list', procopt);
 
@@ -205,8 +227,10 @@ export default class StateManFs  {
     {       
 
         return new Promise( (resolve, reject) => {
-        
-            let procopt = Object.assign(this.options, {id: id});
+       
+            console.log(owner, id, this.options);
+
+            let procopt = Object.assign({}, this.options, {id: id});
             procopt.destination = path.join(procopt.destination, owner);
 
 

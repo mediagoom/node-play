@@ -53,17 +53,17 @@ function test_proc_man(require_string, owner)
 
     });
 
-    it("queue job", () => {
+    it("queue job", (done) => {
                
 
         let file = tval("TESTMEDIAFILE", "./src/processor/test/MEDIA1.MP4");
 
         
 
-        p.queue_job(owner, name, file).then(
+        p.queue_job(owner, id, file).then(
             () => {check(done, ()=> {
-                    expect(id).to.be.a("string");     
-                    expect(id).to.be.match(/\d{10,12}_TEST/);
+                expect(id).to.be.a("string");     
+                expect(id).to.be.match(/\d{10,12}_TEST/);
             })
             }, (err) => done(err))
                    
