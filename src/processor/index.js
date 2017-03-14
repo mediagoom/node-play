@@ -358,37 +358,46 @@ export default class Processor extends EventEmitter {
                     reject(err);
                     return;
                 }
-            
 
-                let cmdline = "mg -k:adaptive \"-o:" + outdir + "\" ";
+                let args = [];
+                args.push("-k:adaptive");
+                args.push("-o:" + outdir);
                 let first   = true;
+                let cmdline = '';
 
                 for(let i = 0; i < quality.length; i++){
                     if(null != quality[i].file){
             
 
                         if(first){
-                            cmdline += "\"-i:";
+                            cmdline += "-i:";
                         }
                         else{
-                            cmdline += "\"-j:";
+                            cmdline += "-j:";
                         }
 
-
                         cmdline += quality[i].file;
-                        cmdline += "\" -b:" + quality[i].videobitrate + " ";
+                        
+                        args.push(cmdline);
+                        cmdline = '';
+
+                        args.push("-b:" + quality[i].videobitrate);
                         
                         if(first){
-                            cmdline += "-s:0 -e:0 ";
+                            args.push("-s:0");
+                            args.push("-e:0");
                         }
                         
                         first = false;
                     }
                 }
 
-                console.log(cmdline);
+                console.log(args);
 
-                cp.exec(cmdline, (err, stdout, stderr) =>{
+                let child = cp.spawn("mg", args);
+                
+                /*
+                cmdline, (err, stdout, stderr) =>{
                  
                     if(null != err){
                         console.log(stdout + "\n" + stderr);
@@ -399,14 +408,29 @@ export default class Processor extends EventEmitter {
                     resolve();
                  
                 });
+                */
 
+                child.on('close', (code/*, signal*/) => {
+                    if(0 == code){
+                        resolve();
+                    }
+                    else{
+                        reject(new Error('mg invalid return code ' + code));
+                    }
+                });
+
+                child.on('error', (err) => {
+                    reject(err);
+                });
+
+                child.stdout.on('data', (data) => {
+                    console.log(data.toString());
+                });
+
+                child.stderr.on('data', (data) => {
+                    console.log(data.toString());
+                });
             });
         });
     }
-
-
-
-
-
-
 }

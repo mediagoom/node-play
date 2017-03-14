@@ -64,6 +64,17 @@ app.get("/api/status/:id", (req, res, next) => {
 
 });
 
+app.get("/api/upload/:name", (req, res, next) => {
+  
+    let name = req.params.name;
+
+    statusman.reserve_name(def_owner, name).then(
+        id => res.json({id : id})
+        , err => next(err)
+    );
+
+});
+
 app.put("/upload/:id?", (req, res) => {
     
     console.log("-------------****");
