@@ -153,7 +153,7 @@ function execnotexisting(idx, debug)
                                , Reset);
            }
 
-           s[idx].child = cp.spawn(p.cmd.proc, args);
+           s[idx].child = cp.spawn(p.cmd.proc, args, p.options);
            var k = idx;
 
            

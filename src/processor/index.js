@@ -18,7 +18,8 @@ export default class Processor extends EventEmitter {
 
             destination : "./"
             , cmd_img : "ffmpeg -t 100 -i \"$(file)\" -vf fps=1/10 \"$(dir)/img%03d.jpg\""
-            , stream_rx : "Stream\\s#0:(\\d+)\\((\\w+)\\):\\s(Audio|Video):.*?(?:(?:,\\s(\\d+)x(\\d+))|(?:(\\d+) Hz)).*?, (\\d+) kb/s([^\\n]+)"
+            , duration_rx : "Duration: (\\d\\d):(\\d\\d):(\\d\\d).(\\d\\d), start: ([\\d\\.]+), bitrate: (\\d+) kb/s"
+            , stream_rx : "Stream\\s#0:(\\d+)(?:[\\(\\[](\\w+)[\\)\\]]){0,1}:\\s(Audio|Video):.*?(?:(?:,\\s(\\d+)x(\\d+))|(?:(\\d+) Hz)).*?, (?:(?:(\\d+) kb/s)|(?:stereo)|(?:.*? fps))"
             , cmd_encode : "ffmpeg -i \"$(file)\" -vf \"scale=w=$(width):h=$(height)\" -codec:v libx264 -profile:v high -level 31 -b:v $(vb)k -r 25 -g 50 -sc_threshold 0 -x264opts ratetol=0.1 -minrate $(vb)k -maxrate $(vb)k -bufsize $(vb)k -b:a $(ab)k -codec:a aac -profile:a aac_low -ar 44100 -ac 2 -y \"$(outputfile)\""
             , quality : [
                               {videobitrate: 120  , height : 144 }
@@ -74,9 +75,25 @@ export default class Processor extends EventEmitter {
     get_streams(output){
 
          ////console.log(output);
+         //
+        let regexpd = new RegExp(this.options.duration_rx, "g");
+        let m = null;
+        let kb = 0;
+
+        if ((m = regexpd.exec(output)) !== null) {
+        
+             let hours = m[1];
+             let minutes = m[2];
+             let seconds = m[3];
+             let milli   = m[4];
+             let start   = m[5];
+                
+                kb = m[6];
+        
+        }
 
         let regexp = new RegExp(this.options.stream_rx, "g");
-        let m = null;
+        
         let streams = [];
         while ((m = regexp.exec(output)) !== null) {
             let s = { index : m[1]
@@ -87,6 +104,12 @@ export default class Processor extends EventEmitter {
                     , kz    : m[6]
                     , bps   : m[7]
             };
+
+            if(s.kind == 'Video' && s.bps == null)
+                s.bps = kb;
+
+            if(s.lang == null)
+                s.lang = 'und';
 
             streams.push(s);
 
@@ -255,6 +278,8 @@ export default class Processor extends EventEmitter {
 
             //console.log(video);
             //console.log(max);
+            //
+            
 
             let quality = this.options.quality.slice();
             let ratio   = video.width / video.height;
@@ -270,6 +295,12 @@ export default class Processor extends EventEmitter {
 
                 quality[i].width = (quality[i].height * ratio).toFixed(0);
                 quality[i].done  = false;
+
+                if(quality[i].width % 2)
+                    quality[i].width = (new Number(quality[i].width) + 1);
+
+                if(quality[i].height % 2)
+                    quality[i].height = (new Number(quality[i].height) + 1);
 
                 if(quality[i].videobitrate > 0){
 

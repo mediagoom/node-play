@@ -26,10 +26,16 @@
                                 , "200000"
                                 , "--reporter" 
                                 , "spec"
-                                , "./bin/processor/test/procman.test.js"
+                                , "-g"
+                                , "cases"
+                                , "./bin/processor/test/index.js"
                                 ]
                          }
            , "dbg_idx" : 1
+           , "options" : { "env":{
+                                    "TESTMEDIAFILE" : "F:/IOMEGA/NEWMEDIA/sample.flv"
+                                 }
+                         }         
            
         }
     ]
