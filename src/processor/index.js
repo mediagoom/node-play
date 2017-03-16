@@ -81,14 +81,14 @@ export default class Processor extends EventEmitter {
         let kb = 0;
 
         if ((m = regexpd.exec(output)) !== null) {
-        
-             let hours = m[1];
-             let minutes = m[2];
-             let seconds = m[3];
-             let milli   = m[4];
-             let start   = m[5];
-                
-                kb = m[6];
+            /*
+            let hours = m[1];
+            let minutes = m[2];
+            let seconds = m[3];
+            let milli   = m[4];
+            let start   = m[5];
+            */
+            kb = m[6];
         
         }
 

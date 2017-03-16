@@ -39,7 +39,7 @@ var result = [ { index: "0"
                                     , height: undefined
                                     , kz: "48000"
                                     , bps: "96" } 
-        ];
+];
 
  
 describe("PROCESSOR", () => {
@@ -70,7 +70,7 @@ describe("PROCESSOR", () => {
                                     , kz: "44100"
                                     , bps: undefined } 
 
-                                  ]
+              ]
             }
             , { name : "mp4"
                 , input : `
@@ -112,19 +112,17 @@ Input #0, mpegts, from 'F:\\IOMEGA\\NEWMEDIA\\MORE\\2\\hdtv.ts':
                                     , kz: "48000"
                                     , bps: undefined } 
 
-                                  ]
+        ]
                 , enabled : false
 
-                }
-            ]
+            }
+        ];
 
-            let output_stream = ` 
+        let output_stream = ` 
   Output #0, image2, to :
  ......
     Stream #0:0: Video: mjpeg, yuvj420p(pc), 640x352 [SAR 44:45 DAR 16:9], q=2-31, 200 kb/s, 0.10 fps, 0.10 tbn, 0.10 tbc
   `
-
-        //it("get_streams_cases", ()=>{
 
         for(let i = 0; i < cases.length; i++)
         {
@@ -133,20 +131,18 @@ Input #0, mpegts, from 'F:\\IOMEGA\\NEWMEDIA\\MORE\\2\\hdtv.ts':
             if(cases[i].enabled || undefined == cases[i].enabled)
             {
            // console.log(name);
-            it(name, () => {
-                let p    = new Processor(name);
-                let s    = p.get_streams(cases[i].input + output_stream);
+                it(name, () => {
+                    let p    = new Processor(name);
+                    let s    = p.get_streams(cases[i].input + output_stream);
 
-                console.log(s.streams);
-                console.log(cases[i].expected);
+                    // console.log(s.streams);
+                    // console.log(cases[i].expected);
 
-                expect(s.streams).to.be.deep.equal(cases[i].expected);
+                    expect(s.streams).to.be.deep.equal(cases[i].expected);
 
-            });
+                });
             }
         }
-
-        //});
 
     });
 
