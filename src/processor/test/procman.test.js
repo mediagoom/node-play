@@ -41,9 +41,6 @@ function test_proc_man(require_string, owner)
                 id = idx;
 
                 console.log("-----", id, "------");
-                            //
-
-                            
                         
             });
         }

@@ -7,6 +7,11 @@
             , "cmd"   : {"proc": "node", "args": ["./bin/server/index.js"]}
             , "debug" : false 
             , "break" : false
+            , "options" : { "env":{
+                                    "NODEPLAYDEFOWNER" : "pippo"
+                                  }
+                          }
+                          
          }
         ,
         {
