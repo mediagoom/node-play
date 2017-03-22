@@ -154,12 +154,18 @@ function execnotexisting(idx, debug)
                                , Reset);
            }
 
-           s[idx].child = cp.spawn(p.cmd.proc, args, p.options);
+           var opt = Object.assign({}, p.options);
+
+           if(null != p.options.env
+                   && null != opt.env)
+           {
+               opt.env = Object.assign(process.env, opt.env);
+
+               //console.log("---env---",opt.env);
+           }
+
+           s[idx].child = cp.spawn(p.cmd.proc, args, opt);
            var k = idx;
-
-           
-
-          
 
            s[idx].child.on('close', (code, signal) => {
                 g[k]['info']   = "close " + code;
@@ -173,9 +179,6 @@ function execnotexisting(idx, debug)
 
                 s[k].child = null;
 
-                /*if(0 != code)
-                   g[k]['status'] = 'error';
-                */
                 console.log(
                         (code == 0 || null == code)?FgGreen:FgRed,
                         'child end: ', pid, k, code, g[k]['status'], g[k].name
@@ -188,8 +191,7 @@ function execnotexisting(idx, debug)
                 g[k]['status'] = "error";
                 s[k].child = null;
 
-                console.log(FgRed, 'child error: ', g[k].name, k, err.message);
-
+                console.log(FgRed, 'child error: ', g[k].name, k, err.message, opt);
 
            });
 
