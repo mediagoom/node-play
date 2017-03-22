@@ -3,6 +3,7 @@
 var chokidar = require('chokidar');
 var cp       = require('child_process');
 var express  = require('express');
+var fs       = require('fs');
 
 var config   = require('./devman.json');
 
@@ -419,10 +420,13 @@ if("start" === action)
 {
     console.log("START", target);
 
+    const out = fs.openSync('./out.log', 'a');
+    const err = fs.openSync('./out.log', 'a');
+    
     var child = cp.spawn("node", [ process.argv[1], "run", target]
                 , {
                     detached: true
-                  , stdio: 'ignore'
+                  , stdio: [ 'ignore', out, err ]
                   , cwd: process.cwd()
                 });
 
@@ -444,6 +448,8 @@ if("start" === action)
         }
 
     }
+
+    
                   
 }
 

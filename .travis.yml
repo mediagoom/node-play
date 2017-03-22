@@ -16,6 +16,7 @@ before_script:
 script:
 - npm run build
 - npm start
+- cat ./out.log
 - npm test
 after_script:
 - npm stop
