@@ -121,6 +121,9 @@ app.put("/upload/:id?", (req, res) => {
     
 });
 
+
+app.use(express.static("dist"));
+
 app.listen(port, function () {
     console.log("app listening on port " + port + "!");
 });
