@@ -398,7 +398,7 @@ function checkurl(timeout, url, count, max)
                 
                     if(err)
                     {
-                        console.log("cannot call ", url, count, max);
+                        console.log("cannot call ", url, count, max, err);
 
                         if(count < max)
                         {
