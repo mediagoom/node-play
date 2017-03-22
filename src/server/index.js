@@ -42,11 +42,27 @@ app.use("/play", express.static("./"));
 
 app.use("/upload", uploader());
 
-/*
-app.get('/', function (req, res) {
-  res.send('Hello World!')
+
+app.get('/clientaccesspolicy.xml', function (req, res) {
+  
+    let clientaccesspolicy = `<?xml version="1.0" encoding="utf-8" ?> 
+<access-policy>
+<cross-domain-access>
+<policy>
+<allow-from http-methods="*" http-request-headers="*">
+<domain uri="http://*" /> 
+</allow-from>
+<grant-to>
+<resource path="/" include-subpaths="true" /> 
+</grant-to>
+</policy>
+</cross-domain-access>
+</access-policy>
+`    
+    
+    res.send(clientaccesspolicy);
 })
-*/
+
 
 app.get("/api/list", (req, res, next) => {
 

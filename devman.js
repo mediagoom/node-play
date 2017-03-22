@@ -390,6 +390,31 @@ if("run" === action)
     })
 }
 
+function checkurl(timeout, url, count, max)
+{
+    setTimeout( () => {  
+                
+                http_get(url, function(err, body){
+                
+                    if(err)
+                    {
+                        console.log("cannot call ", url, count, max);
+
+                        if(count < max)
+                        {
+                            checkurl(timeout, url, count + 1, max);
+                        }
+
+                    }
+                    else
+                    {
+                        console.log("GOT", url);//, body);
+                    }
+                
+                });
+            }, timeout);
+}
+
 if("start" === action)
 {
     console.log("START", target);
@@ -413,23 +438,9 @@ if("start" === action)
 
             if(null != info.timeout)
                 timeout = info.timeout;
-
-            setTimeout( () => {  
-                
-                http_get(info.url, function(err, body){
-                
-                    if(err)
-                    {
-                        console.log("cannot call ", info.url);
-
-                    }
-                    else
-                    {
-                        console.log("GOT", info.url);//, body);
-                    }
-                
-                });
-            }, timeout);
+            
+            checkurl(timeout, info.url, 0, 5);
+            
         }
 
     }

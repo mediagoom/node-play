@@ -45,5 +45,5 @@
         }
     ]
 
-    , "server" : { "url" : "http://localhost:3000", "timeout" : 8000 }
+    , "server" : { "url" : "http://localhost:3000/clientaccesspolicy.xml", "timeout" : 8000 }
 }
