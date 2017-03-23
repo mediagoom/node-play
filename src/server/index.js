@@ -18,18 +18,14 @@ let status_man_use = optval("NODEPLAYSTATUSMAN", "../processor/statmanfs.js");
 let processor_use  = optval("NODEPLAYPROCESSOR", "../processor/index.js");
 let def_owner      = optval("NODEPLAYDEFOWNER", "uploader");
 
-
+let port           = optval("NODEPLAYPORT", 3000);
 
 let statusman = new ProcMan({statusman : status_man_use,  processor : processor_use});
 
-
 express.static.mime.define({'application/dash+xml': ['mpd']});
 
-var app = express();
+let app = express();
 
-var port = 3000;
-
-//app.use(express.static("bin/client"));
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -39,9 +35,7 @@ app.use(function(req, res, next) {
 
 app.use("/play", express.static("./"));
 
-
 app.use("/upload", uploader());
-
 
 app.get('/clientaccesspolicy.xml', function (req, res) {
   
@@ -65,7 +59,6 @@ app.get('/clientaccesspolicy.xml', function (req, res) {
 
 
 app.get("/api/list", (req, res, next) => {
-
     
     statusman.list(def_owner).then(
         
