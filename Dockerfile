@@ -20,6 +20,10 @@ RUN curl -L ${URL} -O \
     && npm start \
     && npm test \
     && npm stop
-
+    && rm src -fr
+    && rm upload -fr
+    && rm statman -fr
+    && rm ffmpeg-release-64bit-static.tar.xz
+    && rm ffmpeg-3.2.4-64bit-static -fr
 
 CMD node ./bin/server/index.js
