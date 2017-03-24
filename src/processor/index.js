@@ -375,7 +375,7 @@ export default class Processor extends EventEmitter {
 
                         if(completed){
                                 
-                            console.log("--QUALITY-->", quality);
+                            //console.log("--QUALITY-->", quality);
 
                             resolve(quality);
                         }
@@ -486,13 +486,7 @@ export default class Processor extends EventEmitter {
                     reject(err);
                 });
 
-                child.stdout.on("data", (data) => {
-                    console.log(data.toString());
-                });
-
-                child.stderr.on("data", (data) => {
-                    console.log(data.toString());
-                });
+                
             });
         });
     }
