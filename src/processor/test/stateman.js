@@ -75,6 +75,11 @@ export default class FakeStateMan  {
                     , hls3   : "STATIC/main.m3u8"
                     , dash   : "STATIC/index.mpd"
                     , thumb  : ["img001.jpg", "img002.jpg"]
+                    , "previus": [
+                        "reserved"
+                        , "analized"
+                        , "encoded"
+                    ]
                     , hls4   : null
                     , playready : null
                     , widevine: null

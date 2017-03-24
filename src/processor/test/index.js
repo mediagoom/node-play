@@ -122,7 +122,7 @@ Input #0, mpegts, from 'F:\\IOMEGA\\NEWMEDIA\\MORE\\2\\hdtv.ts':
   Output #0, image2, to :
  ......
     Stream #0:0: Video: mjpeg, yuvj420p(pc), 640x352 [SAR 44:45 DAR 16:9], q=2-31, 200 kb/s, 0.10 fps, 0.10 tbn, 0.10 tbc
-  `
+  `;
 
         for(let i = 0; i < cases.length; i++)
         {
@@ -205,27 +205,27 @@ Input #0, mpegts, from 'F:\\IOMEGA\\NEWMEDIA\\MORE\\2\\hdtv.ts':
 
         
 
-        let quality = [   { audiobitrate: 96,
-            videobitrate: 120,
-            height: 144,
-            width: "256",
-            done: true,
-            file: path.join(dir, "TEST_256_144_120.mp4") },
-        { audiobitrate: 96,
-            videobitrate: 320,
-            height: 288,
-            width: "512",
-            done: true,
-            file: path.join(dir, "TEST_512_288_320.mp4") },
-        { audiobitrate: 96,
-            videobitrate: 750,
-            height: 576,
-            width: "1024",
-            done: true,
-            file: path.join(dir, "TEST_1024_576_750.mp4") },
-                          { videobitrate: 0, height: 720, width: "1280", done: true },
-                          { videobitrate: 0, height: 720, width: "1280", done: true },
-                          { videobitrate: 0, height: 720, width: "1280", done: true } 
+        let quality = [   { audiobitrate: 96
+            , videobitrate: 120
+            , height: 144
+            , width: "256"
+            , done: true
+            , file: path.join(dir, "TEST_256_144_120.mp4").replace(/\\/g, "/") }
+        , { audiobitrate: 96
+            , videobitrate: 320
+            , height: 288
+            , width: "512"
+            , done: true
+            , file: path.join(dir, "TEST_512_288_320.mp4").replace(/\\/g, "/") }
+        , { audiobitrate: 96
+            , videobitrate: 750
+            , height: 576
+            , width: "1024"
+            , done: true
+            , file: path.join(dir, "TEST_1024_576_750.mp4").replace(/\\/g, "/") }
+                          , { videobitrate: 0, height: 720, width: "1280", done: true }
+                          , { videobitrate: 0, height: 720, width: "1280", done: true }
+                          , { videobitrate: 0, height: 720, width: "1280", done: true } 
         ];                           
                          
 

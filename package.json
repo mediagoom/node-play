@@ -4,13 +4,14 @@
   "description": "A nodejs streaming server implementation",
   "main": "bin/server/index.js",
   "scripts": {
-      "buildserver": "node ./node_modules/gulp/bin/gulp.js server"
-    , "build": "node ./node_modules/gulp/bin/gulp.js build"
-    , "test": "node ./node_modules/mocha/bin/mocha --reporter spec --timeout 800000 ./bin//**/test/index.js ./bin//**/test/*.test.js"
-    , "start": "node ./devman.js start server"
-    , "server": "node ./bin/server/index.js"
-    , "testdebug": "node ./node_modules/mocha/bin/mocha --inspect --debug-brk --reporter spec ./bin//**/test/index.js"
-    , "stop": "node ./devman.js stop"
+    "buildserver": "node ./node_modules/gulp/bin/gulp.js server",
+    "build": "node ./node_modules/gulp/bin/gulp.js build"
+    , "pretest": "node ./node_modules/gulp/bin/gulp.js clean"
+    , "test"   : "node ./node_modules/mocha/bin/mocha --reporter spec --timeout 800000 ./bin//**/test/index.js ./bin//**/test/*.test.js",
+    "start": "node ./devman.js start server",
+    "server": "node ./bin/server/index.js",
+    "testdebug": "node ./node_modules/mocha/bin/mocha --inspect --debug-brk --reporter spec ./bin//**/test/index.js",
+    "stop": "node ./devman.js stop"
   },
   "repository": {
     "type": "git",
@@ -47,6 +48,7 @@
     "gulp-sourcemaps": "^2.4.0",
     "gulp-util": "^3.0.8",
     "mocha": "^3.2.0",
+    "parse-spawn-args": "^1.0.2",
     "request": "^2.79.0",
     "stream-exhaust": "^1.0.1",
     "url": "^0.11.0",

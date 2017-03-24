@@ -2,6 +2,7 @@ import { EventEmitter } from "events";
 import path from "path";
 import cp   from "child_process";
 import fs   from "fs";
+import {parse} from "parse-spawn-args";
 
 function pad(num, size) {
     var s = "000000000000" + num;
@@ -20,7 +21,7 @@ export default class Processor extends EventEmitter {
             , cmd_img : "ffmpeg -t 100 -i \"$(file)\" -vf fps=1/10 \"$(dir)/img%03d.jpg\""
             , duration_rx : "Duration: (\\d\\d):(\\d\\d):(\\d\\d).(\\d\\d), start: ([\\d\\.]+), bitrate: (\\d+) kb/s"
             , stream_rx : "Stream\\s#0:(\\d+)(?:[\\(\\[](\\w+)[\\)\\]]){0,1}:\\s(Audio|Video):.*?(?:(?:,\\s(\\d+)x(\\d+))|(?:(\\d+) Hz)).*?, (?:(?:(\\d+) kb/s)|(?:stereo)|(?:.*? fps))"
-            , cmd_encode : "ffmpeg -i \"$(file)\" -vf \"scale=w=$(width):h=$(height)\" -codec:v libx264 -profile:v high -level 31 -b:v $(vb)k -r 25 -g 50 -sc_threshold 0 -x264opts ratetol=0.1 -minrate $(vb)k -maxrate $(vb)k -bufsize $(vb)k -b:a $(ab)k -codec:a aac -profile:a aac_low -ar 44100 -ac 2 -y \"$(outputfile)\""
+            , cmd_encode : "-i \"$(file)\" -vf \"scale=w=$(width):h=$(height)\" -codec:v libx264 -profile:v high -level 31 -b:v $(vb)k -r 25 -g 50 -sc_threshold 0 -x264opts ratetol=0.1 -minrate $(vb)k -maxrate $(vb)k -bufsize $(vb)k -b:a $(ab)k -codec:a aac -profile:a aac_low -ar 44100 -ac 2 -y \"$(outputfile)\""
             , quality : [
                               {videobitrate: 120  , height : 144 }
                             , {videobitrate: 320  , height : 288 }
@@ -105,11 +106,11 @@ export default class Processor extends EventEmitter {
                     , bps   : m[7]
             };
 
-            if(s.kind == 'Video' && s.bps == null)
+            if(s.kind == "Video" && s.bps == null)
                 s.bps = kb;
 
             if(s.lang == null)
-                s.lang = 'und';
+                s.lang = "und";
 
             streams.push(s);
 
@@ -302,6 +303,8 @@ export default class Processor extends EventEmitter {
                 if(quality[i].height % 2)
                     quality[i].height = (new Number(quality[i].height) + 1);
 
+                filepath = filepath.replace(/\\/g, "/");
+
                 if(quality[i].videobitrate > 0){
 
                     let outputf = this.options.outputfile.replace("$(name)", this.name);
@@ -322,50 +325,73 @@ export default class Processor extends EventEmitter {
                     outputf = outputf.replace("$(ab)", quality[i].audiobitrate);
 
                     outputf = path.join(this.get_target_dir(), outputf);
+                    outputf = outputf.replace(/\\/g, "/");
 
                     cmdline = cmdline.replace("$(outputfile)", outputf);
 
                     quality[i].file = outputf;
 
-                    console.log(cmdline);
+                    //console.log(cmdline);
 
                     let idx = i;
 
-                    cp.exec(cmdline, (err, stdout, stderr) =>{
+                    const outs = fs.openSync(path.join(this.get_target_dir(), "out.log"), "a");
+                    const errs = fs.openSync(path.join(this.get_target_dir(), "err.log"), "a");
+                    
+                    //console.log(cmdline);
+
+                    let args = parse(cmdline);
+
+                    //console.log(args);
+
+                    let child = cp.spawn("ffmpeg", args
+                    , {                           
+                        stdio: [ "ignore", outs, errs ]
+                        , cwd: process.cwd()
+                    });
+
+                    child.on("close", (code/*, signal*/) => {
 
                         if(finished)
                             return;
+
+                        if(0 != code)
+                        {
+                            reject(new Error("Invalid Return Code " + code));
+                            return;
+                        }
+
                                     
                         quality[idx].done  = true;
 
+
+                        let completed = true;
+
+                        for(let k = 0; k < quality.length; k++){                                        
+                            if(!quality[k].done){
+                                completed = false;
+                            }
+                        }
+
+                        if(completed){
+                                
+                            //console.log("--QUALITY-->", quality);
+
+                            resolve(quality);
+                        }
+                        
+
+                    });
+
+                    child.on("error", (err) => {
+                        
                         if(err){
 
                             finished = true;
-                            console.log(stdout + stderr);
+                            //console.log(stdout + stderr);
                             reject(err);
                                     
                         }
-                        else{
-
-                            let completed = true;
-
-                            for(let k = 0; k < quality.length; k++){                                        
-                                if(!quality[k].done){
-
-                                    completed = false;
-                                }
-                            }
-
-                            if(completed){
-                                
-                                console.log("--QUALITY-->", quality);
-
-                                resolve(quality);
-                            }
-                        }
-
-
-
                     });
                 }
                 else{
@@ -394,7 +420,7 @@ export default class Processor extends EventEmitter {
                 args.push("-k:adaptive");
                 args.push("-o:" + outdir);
                 let first   = true;
-                let cmdline = '';
+                let cmdline = "";
 
                 for(let i = 0; i < quality.length; i++){
                     if(null != quality[i].file){
@@ -410,7 +436,7 @@ export default class Processor extends EventEmitter {
                         cmdline += quality[i].file;
                         
                         args.push(cmdline);
-                        cmdline = '';
+                        cmdline = "";
 
                         args.push("-b:" + quality[i].videobitrate);
                         
@@ -423,9 +449,15 @@ export default class Processor extends EventEmitter {
                     }
                 }
 
-                console.log(args);
-
-                let child = cp.spawn("mg", args);
+                //console.log(args);
+                
+                const outs = fs.openSync(path.join(this.get_target_dir(), "mgout.log"), "a");
+                const errs = fs.openSync(path.join(this.get_target_dir(), "mgerr.log"), "a");
+                
+                let child = cp.spawn("mg", args, {                           
+                    stdio: [ "ignore", outs, errs ]
+                        , cwd: process.cwd()
+                });
                 
                 /*
                 cmdline, (err, stdout, stderr) =>{
@@ -441,26 +473,20 @@ export default class Processor extends EventEmitter {
                 });
                 */
 
-                child.on('close', (code/*, signal*/) => {
+                child.on("close", (code/*, signal*/) => {
                     if(0 == code){
                         resolve();
                     }
                     else{
-                        reject(new Error('mg invalid return code ' + code));
+                        reject(new Error("mg invalid return code " + code));
                     }
                 });
 
-                child.on('error', (err) => {
+                child.on("error", (err) => {
                     reject(err);
                 });
 
-                child.stdout.on('data', (data) => {
-                    console.log(data.toString());
-                });
-
-                child.stderr.on('data', (data) => {
-                    console.log(data.toString());
-                });
+                
             });
         });
     }

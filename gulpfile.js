@@ -5,6 +5,10 @@ var buffer = require('vinyl-buffer');
 var browserify = require('browserify');
 var watchify = require('watchify');
 var babel = require('babelify');
+var del = require('del');
+
+
+
 
 var gutil = require('gulp-util');
 var exhaustively = require('stream-exhaust');
@@ -93,6 +97,12 @@ function server(){
             .pipe(gulp.dest("bin"));
 
 };
+
+gulp.task('clean', function () {
+  return del([
+    'statman/**/*'
+  ]);
+});
 
 gulp.task('html', function() { html(); });
 
