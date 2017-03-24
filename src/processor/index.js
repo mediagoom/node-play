@@ -338,11 +338,11 @@ export default class Processor extends EventEmitter {
                     const outs = fs.openSync(path.join(this.get_target_dir(), "out.log"), "a");
                     const errs = fs.openSync(path.join(this.get_target_dir(), "err.log"), "a");
                     
-                    console.log(cmdline);
+                    //console.log(cmdline);
 
                     let args = parse(cmdline);
 
-                    console.log(args);
+                    //console.log(args);
 
                     let child = cp.spawn("ffmpeg", args
                     , {                           
@@ -449,9 +449,15 @@ export default class Processor extends EventEmitter {
                     }
                 }
 
-                console.log(args);
-
-                let child = cp.spawn("mg", args);
+                //console.log(args);
+                
+                const outs = fs.openSync(path.join(this.get_target_dir(), "mgout.log"), "a");
+                const errs = fs.openSync(path.join(this.get_target_dir(), "mgerr.log"), "a");
+                
+                let child = cp.spawn("mg", args, {                           
+                    stdio: [ "ignore", outs, errs ]
+                        , cwd: process.cwd()
+                    });
                 
                 /*
                 cmdline, (err, stdout, stderr) =>{
