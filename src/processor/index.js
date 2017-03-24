@@ -457,7 +457,7 @@ export default class Processor extends EventEmitter {
                 let child = cp.spawn("mg", args, {                           
                     stdio: [ "ignore", outs, errs ]
                         , cwd: process.cwd()
-                    });
+                });
                 
                 /*
                 cmdline, (err, stdout, stderr) =>{
