@@ -41,9 +41,9 @@ var app = express();
 
 var port = 2999;
 
-app.use(express.static('./devman'));
+app.use(express.static('../devman'));
 
-app.get('/', function (req, res) {
+app.get('/api', function (req, res) {
   
       res.json(g);
 })

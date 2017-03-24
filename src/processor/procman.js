@@ -48,7 +48,16 @@ export default class ProcMan  {
 
     queue_job(owner, name, file, opt)
     {
-        return this.state.queue_job(owner, name, file, opt);
+        return new Promise( (resolve, reject) => {
+
+            this.state.queue_job(owner, name, file, opt).then( () => resolve()
+                , (err) => {
+                    this.state.record_error(owner, name, err).then( () => reject(err), (x) => reject(x) );
+                }
+            );
+
+        });
+           
     }
 
     list(owner, opt)
@@ -63,6 +72,8 @@ export default class ProcMan  {
         return this.state.status(owner, id);
         
     }
+
+
 
     
 

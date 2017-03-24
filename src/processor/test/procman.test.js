@@ -61,8 +61,8 @@ function test_proc_man(require_string, owner)
             () => {check(done, ()=> {
                 expect(id).to.be.a("string");     
                 expect(id).to.be.match(/\d{10,12}_TEST/);
-            })
-            }, (err) => done(err))
+            });
+            }, (err) => done(err));
                    
 
     });
@@ -104,10 +104,13 @@ function test_proc_man(require_string, owner)
             status   : "ok"
                     , name   : "TEST"        
                     , id     : id
+                    , datetime : null
+                    , creationtime : null
                     , owner  : owner
                     , hls3   : "STATIC/main.m3u8"
                     , dash   : "STATIC/index.mpd"
                     , thumb  : ["img001.jpg", "img002.jpg"]
+                    , previus: ["reserved","analized","encoded"]
                     , hls4   : null
                     , playready : null
                     , widevine: null
@@ -115,6 +118,10 @@ function test_proc_man(require_string, owner)
 
         p.status(owner, id).then(
                   (status) => {
+
+                      status.datetime = null;
+                      status.creationtime  = null;
+                      
                       
                       check(done, () => {
                       

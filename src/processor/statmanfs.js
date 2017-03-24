@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
 
 
 
@@ -14,7 +14,7 @@ export default class StateManFs  {
         }
 
         let defop = {
-            destination : './'
+            destination : "./"
         };
         
         if(null != opt)
@@ -22,8 +22,8 @@ export default class StateManFs  {
         else
             this.options = defop;
 
-        this.options.subdir = this.options.subdir || 'STATIC';
-        this.options.statusfile = this.options.statusfile || 'status.json';
+        this.options.subdir = this.options.subdir || "STATIC";
+        this.options.statusfile = this.options.statusfile || "status.json";
 
         this.processor = processor;
         
@@ -31,26 +31,41 @@ export default class StateManFs  {
 
     update_status(fspath, status, fail_if_exist)
     {
-        let flags = (fail_if_exist)?'wx+':'a+';
+        let flags = (fail_if_exist)?"wx+":"a+";
 
         return new Promise( (resolve, reject) => {
-            fs.readFile(fspath, {flag: flags, encoding: 'utf8'}, (err, data) => {
+            fs.readFile(fspath, {flag: flags, encoding: "utf8"}, (err, data) => {
                 
-                if(err && ( (err.code != 'ENOENT') || (!fail_if_exist)) ){reject(err);}
+                if(err && ( (err.code != "ENOENT") || (!fail_if_exist)) ){reject(err);}
                 else{
 
                     if(err)
-                        data = '{}';
+                    {                        
+                        data = "{}";
+                    }
 
                     let j = {};
 
-                    try{ j = JSON.parse(data);}catch(e){console.log("JSON PARSE ERR:", "[", data, "]", flags, fspath, '----', e);}
+                    try{ j = JSON.parse(data);}catch(e){console.log("JSON PARSE ERR:", "[", data, "]", flags, fspath, "----", e);}
 
                     if(null != status)
                     {
-                        j = Object.assign(j, status);
+                        if(null == j.previus)
+                        {
+                            j.previus = [];
+                        }
 
-                        fs.writeFile(fspath, JSON.stringify(j), {flag: 'w+'}, (err) =>{
+                        if(null != j.status)
+                            j.previus.push(j.status);
+
+                        j = Object.assign(j, status);
+                        j.datetime = new Date();
+                        if(null == j.creationtime)
+                        {
+                            j.creationtime = new Date();
+                        }
+
+                        fs.writeFile(fspath, JSON.stringify(j), {flag: "w+"}, (err) =>{
                     
                             if(err){reject(err);}
                             else{
@@ -106,10 +121,10 @@ export default class StateManFs  {
                 else
                 {
 
-                    let j = { status: 'reserved'
+                    let j = { status: "reserved"
                         , name : name
                         , id : p.id
-                    }
+                    };
 
                     this.update_status( 
                         this.status_path(p), j, true
@@ -195,7 +210,7 @@ export default class StateManFs  {
 
             console.log(procopt);
 
-            // let p = new this.processor('list', procopt);
+            // let p = new this.processor("list", procopt);
 
             //let dir = p.get_target_dir();
 
@@ -237,6 +252,21 @@ export default class StateManFs  {
             let p = new this.processor(id, procopt);
 
             this.update_status(this.status_path(p), null, false).then( j => resolve(j), err => reject(err));
+        
+        });
+    }
+
+    record_error(owner, id, err)
+    {
+        return new Promise( (resolve, reject) => {
+
+            let procopt = Object.assign({}, this.options, {id: id});
+            procopt.destination = path.join(procopt.destination, owner);
+
+
+            let p = new this.processor(id, procopt);
+
+            this.update_status(this.status_path(p), {status: "error", err : err.toString()}, false).then( () => resolve(), err => reject(err));
         
         });
     }

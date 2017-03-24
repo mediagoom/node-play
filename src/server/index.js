@@ -22,7 +22,7 @@ let port           = optval("NODEPLAYPORT", 3000);
 
 let statusman = new ProcMan({statusman : status_man_use,  processor : processor_use});
 
-express.static.mime.define({'application/dash+xml': ['mpd']});
+express.static.mime.define({"application/dash+xml": ["mpd"]});
 
 let app = express();
 
@@ -37,7 +37,7 @@ app.use("/play", express.static("./"));
 
 app.use("/upload", uploader());
 
-app.get('/clientaccesspolicy.xml', function (req, res) {
+app.get("/clientaccesspolicy.xml", function (req, res) {
   
     let clientaccesspolicy = `<?xml version="1.0" encoding="utf-8" ?> 
 <access-policy>
@@ -52,10 +52,10 @@ app.get('/clientaccesspolicy.xml', function (req, res) {
 </policy>
 </cross-domain-access>
 </access-policy>
-`    
+`;    
     
     res.send(clientaccesspolicy);
-})
+});
 
 
 app.get("/api/list", (req, res, next) => {
