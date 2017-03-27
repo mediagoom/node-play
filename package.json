@@ -1,6 +1,6 @@
 {
-  "name": "node-play",
-  "version": "0.0.1",
+  "name": "node-webplay",
+  "version": "0.0.2",
   "description": "A nodejs streaming server implementation",
   "main": "bin/server/index.js",
   "scripts": {

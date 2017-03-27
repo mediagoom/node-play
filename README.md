@@ -7,7 +7,8 @@ A nodejs streaming server implementation.
 Its UI is impemented in vue.js and the source are in the [mediagoom/node-play-ui](https://github.com/mediagoom/node-play-ui) repository.
 
 For encoding it uses [*ffmpeg*](https://ffmpeg.org/download.html). A free tool.
-For packeging it uses [*mg*](https://github.com/mediagoom/mg).
+
+For packaging it uses [*mg*](https://github.com/mediagoom/mg).
 
 It should work in *Linux* and *Window*.
 

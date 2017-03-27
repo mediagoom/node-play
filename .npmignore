@@ -1,0 +1,13 @@
+/src
+/node_modules
+/statman
+/uploader
+/pippo
+.travis.yml
+devman.*
+Dockerfile
+out.log
+*.tmp
+.eslintrc.json
+.gitignore
+
