@@ -1,8 +1,10 @@
-# node-play
+# node-webplay
 
 A nodejs streaming server implementation.
 
-*node-play* is a web server witch expose api for encondig your videos and plaing them back in either HLS (HTTP LIVE STREAMING) or MPEG-DASH.
+![node-webplay streaming server](http://mediagoom.com/assets/bigbunny.gif)
+
+*node-webplay* is a web server witch expose api for encondig your videos and plaing them back in either HLS (HTTP LIVE STREAMING) or MPEG-DASH.
 
 Its UI is impemented in vue.js and the source are in the [mediagoom/node-play-ui](https://github.com/mediagoom/node-play-ui) repository.
 
@@ -25,5 +27,17 @@ npm run build
 node ./bin/server/index.js
 ```
 - navigate to http://localhost:3000
+
+## Roadmap
+
+At this point the functionality are limited. When we have time and resources we would like to add additional functionality.
+At this point this is our list:
+
+- npm install
+- live streaming
+- DRM support
+- dynamic packaging
+
+We would love to have our feedback on these features. How impotant they are for you? 
 
 
