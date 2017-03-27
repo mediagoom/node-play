@@ -2,7 +2,7 @@ FROM node:6.10.1-alpine
 
 #ARG URL=https://github.com/mediagoom/mg/releases/download/v0.1.3/mg 
 ARG URL=https://www.dropbox.com/s/pasw0hnlgegshem/mg?dl=0
-ARG BRANCH=dev
+ARG BRANCH=master
 
 #RUN apt-get update \
 #    && apt-get install --no-install-recommends --no-install-suggests -y \
