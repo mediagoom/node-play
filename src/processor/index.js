@@ -350,14 +350,16 @@ export default class Processor extends EventEmitter {
                         , cwd: process.cwd()
                     });
 
-                    child.on("close", (code/*, signal*/) => {
+                    child.on("close", (code, signal) => {
+                        
+                        console.log("FFCLOSE", idx, code, signal, quality);
 
                         if(finished)
                             return;
 
                         if(0 != code)
                         {
-                            reject(new Error("Invalid Return Code " + code));
+                            reject(new Error("Invalid Return Code " + code + " " + signal));
                             return;
                         }
 
