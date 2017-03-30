@@ -205,27 +205,37 @@ Input #0, mpegts, from 'F:\\IOMEGA\\NEWMEDIA\\MORE\\2\\hdtv.ts':
 
         
 
-        let quality = [   { audiobitrate: 96
+        let quality = [   { 
+            filename : null
+            , args : null
+            , status : null
+            , audiobitrate: 96
             , videobitrate: 120
             , height: 144
             , width: "256"
             , done: true
             , file: path.join(dir, "TEST_256_144_120.mp4").replace(/\\/g, "/") }
-        , { audiobitrate: 96
+        , {  filename : null
+            , args : null
+            , status : null
+            ,audiobitrate: 96
             , videobitrate: 320
             , height: 288
             , width: "512"
             , done: true
             , file: path.join(dir, "TEST_512_288_320.mp4").replace(/\\/g, "/") }
-        , { audiobitrate: 96
+        , {  filename : null
+            , args : null
+            , status : null
+            ,audiobitrate: 96
             , videobitrate: 750
             , height: 576
             , width: "1024"
             , done: true
             , file: path.join(dir, "TEST_1024_576_750.mp4").replace(/\\/g, "/") }
-                          , { videobitrate: 0, height: 720, width: "1280", done: true }
-                          , { videobitrate: 0, height: 720, width: "1280", done: true }
-                          , { videobitrate: 0, height: 720, width: "1280", done: true } 
+                          , { videobitrate: 0, height: 720, width: "1280", done: true, status: none }
+                          , { videobitrate: 0, height: 720, width: "1280", done: true, status: none }
+                          , { videobitrate: 0, height: 720, width: "1280", done: true, status: none } 
         ];                           
                          
 
@@ -259,6 +269,17 @@ Input #0, mpegts, from 'F:\\IOMEGA\\NEWMEDIA\\MORE\\2\\hdtv.ts':
             expect(result.length).to.be.equal(2);
 
             p.encode(file, result).then((rquality) => {
+
+                for(let i = 0; i < rquality.length; i++)
+                { 
+                    if(null != rquality[i].args)
+                    {
+                        rquality[i].args = null;
+                        rquality[i].filename = null;
+                        rquality[i].status = null;
+                    }
+                }
+
                 
                 check(done, () => {
 

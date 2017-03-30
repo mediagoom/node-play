@@ -121,6 +121,7 @@ function test_proc_man(require_string, owner)
 
                       status.datetime = null;
                       status.creationtime  = null;
+                     
                       
                       
                       check(done, () => {
