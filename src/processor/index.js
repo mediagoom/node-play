@@ -352,14 +352,14 @@ export default class Processor extends EventEmitter {
 
                     child.on("close", (code, signal) => {
                         
-                        console.log("FFCLOSE", idx, code, signal, quality);
+                        console.log("FFCLOSE", idx, code, signal, finished, quality);
 
                         if(finished)
                             return;
 
                         if(0 != code)
                         {
-                            reject(new Error("Invalid Return Code " + code + " " + signal));
+                            reject(new Error("-Invalid Return Code [" + code + " " + signal + "]" ));
                             return;
                         }
 
