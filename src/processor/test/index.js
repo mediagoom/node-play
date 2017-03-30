@@ -233,9 +233,9 @@ Input #0, mpegts, from 'F:\\IOMEGA\\NEWMEDIA\\MORE\\2\\hdtv.ts':
             , width: "1024"
             , done: true
             , file: path.join(dir, "TEST_1024_576_750.mp4").replace(/\\/g, "/") }
-                          , { videobitrate: 0, height: 720, width: "1280", done: true, status: none }
-                          , { videobitrate: 0, height: 720, width: "1280", done: true, status: none }
-                          , { videobitrate: 0, height: 720, width: "1280", done: true, status: none } 
+                          , { videobitrate: 0, height: 720, width: "1280", done: true, status: "none" }
+                          , { videobitrate: 0, height: 720, width: "1280", done: true, status: "none" }
+                          , { videobitrate: 0, height: 720, width: "1280", done: true, status: "none" } 
         ];                           
                          
 
