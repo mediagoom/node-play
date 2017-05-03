@@ -1,15 +1,16 @@
 language: node_js
 node_js:
-    - 6
-    - 5
-    - 4
+- 6
+- 5
+- 4
 branches:
   except:
   - dev-wia
 before_script:
-- curl https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz -O
+- curl https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz
+  -O
 - tar -Jxvf ffmpeg-release-64bit-static.tar.xz
-- export PATH=$PATH:$PWD/ffmpeg-3.2.4-64bit-static 
+- export PATH=$PATH:$PWD/ffmpeg-3.2.4-64bit-static
 - curl https://github.com/mediagoom/mg/releases/download/v0.1.3/mg -O -L
 - chmod +x mg
 - mv mg $PWD/ffmpeg-3.2.4-64bit-static
@@ -20,4 +21,6 @@ script:
 - npm test
 after_script:
 - npm stop
-
+deploy:
+  api_key:
+    secure: gUVFT7Uw3GSAm+vrrypj1H7nbS5ceJN7gTY20K1z3jvNvQOD9rThOTqWX1RUjorYyJ38oq1bgmhh+prl2yS+atrgQqdZfoLhz9hjUM1ZsNN6kHw/Zftv8cNNxOqWm+qQvQvdYoQ6poQBjK0XJI1jeic0MSDrESKpgLZB2uwUI7ZuSIUgdIcplOL1GJQgIo0WYrLu0aVYEPXV8KfltfAHiyKUXstNHQuJrDMiAwbkfGkxzc6Uv14z3qGuf9sbEwp8SzlELygAYVnuSDisvRf+6+NlbSiW97EoX4RGhA9hWpXHOplyGPsmBXTvBGwnKIpTXWt4NGv2Wri9q/oufYcoCA3s9GRBK5NsXJ9Vrc/cKbOzJ8rLHKOIIF0Zk+QnZStc8yyG3VDkA+cYkLbVwnV82inLLrwktXaSCsxsCYscICxNGoCEXkPn9SOwyVCSHAGuZ40rFyfaWiyi4dCsKxPTTz8uZjA2aHJtu7d6BNyp5vA06aoGF+z3SuqDl5uQWo/4zVdtEYzA7uhUTeB+/+V5YmYwxGUh170HglI1xfapAxwuo9uBA9vEvFmsIt4R0T6Frgc+bNrmK2YYtx2lQLJK51d4qZ2NpT5W9sUpUPMU5H/VTXs99idac7FnjkKCmyLEuQ7UXRENb+s9vrogHXUNiQBrsNFoEXzAtLb47gE1j9M=
