@@ -34,6 +34,7 @@ export default class Processor extends EventEmitter {
 
              , outputfile : "$(name)_$(width)_$(height)_$(vb).mp4"
              , audiobitrate : 96
+             , max_encoders: 2
             
         };
 
@@ -59,6 +60,8 @@ export default class Processor extends EventEmitter {
         {
             this.id = this.options.id;
         }
+
+        this.finished = false;
 
     }
 
@@ -240,6 +243,87 @@ export default class Processor extends EventEmitter {
         });
     }
 
+    encode_file(resolve, reject, qua, i)
+    {
+        let quality = qua;
+        let idx = i;
+
+        const outs = fs.openSync(path.join(this.get_target_dir(), quality[idx].filename + "_out.log"), "a");
+        const errs = fs.openSync(path.join(this.get_target_dir(), quality[idx].filename + "_err.log"), "a");
+
+        quality[idx].status = 'running';
+
+        console.log("FFSPAWN", idx, quality[idx].args);
+        
+        let child = cp.spawn("ffmpeg", quality[idx].args
+        , {                           
+            stdio: [ "ignore", outs, errs ]
+            , cwd: process.cwd()
+        });
+
+        child.on("close", (code, signal) => {
+            
+            console.log("FFCLOSE", idx, code, signal, quality, this.finished);
+
+            if(this.finished)
+                return;
+
+            if(0 != code)
+            {
+                let msg = "Invalid Return Code [" + code + " " + signal + "]";
+                if(null == code)
+                    msg += " The process is being terminated. Check you have enough resources to run it.";
+                reject(new Error(msg ));
+                return;
+            }
+                        
+            quality[idx].done  = true;
+
+            let completed = true;
+
+            let running = 0;
+            let spawn_id = -1;
+
+            for(let k = 0; k < quality.length; k++){                                        
+                if(!quality[k].done){
+                    completed = false;
+                    
+                    if(quality[k].status == 'running')
+                        running++;
+
+                    if(quality[k].status == 'ready' && spawn_id === -1)
+                        spawn_id = k;
+
+                }
+            }
+
+            if(completed){
+                this.finished = true;
+                resolve(quality);
+            }
+            else
+            {
+                if(running < this.options.max_encoders && spawn_id >= 0)
+                {
+                    this.encode_file(resolve, reject, quality, spawn_id);
+                }
+            }
+            
+
+        });
+
+        child.on("error", (err) => {
+            
+            if(err){
+
+                this.finished = true;
+                //console.log(stdout + stderr);
+                reject(err);
+                        
+            }
+        });
+    }
+
     encode(filepath, streams)
     {
         
@@ -284,7 +368,6 @@ export default class Processor extends EventEmitter {
 
             let quality = this.options.quality.slice();
             let ratio   = video.width / video.height;
-            let finished = false;
 
             //console.log(this.options.quality);
             //console.log(quality);
@@ -305,11 +388,13 @@ export default class Processor extends EventEmitter {
 
                 filepath = filepath.replace(/\\/g, "/");
 
+                quality[i].status = 'none';
+
                 if(quality[i].videobitrate > 0){
 
                     let outputf = this.options.outputfile.replace("$(name)", this.name);
                     let cmdline = this.options.cmd_encode.replace("$(file)", filepath);
-                                                    
+                                                   
                     cmdline = cmdline.replace("$(width)", quality[i].width);
                     outputf = outputf.replace("$(width)", quality[i].width);
 
@@ -324,6 +409,8 @@ export default class Processor extends EventEmitter {
                     cmdline = cmdline.replace("$(ab)", quality[i].audiobitrate);
                     outputf = outputf.replace("$(ab)", quality[i].audiobitrate);
 
+                    quality[i].filename = outputf;
+
                     outputf = path.join(this.get_target_dir(), outputf);
                     outputf = outputf.replace(/\\/g, "/");
 
@@ -332,73 +419,27 @@ export default class Processor extends EventEmitter {
                     quality[i].file = outputf;
 
                     //console.log(cmdline);
-
-                    let idx = i;
-
-                    const outs = fs.openSync(path.join(this.get_target_dir(), "out.log"), "a");
-                    const errs = fs.openSync(path.join(this.get_target_dir(), "err.log"), "a");
                     
-                    //console.log(cmdline);
+                    quality[i].args = parse(cmdline);
 
-                    let args = parse(cmdline);
+                    quality[i].status = 'ready';
 
-                    //console.log(args);
-
-                    let child = cp.spawn("ffmpeg", args
-                    , {                           
-                        stdio: [ "ignore", outs, errs ]
-                        , cwd: process.cwd()
-                    });
-
-                    child.on("close", (code/*, signal*/) => {
-
-                        if(finished)
-                            return;
-
-                        if(0 != code)
-                        {
-                            reject(new Error("Invalid Return Code " + code));
-                            return;
-                        }
-
-                                    
-                        quality[idx].done  = true;
-
-
-                        let completed = true;
-
-                        for(let k = 0; k < quality.length; k++){                                        
-                            if(!quality[k].done){
-                                completed = false;
-                            }
-                        }
-
-                        if(completed){
-                                
-                            //console.log("--QUALITY-->", quality);
-
-                            resolve(quality);
-                        }
-                        
-
-                    });
-
-                    child.on("error", (err) => {
-                        
-                        if(err){
-
-                            finished = true;
-                            //console.log(stdout + stderr);
-                            reject(err);
-                                    
-                        }
-                    });
                 }
                 else{
                     quality[i].done = true;
                 }
 
             }
+
+            for(let i = 0; i < this.options.max_encoders; i++){
+
+                let idx = i;
+
+                this.encode_file(resolve, reject, quality, idx);
+
+            }
+                
+            
         
         });
     }
