@@ -12,6 +12,7 @@
     "server": "node ./bin/server/index.js",
     "testdebug": "node ./node_modules/mocha/bin/mocha --inspect --debug-brk --reporter spec ./bin//**/test/index.js",
     "stop": "node ./devman.js stop"
+    , "install": "node ./dowloadtools.js"
   },
   "repository": {
     "type": "git",
