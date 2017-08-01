@@ -27,9 +27,9 @@ node ./bin/server/index.js
 In order to build it you can follow these steps:
 
 - Clone the repository
-    - ```bash git clone git://github.com/mediagoom/node-play ```
+    - ``` git clone git://github.com/mediagoom/node-play ```
 - Download Tools [*ffmpeg*](https://ffmpeg.org/download.html) and [*mg*](http://mediagoom.com/download)
-    - ```bash node downloadtools.js ```
+    - ``` node downloadtools.js ```
 - Run: 
 ```bash
 npm run build
