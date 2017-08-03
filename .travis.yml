@@ -7,9 +7,7 @@ branches:
   except:
   - dev-wia
 before_script:
-- ls bin
-- export PATH=$PATH:$PWD/bin
-- echo $PATH
+
 script:
 - npm run build
 - npm start

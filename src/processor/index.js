@@ -227,7 +227,7 @@ export default class Processor extends EventEmitter {
                 }
                 else{
 
-                    cp.exec(cmdline, (err, stdout, stderr) =>{
+                    cp.exec(cmdline/*, {env: process.env}*/, (err, stdout, stderr) =>{
                                     
                         if(null != err){
                             reject(err);
@@ -259,6 +259,7 @@ export default class Processor extends EventEmitter {
         , {                           
             stdio: [ "ignore", outs, errs ]
             , cwd: process.cwd()
+            //, env: process.env
         });
 
         child.on("close", (code, signal) => {
@@ -498,6 +499,7 @@ export default class Processor extends EventEmitter {
                 let child = cp.spawn("mg", args, {                           
                     stdio: [ "ignore", outs, errs ]
                         , cwd: process.cwd()
+                        // , env: process.env
                 });
                 
                 /*

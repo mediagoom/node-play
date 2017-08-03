@@ -1,7 +1,7 @@
 import express from "express";
 import uploader from "../uploader/server.js";
 import ProcMan  from "../processor/procman.js";
-//import path from "path";
+import modpath from "path";
 
 function optval(name, def)
 {
@@ -25,6 +25,18 @@ let statusman = new ProcMan({statusman : status_man_use,  processor : processor_
 express.static.mime.define({"application/dash+xml": ["mpd"]});
 
 let app = express();
+
+let env_path = process.env.PATH;
+
+let dirname = modpath.normalize(modpath.join(__dirname, '../../bin'));
+
+process.env.PATH = dirname + modpath.delimiter + env_path;
+
+console.log("PATH: ", dirname, " ", env_path);
+console.log("---------------------");
+console.log(process.env.PATH);
+console.log("---------------------");
+
 
 
 app.use(function(req, res, next) {
@@ -113,6 +125,7 @@ app.put("/upload/:id?", (req, res) => {
 
     
 });
+
 
 
 app.use(express.static("dist"));
