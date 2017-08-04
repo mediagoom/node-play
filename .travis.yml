@@ -6,7 +6,8 @@ node_js:
 branches:
   except:
   - dev-wia
-before_script: 
+before_install:
+  npm install -g npm@'>=2.13.5'
 script:
 - npm run build
 - npm start
@@ -21,7 +22,6 @@ deploy:
   api_key:
     secure: Ex3TiPfourRhpxVNIK9lL0A9vJVIWUO9ueEPXBT5DOTg+uX8iYsWolE6WRUB7jZ14bDCnHee2dHcpyz9XV2zBf4qwsw8NtzbIOIlrdAtEDBb/9JKzR9e95S3QrpQ1x5GsjmTNW/fiWjW+7RnsR1a0ypu40Ob4hsj0z5l/7C4HiSUqaftNR/0h6XChpKtuBxBd4BDzn41OhDfBOgepfVhFinFSKElyCbDKoCXHWHNRZ3NeDoE3W0ohub8XQoeQ8llqxF2EyAQTHzY2yLEkpaeMI2qgfdyJijVeRy5h+Yx0kIVhsk77rFA1k38E3u5STtCAD5NwhPPWkXIEk62HGRCayzfeTc2GswBoK/jgG9RZYjH9y33LC9sAHg76b6uTaX2TCcOmrX9TI4rHRpeyaxnAk0oMqeHtRKqhLAfg72LsllvFQPJX4ltYkT2yiW4Q3eYKX+5NkR/s548BqGaX8PDYeGOBUxDxOt9lAo2+DG++j947Dj5ozKWeiSn7zYMSim1YNFL0FA+X2PDIOZ3Nl0CmlyXPztQXx7Vlem5bkFEFyoi5Iujz5Cwoif04tbMMSeLBWjf6KZn0uqYY015J0bR7LWw0y0L3YGeanNcShtsM/Ghf0Jpuymw0+d7jd7YqvqL+MLEgygmuRjTh/iGuM47aJIVn7cLunHwc1QimkcOCrQ=
     on:
-      repo: mediagoom/node-play
-      branch: master
       tags: true
+      node: "6"
       
