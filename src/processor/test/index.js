@@ -1,7 +1,7 @@
-import chai from "chai";
+import chai      from "chai";
 import Processor from "../../processor/index.js";
-import cp   from "child_process";
-import path from "path";
+import cp        from "child_process";
+import path      from "path";
 
 var expect = chai.expect;
 
@@ -14,7 +14,6 @@ function tval(name, def)
 
     return process.env[name];
 }
-
 
 function check( done, f ) {
     try {

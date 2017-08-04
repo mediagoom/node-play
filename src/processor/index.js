@@ -309,8 +309,6 @@ export default class Processor extends EventEmitter {
                     this.encode_file(resolve, reject, quality, spawn_id);
                 }
             }
-            
-
         });
 
         child.on("error", (err) => {
@@ -341,7 +339,7 @@ export default class Processor extends EventEmitter {
 
                 console.log("INVALID STREAMS", streams, streams.length);
 
-                let err = new Error("at the moment only audio / video supporte [" + streams.length.toString() + "]");
+                let err = new Error("at the moment only audio / video supported [" + streams.length.toString() + "]");
                 reject(err);
                 return;
             }
