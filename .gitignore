@@ -9,6 +9,14 @@
 
 *.tmp
 *.tmp.mp4
+*.m4v
+*.m4a
+*.ts
+*.mp4
+img*.jpg
+status.json
+*.m3u8
+*.mpd
 
 *.o
 /ar-lib

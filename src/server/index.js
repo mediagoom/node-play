@@ -28,7 +28,7 @@ let app = express();
 
 let env_path = process.env.PATH;
 
-let dirname = modpath.normalize(modpath.join(__dirname, '../../bin'));
+let dirname = modpath.normalize(modpath.join(__dirname, "../../bin"));
 
 process.env.PATH = dirname + modpath.delimiter + env_path;
 

@@ -251,7 +251,7 @@ export default class Processor extends EventEmitter {
         const outs = fs.openSync(path.join(this.get_target_dir(), quality[idx].filename + "_out.log"), "a");
         const errs = fs.openSync(path.join(this.get_target_dir(), quality[idx].filename + "_err.log"), "a");
 
-        quality[idx].status = 'running';
+        quality[idx].status = "running";
 
         console.log("FFSPAWN", idx, quality[idx].args);
         
@@ -289,10 +289,10 @@ export default class Processor extends EventEmitter {
                 if(!quality[k].done){
                     completed = false;
                     
-                    if(quality[k].status == 'running')
+                    if(quality[k].status == "running")
                         running++;
 
-                    if(quality[k].status == 'ready' && spawn_id === -1)
+                    if(quality[k].status == "ready" && spawn_id === -1)
                         spawn_id = k;
 
                 }
@@ -389,7 +389,7 @@ export default class Processor extends EventEmitter {
 
                 filepath = filepath.replace(/\\/g, "/");
 
-                quality[i].status = 'none';
+                quality[i].status = "none";
 
                 if(quality[i].videobitrate > 0){
 
@@ -423,7 +423,7 @@ export default class Processor extends EventEmitter {
                     
                     quality[i].args = parse(cmdline);
 
-                    quality[i].status = 'ready';
+                    quality[i].status = "ready";
 
                 }
                 else{
