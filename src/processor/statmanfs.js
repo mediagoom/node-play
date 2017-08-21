@@ -29,6 +29,35 @@ export default class StateManFs  {
         
     }
 
+    //PRIVATE
+
+    create_processor(owner, name, id, out_opt)
+    {
+        let opt = {destination: path.join(this.options.destination, owner)};
+
+        let procopt = Object.assign({}, this.options, opt);
+
+        if(null != out_opt)
+        {
+            Object.assign(procpot, out_opt);
+        }
+
+        if(null != id)
+            procopt.id = id;
+
+        let p = new this.processor(name,  procopt);
+        
+        p.on("processing", (perc) =>{
+                console.log("--PROCESSING: ", perc);
+                this.set_quick_processing(p, perc);
+        });
+
+        //TODO: change it to pass and determine the directory from the statman
+        p["statman_target_dir"] = p.get_target_dir();
+
+        return p;
+    }
+
     update_status(fspath, status, fail_if_exist)
     {
         let flags = (fail_if_exist)?"wx+":"a+";
@@ -39,14 +68,14 @@ export default class StateManFs  {
                 if(err && ( (err.code != "ENOENT") || (!fail_if_exist)) ){reject(err);}
                 else{
 
-                    if(err)
+                    if(err || "" == data)
                     {                        
                         data = "{}";
                     }
 
                     let j = {};
 
-                    try{ j = JSON.parse(data);}catch(e){console.log("JSON PARSE ERR:", "[", data, "]", flags, fspath, "----", e);}
+                    try{ j = JSON.parse(data);}catch(e){console.log("JSON PARSE ERR:", e.code, "[", data, "]", flags, fspath, "----", e);}
 
                     if(null != status)
                     {
@@ -89,7 +118,7 @@ export default class StateManFs  {
 
     status_path(p)
     {
-        return path.join(p.get_target_dir(), this.options.statusfile);
+        return path.join(p["statman_target_dir"], this.options.statusfile);
     }
 
     set_quick_status(p, status)
@@ -105,14 +134,52 @@ export default class StateManFs  {
         });
     }
 
+    set_quick_processing(p, perc)
+    {
+        return new Promise( (resolve, reject) => {
+
+            let stpath = this.status_path(p);
+                       
+            let j = { processing: perc };
+
+            this.update_status(stpath, j, false).then(() => resolve(), err => reject(err));
+
+        });
+    }
+
+    //PUBLIC: ISTATEMAN
+
+    record_error(owner, id, err, info)
+    {
+        return new Promise( (resolve, reject) => {
+
+            /*
+            let procopt = Object.assign({}, this.options, {id: id});
+            procopt.destination = path.join(procopt.destination, owner);
+
+
+            let p = new this.processor(id, procopt);
+            */
+
+            let p = this.create_processor(owner, id, id);
+
+            this.update_status(this.status_path(p), {status: "error", err : err.toString(), errinfo: (info + " ["  +err.toString() + "]") }, false).then( () => resolve(), err => reject(err));
+        
+        });
+    }
+
+    
+
+    //TODO: processor should get the id and the destination. Should not create an id and should not
+    // change the destination
     reserve_name(owner, name)
     {
         
         return new Promise( (resolve, reject) => {
 
-            let p = new this.processor(name, {destination: path.join(this.options.destination, owner)} );
+            let p = this.create_processor(owner, name); //new this.processor(name, {destination: path.join(this.options.destination, owner)} );
 
-            p.mkdirr(p.get_target_dir(), (err) => {
+            p.mkdirr(p["statman_target_dir"], (err) => {
                     
                 if(err)
                 {
@@ -142,18 +209,21 @@ export default class StateManFs  {
 
         return new Promise( (resolve, reject) => {
 
-            
+            /*
             let procopt = Object.assign({}, this.options, opt);
 
             procopt.id = id;
             procopt.destination = path.join(procopt.destination, owner);
 
             let p = new this.processor(id, procopt);
+            */
+
+            let p = this.create_processor(owner, id, id, opt);
 
             p.read_stream_info(file).then(
                     (st) => {
                        
-                        console.log("STREAMS: ", st.streams, "\n--------\n", st);
+                        //console.log("STREAMS: ", st.streams, "\n--------\n", st);
 
                         this.set_quick_status(p, "analized").then(()=> {}, err => reject(err));
 
@@ -162,11 +232,12 @@ export default class StateManFs  {
 
                                         this.set_quick_status(p, "encoded").then(()=> {}, err => reject(err));
 
-                                        p.package(quality, procopt.subdir).then(
+                                        console.log(">>PACKAGE", this.options.subdir, p["statman_target_dir"]);
+
+                                        let package_dir = path.join(p["statman_target_dir"], "STATIC");
+                                        p.package(quality, package_dir).then(
                                               ()=>{  
 
-                                                  //set_quick_status(p, "analized").then(()=> {}, err => reject(err));
-                                              
                                                   let res = {
                                                       status   : "ok"
                                                         , owner  : owner
@@ -224,7 +295,12 @@ export default class StateManFs  {
                 {
                     for(let i = 0; i < files.length; i++)
                     {
-                        j.push({owner : owner, id : files[i]});
+                        let fstat = fs.statSync(path.join(procopt.destination, files[i]));
+                        
+                        if(fstat.isDirectory())
+                        {
+                            j.push({owner : owner, id : files[i]});
+                        }
                     }
 
                     resolve({assets: j});
@@ -243,6 +319,7 @@ export default class StateManFs  {
 
         return new Promise( (resolve, reject) => {
        
+            /*
             console.log(owner, id, this.options);
 
             let procopt = Object.assign({}, this.options, {id: id});
@@ -250,26 +327,16 @@ export default class StateManFs  {
 
 
             let p = new this.processor(id, procopt);
+            */
+
+            let p = this.create_processor(owner, id, id);
 
             this.update_status(this.status_path(p), null, false).then( j => resolve(j), err => reject(err));
         
         });
     }
 
-    record_error(owner, id, err)
-    {
-        return new Promise( (resolve, reject) => {
-
-            let procopt = Object.assign({}, this.options, {id: id});
-            procopt.destination = path.join(procopt.destination, owner);
-
-
-            let p = new this.processor(id, procopt);
-
-            this.update_status(this.status_path(p), {status: "error", err : err.toString()}, false).then( () => resolve(), err => reject(err));
-        
-        });
-    }
+    
 
     
 
