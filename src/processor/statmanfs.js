@@ -39,7 +39,7 @@ export default class StateManFs  {
 
         if(null != out_opt)
         {
-            Object.assign(procpot, out_opt);
+            Object.assign(procopt, out_opt);
         }
 
         if(null != id)
@@ -48,8 +48,8 @@ export default class StateManFs  {
         let p = new this.processor(name,  procopt);
         
         p.on("processing", (perc) =>{
-                console.log("--PROCESSING: ", perc);
-                this.set_quick_processing(p, perc);
+            console.log("--PROCESSING: ", perc);
+            this.set_quick_processing(p, perc);
         });
 
         //TODO: change it to pass and determine the directory from the statman

@@ -120,10 +120,10 @@ app.put("/upload/:id?", (req, res) => {
             , id //, path.basename(req.uploader)
             , req.uploader
             ).then(()=>{}, err => 
-                                {
-                                    console.log("QYE", err.toString()); 
-                                    statusman.record_error(def_owner, id, err, "QUEUE JOB ERROR");
-                                }
+            {
+                console.log("QYE", err.toString()); 
+                statusman.record_error(def_owner, id, err, "QUEUE JOB ERROR");
+            }
             );
     }
 
