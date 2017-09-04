@@ -79,13 +79,16 @@ export default class StateManFs  {
 
                     if(null != status)
                     {
-                        if(null == j.previus)
+                        if(null != status.status)
                         {
-                            j.previus = [];
-                        }
+                            if(null == j.previus)
+                            {
+                                j.previus = [];
+                            }
 
-                        if(null != j.status)
-                            j.previus.push(j.status);
+                            if(null != j.status)
+                                j.previus.push(j.status);
+                        }
 
                         j = Object.assign(j, status);
                         j.datetime = new Date();
@@ -101,8 +104,6 @@ export default class StateManFs  {
                                 resolve(j);
                             }
                     
-
-
                         });
                     }
                     else
@@ -232,9 +233,12 @@ export default class StateManFs  {
 
                                         this.set_quick_status(p, "encoded").then(()=> {}, err => reject(err));
 
-                                        console.log(">>PACKAGE", this.options.subdir, p["statman_target_dir"]);
+                                        console.log(">>PACKAGE", this.options.subdir, "<<", p["statman_target_dir"], ">>");
 
                                         let package_dir = path.join(p["statman_target_dir"], "STATIC");
+                                        
+                                        console.log(">>PACKAGE2", "<<", package_dir, ">>");
+
                                         p.package(quality, package_dir).then(
                                               ()=>{  
 

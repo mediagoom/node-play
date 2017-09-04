@@ -196,13 +196,15 @@ export default class Processor extends EventEmitter {
                 }
                 else{
 
+                    this.emit("processing", new Number(0.05));
+
                     cp.exec(cmdline/*, {env: process.env}*/, (err, stdout, stderr) =>{
                                     
                         if(null != err){
                             reject(err);
                         }
                         else{
-                            this.emit("processing", new Number(0.1));
+                            
                             resolve(this.get_streams(stdout + "\n" + stderr));
                         }
                     });
@@ -425,7 +427,7 @@ export default class Processor extends EventEmitter {
     {
         return new Promise( (resolve, reject) => {
 
-            let outdir = path.join(this.get_target_dir(), subdir);
+            let outdir = subdir;//path.join(this.get_target_dir(), subdir);
 
             this.mkdirr(outdir, (err) => {
 
@@ -434,7 +436,7 @@ export default class Processor extends EventEmitter {
                     return;
                 }
 
-                this.emit("processing", 0.85);
+                //this.emit("processing", 0.85);
 
                 let args = [];
                 args.push("-k:adaptive");

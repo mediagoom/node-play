@@ -15,10 +15,11 @@ script:
 after_script:
 - npm stop
 deploy:
-  provider: npm
+- provider: npm
   email: info@mediagoom.com
   api_key:
     secure: l+bBmf0gBoDoXIk756Mic4vfBP5wvmHOM8FK5Yz3GQYVspM/IVVOrNCwHmcEwWUBEzCqXHq/qAcQ8SI5O7CtBSFNlIFbfKxzuWB8W2ovNWYcOCkFQ7nhCb52HvBBG2+r/GJaWtFp/vBy/Tu/FnPTXtHhprfUUdafX50FzSshfOC+KtNuI2RIhIu8yh9EXq4jdrlwdx/9NvvYTA0vSd1A4mXmeiwtJe92c9qsxiqEbtLZf+F75otf8/B7EZv4A+XZcZua/8M+tZdEApHpvxIC1jwjVQv4tvB32+mmYhOkVWsWWQKfSvXN3vxU0co5kXHm+AnOL0+XNnEVOJH54VRHd9ktyzHqfa68mqp7vzn3Qnr6vssmwRGecn6wGqZfY+Urmq0aV2d6DywPoQquzmI39MFGD4UDzHJzvKZ6G/N194jKg8Q9ofUerNlrCHFXh533T0v3JWrELJSI+D+/M7bRqrfZicnGlEziQrlOA70SpIKdrJnkchjED3xxX4nxOWZnEsX+qDnvNAJTZgXNwUdc3HAmbZkWEdQIfKQvYUMn6r7kkF3QpxvjCw32lqh5VNBTLt3DPijN47C5RaGnbeLh9su7hhouCH8UoSMUI6IKUN17Sq6GCNd1X1DAwcumHET9SzV6It+6/fcFIDEecTOkCE1if84d+7pKdqGbDGz5guQ=
   on:
     tags: true
     repo: mediagoom/node-play
+    node: 6
