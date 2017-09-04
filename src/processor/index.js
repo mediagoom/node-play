@@ -78,20 +78,13 @@ export default class Processor extends EventEmitter {
 
     get_streams(output){
 
-         ////console.log(output);
-         //
+        
         let regexpd = new RegExp(this.options.duration_rx, "g");
         let m = null;
         let kb = 0;
 
         if ((m = regexpd.exec(output)) !== null) {
-            /*
-            let hours = m[1];
-            let minutes = m[2];
-            let seconds = m[3];
-            let milli   = m[4];
-            let start   = m[5];
-            */
+            
             kb = m[6];
         
         }
@@ -197,35 +190,13 @@ export default class Processor extends EventEmitter {
             cmdline = cmdline.replace("$(file)", filepath);
             cmdline = cmdline.replace("$(dir)" , dir);
 
-            ////console.log(cmdline);
-
-            /*
-            fs.mkdir(dir, (e) => {
-                if(!e || (e && e.code === "EEXIST")){
-          
-                    cp.exec(cmdline, (err, stdout, stderr) =>{
-                                    
-                        if(null != err)
-                                    {
-                            reject(err);
-                        }
-                        else
-                                    {
-                            resolve(this.get_streams(stdout + "\n" + stderr));
-                        }
-
-                                    
-                    });
-                }else
-                        {reject(e);}
-            });
-            */
-
             this.mkdirr(dir, (e) => {
                 if(null != e){
                     reject(e);
                 }
                 else{
+
+                    this.emit("processing", new Number(0.05));
 
                     cp.exec(cmdline/*, {env: process.env}*/, (err, stdout, stderr) =>{
                                     
@@ -233,6 +204,7 @@ export default class Processor extends EventEmitter {
                             reject(err);
                         }
                         else{
+                            
                             resolve(this.get_streams(stdout + "\n" + stderr));
                         }
                     });
@@ -253,7 +225,7 @@ export default class Processor extends EventEmitter {
 
         quality[idx].status = "running";
 
-        console.log("FFSPAWN", idx, quality[idx].args);
+        console.log("FFSPAWN", idx); //, quality[idx].args);
         
         let child = cp.spawn("ffmpeg", quality[idx].args
         , {                           
@@ -264,7 +236,7 @@ export default class Processor extends EventEmitter {
 
         child.on("close", (code, signal) => {
             
-            console.log("FFCLOSE", idx, code, signal, quality, this.finished);
+            console.log("FFCLOSE", idx, code, signal, /*quality,*/ this.finished);
 
             if(this.finished)
                 return;
@@ -285,6 +257,8 @@ export default class Processor extends EventEmitter {
             let running = 0;
             let spawn_id = -1;
 
+            let done = 0;
+
             for(let k = 0; k < quality.length; k++){                                        
                 if(!quality[k].done){
                     completed = false;
@@ -296,6 +270,10 @@ export default class Processor extends EventEmitter {
                         spawn_id = k;
 
                 }
+                else
+                {
+                    done++;
+                }
             }
 
             if(completed){
@@ -306,6 +284,8 @@ export default class Processor extends EventEmitter {
             {
                 if(running < this.options.max_encoders && spawn_id >= 0)
                 {
+                    //console.log(">>PP", quality.length, done);
+                    this.emit("processing", new Number( (done / quality.length * 0.7) + 0.1) );
                     this.encode_file(resolve, reject, quality, spawn_id);
                 }
             }
@@ -447,7 +427,7 @@ export default class Processor extends EventEmitter {
     {
         return new Promise( (resolve, reject) => {
 
-            let outdir = path.join(this.get_target_dir(), subdir);
+            let outdir = subdir;//path.join(this.get_target_dir(), subdir);
 
             this.mkdirr(outdir, (err) => {
 
@@ -455,6 +435,8 @@ export default class Processor extends EventEmitter {
                     reject(err);
                     return;
                 }
+
+                //this.emit("processing", 0.85);
 
                 let args = [];
                 args.push("-k:adaptive");
@@ -517,6 +499,7 @@ export default class Processor extends EventEmitter {
                 child.on("close", (code/*, signal*/) => {
                     if(0 == code){
                         resolve();
+                        this.emit("processing", 1);
                     }
                     else{
                         reject(new Error("mg invalid return code " + code));

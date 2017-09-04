@@ -106,6 +106,7 @@ function test_proc_man(require_string, owner)
                     , id     : id
                     , datetime : null
                     , creationtime : null
+                    , processing: null
                     , owner  : owner
                     , hls3   : "STATIC/main.m3u8"
                     , dash   : "STATIC/index.mpd"
@@ -121,6 +122,7 @@ function test_proc_man(require_string, owner)
 
                       status.datetime = null;
                       status.creationtime  = null;
+                      status.processing = null;
                      
                       
                       

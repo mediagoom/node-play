@@ -32,11 +32,12 @@ let dirname = modpath.normalize(modpath.join(__dirname, "../../bin"));
 
 process.env.PATH = dirname + modpath.delimiter + env_path;
 
+/*
 console.log("PATH: ", dirname, " ", env_path);
 console.log("---------------------");
 console.log(process.env.PATH);
 console.log("---------------------");
-
+*/
 
 
 app.use(function(req, res, next) {
@@ -118,7 +119,12 @@ app.put("/upload/:id?", (req, res) => {
         statusman.queue_job(def_owner
             , id //, path.basename(req.uploader)
             , req.uploader
-            ).then(()=>{}, err => console.log("MUST RECORD QUEUE JOB ERROR", err));
+            ).then(()=>{}, err => 
+            {
+                console.log("QYE", err.toString()); 
+                statusman.record_error(def_owner, id, err, "QUEUE JOB ERROR");
+            }
+            );
     }
 
     res.send("OK");

@@ -153,10 +153,12 @@ Input #0, mpegts, from 'F:\\IOMEGA\\NEWMEDIA\\MORE\\2\\hdtv.ts':
 
         process.env.PATH = dirname + path.delimiter + env_path;
 
+        /*
         console.log("PATH: ", dirname, " ", env_path);
         console.log("----------T-----------");
         console.log(process.env.PATH);
         console.log("----------T-----------");
+        */
             
         cp.exec("ffmpeg -version", {env: process.env},  (err/*, stdout, stderr*/) =>{
                 
