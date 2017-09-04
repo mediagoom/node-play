@@ -49,7 +49,7 @@ export default class StateManFs  {
         
         p.on("processing", (perc) =>{
             console.log("--PROCESSING: ", perc);
-            this.set_quick_processing(p, perc);
+            //this.set_quick_processing(p, perc);
         });
 
         //TODO: change it to pass and determine the directory from the statman
@@ -226,7 +226,9 @@ export default class StateManFs  {
                        
                         //console.log("STREAMS: ", st.streams, "\n--------\n", st);
 
-                        this.set_quick_status(p, "analized").then(()=> {}, err => reject(err));
+                        this.set_quick_status(p, "analized").then(()=> {
+                            console.log("analized");
+                        }, err => reject(err));
 
                         p.encode(file, st.streams).then(
                                     (quality) => {
