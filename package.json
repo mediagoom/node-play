@@ -3,7 +3,9 @@
   "version": "0.0.4",
   "description": "A nodejs streaming server implementation",
   "main": "bin/server/index.js",
-  "bin" : "bin/server/index.js",
+  "bin" : {
+    "webplay" : "bin/server/index.js"
+  },
   "scripts": {
     "buildserver": "node ./node_modules/gulp/bin/gulp.js server",
     "build": "node ./node_modules/gulp/bin/gulp.js build",
