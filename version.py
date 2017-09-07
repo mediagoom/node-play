@@ -51,7 +51,7 @@ if appveyor:
     if None != appv:
         lversion=appv
 if travis:
-    if Nonte != travistag:
+    if None != travistag:
         lversion=travistag
 
 cnt = get_file_content(v)
