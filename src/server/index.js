@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import express from "express";
 import uploader from "../uploader/server.js";
 import ProcMan  from "../processor/procman.js";
@@ -28,7 +30,10 @@ let app = express();
 
 let env_path = process.env.PATH;
 
-let dirname = modpath.normalize(modpath.join(__dirname, "../../bin"));
+let rootdir = modpath.normalize(modpath.join(__dirname, "../.."));
+let dirname = modpath.normalize(modpath.join(rootdir, "./bin"));
+let distdir = modpath.normalize(modpath.join(rootdir, "./dist"));
+
 
 process.env.PATH = dirname + modpath.delimiter + env_path;
 
@@ -46,7 +51,7 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.use("/play", express.static("./"));
+app.use("/play", express.static(rootdir));
 
 app.use("/upload", uploader());
 
@@ -134,7 +139,7 @@ app.put("/upload/:id?", (req, res) => {
 
 
 
-app.use(express.static("dist"));
+app.use(express.static(distdir));
 
 app.listen(port, function () {
     console.log("app listening on port " + port + "!");

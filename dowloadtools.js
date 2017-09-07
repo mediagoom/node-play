@@ -10,10 +10,11 @@ var cp       = require('child_process');
 
 
 var dirname = path.join(__dirname, 'bin');
+var dirup   = path.join(__dirname, 'uploader');
 
 console.log("PLAT " , proc.platform, " ", proc.arch);
 
-console.log("BIN ", dirname);
+//console.log("BIN ", dirname);
 
 function get_proxy(cb)
 {
@@ -76,7 +77,7 @@ var download = function(proxy, address, dest, cb) {
     {
         var p = url.parse(proxy);
 
-        console.log(p);
+        //console.log(p);
 
         options = {
         host: p.hostname,
@@ -95,7 +96,7 @@ var download = function(proxy, address, dest, cb) {
         options = u.href;
     }
 
-    console.log("OPTIONS", options, ' [', dest, ']');
+    //console.log("OPTIONS", options, ' [', dest, ']');
 
     var file = fs.createWriteStream(dest);
     var request = http.get(options, function(response) {
@@ -196,3 +197,6 @@ else
 {
     console.error("This platform is not supported. [" + proc.platform + " / " + proc.arch + "]. Please report your problem or install tools manually");
 }
+
+
+fs.mkdir(dirup, (e) => {});

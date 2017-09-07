@@ -20,8 +20,13 @@ npm install node-webplay
 ```
 To run it run:
 ```bash
-node ./bin/server/index.js
+./node_modules/.bin/webplay
 ```
+or
+```bash
+node ./node_modules/node-webplay/bin/server.js
+```
+
 - navigate to http://localhost:3000
 
 In order to build it you can follow these steps:

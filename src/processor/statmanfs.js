@@ -14,7 +14,7 @@ export default class StateManFs  {
         }
 
         let defop = {
-            destination : "./"
+            destination : path.normalize(path.join(__dirname, "../.."))
         };
         
         if(null != opt)
@@ -278,14 +278,14 @@ export default class StateManFs  {
         
         return new Promise( (resolve, reject) => {
 
-            console.log(this.options, opt);
+            //console.log(this.options, opt);
 
             let procopt = Object.assign({}, this.options, opt);
 
             // procopt.id = id;
             procopt.destination = path.join(procopt.destination, owner);
 
-            console.log(procopt);
+            //console.log(procopt);
 
             // let p = new this.processor("list", procopt);
 
