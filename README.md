@@ -1,5 +1,7 @@
 # node-webplay
 
+[![Build Status](https://travis-ci.org/mediagoom/node-play.svg?branch=master)](https://travis-ci.org/mediagoom/node-play)
+
 A nodejs streaming server implementation.
 
 ![node-webplay streaming server](http://mediagoom.com/assets/bigbunny.gif)
