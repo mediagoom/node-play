@@ -1,0 +1,38 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.10.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  'npm:hoek:20180212':
+    - chokidar > fsevents > node-pre-gyp > hawk > hoek:
+        reason: None given
+        expires: '2018-03-24T06:18:28.755Z'
+    - chokidar > fsevents > node-pre-gyp > hawk > boom > hoek:
+        reason: None given
+        expires: '2018-03-24T06:18:28.755Z'
+    - chokidar > fsevents > node-pre-gyp > hawk > cryptiles > boom > hoek:
+        reason: None given
+        expires: '2018-03-24T06:18:28.755Z'
+    - chokidar > fsevents > node-pre-gyp > request > hawk > cryptiles > boom > hoek:
+        reason: None given
+        expires: '2018-03-24T06:18:28.755Z'
+    - chokidar > fsevents > node-pre-gyp > request > hawk > boom > hoek:
+        reason: None given
+        expires: '2018-03-24T06:18:28.755Z'
+    - chokidar > fsevents > node-pre-gyp > hawk > sntp > hoek:
+        reason: None given
+        expires: '2018-03-24T06:18:28.755Z'
+    - chokidar > fsevents > node-pre-gyp > request > hawk > sntp > hoek:
+        reason: None given
+        expires: '2018-03-24T06:18:28.755Z'
+    - chokidar > fsevents > node-pre-gyp > request > hawk > hoek:
+        reason: None given
+        expires: '2018-03-24T06:18:28.755Z'
+  'npm:lodash:20180130':
+    - npm > cli-table2 > lodash:
+        reason: None given
+        expires: '2018-03-24T06:18:28.755Z'
+  'npm:ssri:20180214':
+    - npm > npm-registry-client > ssri:
+        reason: None given
+        expires: '2018-03-24T06:18:28.756Z'
+patch: {}
