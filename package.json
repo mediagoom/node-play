@@ -3,8 +3,8 @@
   "version": "0.0.4",
   "description": "A nodejs streaming server implementation",
   "main": "bin/server/index.js",
-  "bin" : {
-    "webplay" : "bin/server/index.js"
+  "bin": {
+    "webplay": "bin/server/index.js"
   },
   "scripts": {
     "buildserver": "node ./node_modules/gulp/bin/gulp.js server",
@@ -60,7 +60,7 @@
     "watchify": "^3.9.0"
   },
   "dependencies": {
-    "chokidar": "^1.6.1",
+    "chokidar": "^2.0.0",
     "express": "^4.14.1",
     "npm": "^5.3.0",
     "parse-spawn-args": "^1.0.2"
