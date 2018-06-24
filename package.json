@@ -3,8 +3,8 @@
   "version": "0.0.4",
   "description": "A nodejs streaming server implementation",
   "main": "bin/server/index.js",
-  "bin" : {
-    "webplay" : "bin/server/index.js"
+  "bin": {
+    "webplay": "bin/server/index.js"
   },
   "scripts": {
     "buildserver": "node ./node_modules/gulp/bin/gulp.js server",
@@ -15,7 +15,9 @@
     "server": "node ./bin/server/index.js",
     "testdebug": "node ./node_modules/mocha/bin/mocha --inspect --debug-brk --reporter spec ./bin//**/test/index.js",
     "stop": "node ./devman.js stop",
-    "install": "node ./dowloadtools.js"
+    "install": "node ./dowloadtools.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -63,6 +65,8 @@
     "chokidar": "^1.6.1",
     "express": "^4.14.1",
     "npm": "^5.3.0",
-    "parse-spawn-args": "^1.0.2"
-  }
+    "parse-spawn-args": "^1.0.2",
+    "snyk": "^1.83.0"
+  },
+  "snyk": true
 }
