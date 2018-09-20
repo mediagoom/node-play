@@ -86,12 +86,12 @@ function geturl(who)
     
     if("win32" == proc.platform)
     {
-        uri += "/Visual Studio 2017/master";
+        uri += "/Visual Studio 2017/master/";
         end = ".exe";
     }
     else if("linux" == proc.platform && "x64" == proc.arch)
     {
-        uri += "/Ubuntu/master";
+        uri += "/Ubuntu/master/";
     }
     else
     {
