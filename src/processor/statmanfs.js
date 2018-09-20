@@ -336,7 +336,9 @@ export default class StateManFs  {
             */
 
             let p = this.create_processor(owner, id, id);
-
+            
+            //we call update status passing null as the new status
+            //in this way the currunt status is returned
             this.update_status(this.status_path(p), null, false).then( j => resolve(j), err => reject(err));
         
         });

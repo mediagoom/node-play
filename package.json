@@ -11,10 +11,10 @@
     "build": "node ./node_modules/gulp/bin/gulp.js build",
     "pretest": "node ./node_modules/gulp/bin/gulp.js clean",
     "test": "node ./node_modules/mocha/bin/mocha --reporter spec --timeout 800000 ./bin//**/test/index.js ./bin//**/test/*.test.js",
-    "start": "node ./devman.js start server",
+    "start": "node ./node_modules/@mediagoom/devman start server",
     "server": "node ./bin/server/index.js",
     "testdebug": "node ./node_modules/mocha/bin/mocha --inspect --debug-brk --reporter spec ./bin//**/test/index.js",
-    "stop": "node ./devman.js stop",
+    "stop": "node ./node_modules/@mediagoom/devman stop",
     "install": "node ./dowloadtools.js"
   },
   "repository": {
@@ -58,6 +58,7 @@
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.9.0"
+    , "@mediagoom/devman": "^0.0.6"
   },
   "dependencies": {
     "chokidar": "^1.6.1",
