@@ -19,7 +19,11 @@
                          - package
                           
                           
-                          /\
-                         /  \
-                        /    \
-                       /      \
+ProcMan => queue_job return jobid
+        => add job_details
+        => add media id settings POST after reserve_name set configuration
+
+Derive From StatusManFs => override queue_job to use opflow 
+                        => transformer => from media settings to opflow
+
+                        
