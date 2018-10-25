@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs from 'fs';
 
 /**
  * Make a serializable error object.
@@ -32,11 +32,11 @@ function createError (status, message, type, props) {
     error.statusCode = status;
 
   // set type
-    Object.defineProperty(error, "type", {
-        value: type,
-        enumerable: true,
-        writable: true,
-        configurable: true
+    Object.defineProperty(error, 'type', {
+        value: type
+        , enumerable: true
+        , writable: true
+        , configurable: true
     });
 
     return error;
@@ -46,7 +46,7 @@ function createError (status, message, type, props) {
 export default function uplaoder(options){
         
     let opt = {
-        base_path : "./"
+        base_path : './'
             , limit : (10 * 1024 * 1024)
     };
 
@@ -57,7 +57,7 @@ export default function uplaoder(options){
                 //console.log("------- chunk buffer -> ", Buffer.isBuffer(b), b.length);
 
         fs.mkdir(p, (e) => {
-            if(!e || (e && e.code === "EEXIST")){
+            if(!e || (e && e.code === 'EEXIST')){
                 fs.appendFile(f, b, {encoding : null}, (err) => {complete(err);});           //do something with contents
                               /* 
                               //console.log("append");
@@ -116,13 +116,13 @@ export default function uplaoder(options){
         let length    = 0; 
 
             // attach listeners
-        stream.on("aborted", onAborted);
-        stream.on("close", cleanup);
-        stream.on("data", onData);
-        stream.on("end", onEnd);
-        stream.on("error", onEnd);
+        stream.on('aborted', onAborted);
+        stream.on('close', cleanup);
+        stream.on('data', onData);
+        stream.on('end', onEnd);
+        stream.on('error', onEnd);
 
-        let cr = req.headers["content-range"];
+        let cr = req.headers['content-range'];
         //let cont = true;
 
         let regexp = /bytes (\d+)-(\d+)\/(\d+)/gi;
@@ -178,8 +178,8 @@ export default function uplaoder(options){
         function onAborted () {
             if (complete) return;
 
-            done(createError(400, "request aborted", "request.aborted", {
-                code: "ECONNABORTED",
+            done(createError(400, 'request aborted', 'request.aborted', {
+                code: 'ECONNABORTED',
                 expected: length,
                 length: length,
                 received: received
@@ -198,7 +198,7 @@ export default function uplaoder(options){
             received += chunk.length;
 
             if (limit !== null && received > limit) {
-                done(createError(413, "request entity too large", "entity.too.large", {
+                done(createError(413, 'request entity too large', 'entity.too.large', {
                     limit: limit,
                     received: received
                 }));
@@ -214,7 +214,7 @@ export default function uplaoder(options){
 
                 //console.log("---->Invalid Size", size, received, length);
 
-                done(createError(400, "request size did not match content length", "request.size.invalid", {
+                done(createError(400, 'request size did not match content length', 'request.size.invalid', {
                     expected: length,
                     length: length,
                     received: received
@@ -233,16 +233,16 @@ export default function uplaoder(options){
                 if(null != req.headers.owner)
                 {
                     path += req.headers.owner;
-                    path += "/";
+                    path += '/';
                 }
 
                 let filepath = path;
 
-                if(null != req.headers["file-name"])
-                    filepath +=  req.headers["file-name"];
+                if(null != req.headers['file-name'])
+                    filepath +=  req.headers['file-name'];
              
 
-                req["uploader"] = filepath; 
+                req['uploader'] = filepath; 
 
 
               //let cr = req.headers['content-range'];
@@ -250,7 +250,7 @@ export default function uplaoder(options){
                 if(null == cr)
                 {
                  //console.log('NO HEADERS');
-                    done(createError(400, "request has invalid headers", "request.size.invalid", {
+                    done(createError(400, 'request has invalid headers', 'request.size.invalid', {
                         expected: size,
                         length: buffer.length,
                         received: received
@@ -269,7 +269,7 @@ export default function uplaoder(options){
                 if(size != received)
                 {
                               //console.log('ERROR INVALID SIZE', size, buffer.length);
-                    done(createError(400, "request content-size did not match content length", "request.size.invalid", {
+                    done(createError(400, 'request content-size did not match content length', 'request.size.invalid', {
                         expected: size,
                         length: buffer.length,
                         received: received
@@ -305,7 +305,7 @@ export default function uplaoder(options){
                                     append(path, filepath, buffer, fend, start);
                                 }
                             });
-                        } else if(err.code == "ENOENT") {
+                        } else if(err.code == 'ENOENT') {
                                         // file does not exist
                             append(path, filepath, buffer, fend);
                         } else {
@@ -331,11 +331,11 @@ export default function uplaoder(options){
         function cleanup () {
            // buffer = null
 
-            stream.removeListener("aborted", onAborted);
-            stream.removeListener("data", onData);
-            stream.removeListener("end", onEnd);
-            stream.removeListener("error", onEnd);
-            stream.removeListener("close", cleanup);
+            stream.removeListener('aborted', onAborted);
+            stream.removeListener('data', onData);
+            stream.removeListener('end', onEnd);
+            stream.removeListener('error', onEnd);
+            stream.removeListener('close', cleanup);
         }
         
     };

@@ -1,5 +1,5 @@
-import chai from "chai";
-import ProcMan  from "../../processor/procman.js";
+import chai from 'chai';
+import ProcMan  from '../../processor/procman.js';
 
 var expect = chai.expect;
 
@@ -26,21 +26,21 @@ function check( done, f ) {
 function test_proc_man(require_string, owner)
 {
     let p     = new ProcMan({statusman : require_string});
-    let id    = "";
+    let id    = '';
     //let owner = "uploader";
-    let name  = "TEST";
+    let name  = 'TEST';
 
-    it("reserve name", (done) => {
+    it('reserve name', (done) => {
                
         p.reserve_name(owner, name).then( (idx) => {
 
             check(done, () => {
                             
-                expect(idx).to.be.a("string");
+                expect(idx).to.be.a('string');
                     
                 id = idx;
 
-                console.log("-----", id, "------");
+                console.log('-----', id, '------');
                         
             });
         }
@@ -50,16 +50,16 @@ function test_proc_man(require_string, owner)
 
     });
 
-    it("queue job", (done) => {
+    it('queue job', (done) => {
                
 
-        let file = tval("TESTMEDIAFILE", "./src/processor/test/MEDIA1.MP4");
+        let file = tval('TESTMEDIAFILE', './src/processor/test/MEDIA1.MP4');
 
         
 
         p.queue_job(owner, id, file).then(
             () => {check(done, ()=> {
-                expect(id).to.be.a("string");     
+                expect(id).to.be.a('string');     
                 expect(id).to.be.match(/\d{10,12}_TEST/);
             });
             }, (err) => done(err));
@@ -68,7 +68,7 @@ function test_proc_man(require_string, owner)
     });
 
 
-    it("list", (done) => {
+    it('list', (done) => {
         
         p.list(owner).then(
                  (list) => {
@@ -98,20 +98,20 @@ function test_proc_man(require_string, owner)
 
 
 
-    it("status", (done) => {
+    it('status', (done) => {
         
         let r = {
-            status   : "ok"
-                    , name   : "TEST"        
+            status   : 'ok'
+                    , name   : 'TEST'        
                     , id     : id
                     , datetime : null
                     , creationtime : null
                     , processing: null
                     , owner  : owner
-                    , hls3   : "STATIC/main.m3u8"
-                    , dash   : "STATIC/index.mpd"
-                    , thumb  : ["img001.jpg", "img002.jpg"]
-                    , previus: ["reserved","analized","encoded"]
+                    , hls3   : 'STATIC/main.m3u8'
+                    , dash   : 'STATIC/index.mpd'
+                    , thumb  : ['img001.jpg', 'img002.jpg']
+                    , previus: ['reserved','analyzed','encoded']
                     , hls4   : null
                     , playready : null
                     , widevine: null
@@ -144,15 +144,15 @@ function test_proc_man(require_string, owner)
 }
 
 
-describe("PROCESS MANAGER", () => {
+describe('PROCESS MANAGER', () => {
 
-    it("set up correctly", (done) => {
+    it('set up correctly', (done) => {
                     
-        expect(ProcMan).to.be.a("function");
+        expect(ProcMan).to.be.a('function');
                   
         let p = new ProcMan();
                   
-        expect(p).to.be.a("object");
+        expect(p).to.be.a('object');
 
         check(done, ()=> {
 
@@ -164,13 +164,13 @@ describe("PROCESS MANAGER", () => {
     });
 
    
-    describe("Fake StatMan", () => {
+    describe('Fake StatMan', () => {
 
-        test_proc_man("./test/stateman.js", "uploader");
+        test_proc_man('./test/stateman.js', 'uploader');
         
     });
 
-    describe("Fs StatMan", () => {
-        test_proc_man("./statmanfs.js", "statman");
+    describe('Fs StatMan', () => {
+        test_proc_man('./statmanfs.js', 'statman');
     });
 });
