@@ -1,26 +1,26 @@
 #!/usr/bin/env
 
-var fs       = require("fs");
-var path     = require("path");
-var proc     = require("process");
+var fs       = require('fs');
+var path     = require('path');
+var proc     = require('process');
 
-var npm      = require("npm");
-var url      = require("url");
-var cp       = require("child_process");
+var npm      = require('npm');
+var url      = require('url');
+var cp       = require('child_process');
 
 
-var dirname = path.join(__dirname, "bin");
-var dirup   = path.join(__dirname, "uploader");
+var dirname = path.join(__dirname, 'bin');
+var dirup   = path.join(__dirname, 'uploader');
 
-console.log("PLAT " , proc.platform, " ", proc.arch);
+console.log('PLAT ' , proc.platform, ' ', proc.arch);
 
 //console.log("BIN ", dirname);
 
 
 function getPaths (bin) {
-    var envPath = (process.env.PATH || "");
-    var envExt = (process.env.PATHEXT || "");
-    return envPath.replace(/["]+/g, "").split(path.delimiter).map(function (chunk) {
+    var envPath = (process.env.PATH || '');
+    var envExt = (process.env.PATHEXT || '');
+    return envPath.replace(/["]+/g, '').split(path.delimiter).map(function (chunk) {
         return envExt.split(path.delimiter).map(function (ext) {
             return path.join(chunk, bin + ext);
         });
@@ -74,37 +74,37 @@ function get_proxy(cb)
             cb(er, null);
         else
         {            
-            cb(null, npm.config.get("https-proxy"));
+            cb(null, npm.config.get('https-proxy'));
         }
     });
 }
 
 function geturl(who)
 {
-    var uri = "https://defgroupdisks.blob.core.windows.net/builds/APPVEYOR";
-    var end = "";
+    var uri = 'https://defgroupdisks.blob.core.windows.net/builds/APPVEYOR';
+    var end = '';
     
-    if("win32" == proc.platform)
+    if('win32' == proc.platform)
     {
-        uri += "/Visual Studio 2017/master";
-        end = ".exe";
+        uri += '/Visual Studio 2017/master';
+        end = '.exe';
     }
-    else if("linux" == proc.platform && "x64" == proc.arch)
+    else if('linux' == proc.platform && 'x64' == proc.arch)
     {
-        uri += "/Ubuntu/master";
+        uri += '/Ubuntu/master';
     }
     else
     {
         return null;
     }
 
-    if("mg" == who)
+    if('mg' == who)
     {
-        uri += "/";
+        uri += '/';
         uri += proc.arch;
     }
 
-    return uri + "/" + who + end;
+    return uri + '/' + who + end;
 
 }
 
@@ -112,7 +112,7 @@ var download = function(proxy, address, dest, cb) {
 
     var u = url.parse(address);
 
-    var http = require("https");
+    var http = require('https');
 
     var options = null;
     
@@ -124,14 +124,14 @@ var download = function(proxy, address, dest, cb) {
 
         options = {
             host: p.hostname
-        ,port: (p.port)?p.port:((p.protocol == "https")?443:80)
+        ,port: (p.port)?p.port:((p.protocol == 'https')?443:80)
         ,path: u.href
             ,headers: {
                 Host: u.host
             }
         };
 
-        http = require(p.protocol.replace(":", ""));
+        http = require(p.protocol.replace(':', ''));
     
     }
     else
@@ -146,23 +146,23 @@ var download = function(proxy, address, dest, cb) {
 
         // check if response is success
         if (response.statusCode !== 200) {
-            return cb("Response status was " + response.statusCode);
+            return cb('Response status was ' + response.statusCode);
         }
 
         response.pipe(file);
 
-        file.on("finish", function() {
+        file.on('finish', function() {
             file.close(cb);  // close() is async, call cb after close completes.
         });
     });
 
     // check for request error too
-    request.on("error", function (err) {
+    request.on('error', function (err) {
         fs.unlink(dest);
         return cb(err.message);
     });
 
-    file.on("error", function(err) { // Handle errors
+    file.on('error', function(err) { // Handle errors
         fs.unlink(dest); // Delete the file async. (But we don't check the result) 
         return cb(err.message);
     });
@@ -172,7 +172,7 @@ var _jj = 0;
 
 function getnext()
 {
-    var n = ["mg", "ffmpeg", "ffprobe"];
+    var n = ['mg', 'ffmpeg', 'ffprobe'];
 
     if(_jj >= n.length)
         return null;
@@ -184,7 +184,7 @@ function downloadcb(er, who, next, proxy)
 {
     if(null != er)
     {
-        console.error("Could not download " + who +".exe ", er);
+        console.error('Could not download ' + who +'.exe ', er);
     }
     else
     {
@@ -196,20 +196,20 @@ function downloadcb(er, who, next, proxy)
         var exist = inpath(next);
         if(null != exist)
         {
-            console.log("Found: ", next, " in ", exist, " using existing installation");
+            console.log('Found: ', next, ' in ', exist, ' using existing installation');
             downloadcb(null, null, getnext(), proxy);
             return;
         }        
         
-        var file =  next + (("win32" == proc.platform)?".exe":"");
+        var file =  next + (('win32' == proc.platform)?'.exe':'');
         var dir  = path.join(dirname, file);
        
-        console.log("download ", mg);
+        console.log('download ', mg);
         download(proxy, mg, dir
                         , function(e){
-                            if("linux" == proc.platform)
+                            if('linux' == proc.platform)
                             {
-                                cp.execSync("chmod 777 \"" + dir + "\"");
+                                cp.execSync('chmod 777 "' + dir + '"');
                             }
                             downloadcb(e, next, getnext(), proxy);
                         }
@@ -223,28 +223,28 @@ function filedownload(proxy)
     downloadcb(null, null, getnext(), proxy);
 }
 //MAKE SURE WE KNOW WHERE TO GO
-if(null != geturl("mg"))
+if(null != geturl('mg'))
 {
     fs.mkdir(dirname, (e) => {
-        if(!e || (e && e.code === "EEXIST")){
+        if(!e || (e && e.code === 'EEXIST')){
                     
             get_proxy(function(er, proxy)
                 {
                 if(er)
-                    console.error("cannot get proxy: " + er.toString());
+                    console.error('cannot get proxy: ' + er.toString());
                 else
                     filedownload(proxy);
             });            
         }
         else
         {
-            console.error("cannot create bin dir: " + e.toString());
+            console.error('cannot create bin dir: ' + e.toString());
         }
     });
 }
 else
 {
-    console.error("This platform is not supported. [" + proc.platform + " / " + proc.arch + "]. Please report your problem or install tools manually");
+    console.error('This platform is not supported. [' + proc.platform + ' / ' + proc.arch + ']. Please report your problem or install tools manually');
 }
 
 

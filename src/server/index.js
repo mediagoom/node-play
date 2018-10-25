@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import express from "express";
-import uploader from "../uploader/server.js";
-import ProcMan  from "../processor/procman.js";
-import modpath from "path";
+import express from 'express';
+import uploader from '../uploader/server.js';
+import ProcMan  from '../processor/procman.js';
+import modpath from 'path';
 
 function optval(name, def)
 {
@@ -16,23 +16,23 @@ function optval(name, def)
 }
 
 
-let status_man_use = optval("NODEPLAYSTATUSMAN", "../processor/statmanfs.js");
-let processor_use  = optval("NODEPLAYPROCESSOR", "../processor/index.js");
-let def_owner      = optval("NODEPLAYDEFOWNER", "uploader");
+let status_man_use = optval('NODEPLAYSTATUSMAN', '../processor/statmanfs.js');
+let processor_use  = optval('NODEPLAYPROCESSOR', '../processor/index.js');
+let def_owner      = optval('NODEPLAYDEFOWNER', 'uploader');
 
-let port           = optval("NODEPLAYPORT", 3000);
+let port           = optval('NODEPLAYPORT', 3000);
 
 let statusman = new ProcMan({statusman : status_man_use,  processor : processor_use});
 
-express.static.mime.define({"application/dash+xml": ["mpd"]});
+express.static.mime.define({'application/dash+xml': ['mpd']});
 
 let app = express();
 
 let env_path = process.env.PATH;
 
-let rootdir = modpath.normalize(modpath.join(__dirname, "../.."));
-let dirname = modpath.normalize(modpath.join(rootdir, "./bin"));
-let distdir = modpath.normalize(modpath.join(rootdir, "./dist"));
+let rootdir = modpath.normalize(modpath.join(__dirname, '../..'));
+let dirname = modpath.normalize(modpath.join(rootdir, './bin'));
+let distdir = modpath.normalize(modpath.join(rootdir, './dist'));
 
 
 process.env.PATH = dirname + modpath.delimiter + env_path;
@@ -46,16 +46,16 @@ console.log("---------------------");
 
 
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With');
     next();
 });
 
-app.use("/play", express.static(rootdir));
+app.use('/play', express.static(rootdir));
 
-app.use("/upload", uploader());
+app.use('/upload', uploader());
 
-app.get("/clientaccesspolicy.xml", function (req, res) {
+app.get('/clientaccesspolicy.xml', function (req, res) {
   
     let clientaccesspolicy = `<?xml version="1.0" encoding="utf-8" ?> 
 <access-policy>
@@ -76,7 +76,7 @@ app.get("/clientaccesspolicy.xml", function (req, res) {
 });
 
 
-app.get("/api/list", (req, res, next) => {
+app.get('/api/list', (req, res, next) => {
     
     statusman.list(def_owner).then(
         
@@ -87,7 +87,7 @@ app.get("/api/list", (req, res, next) => {
 
 });
 
-app.get("/api/status/:id", (req, res, next) => {
+app.get('/api/status/:id', (req, res, next) => {
 
     let id = req.params.id;
 
@@ -98,7 +98,7 @@ app.get("/api/status/:id", (req, res, next) => {
 
 });
 
-app.get("/api/upload/:name", (req, res, next) => {
+app.get('/api/upload/:name', (req, res, next) => {
   
     let name = req.params.name;
 
@@ -109,12 +109,12 @@ app.get("/api/upload/:name", (req, res, next) => {
 
 });
 
-app.put("/upload/:id?", (req, res) => {
+app.put('/upload/:id?', (req, res) => {
     
-    console.log("-------------****");
+    console.log('-------------****');
        //console.log(JSON.stringify(req.headers));
     console.log(req.uploader);
-    console.log("-------------**--");
+    console.log('-------------**--');
 
     let id = req.params.id;
 
@@ -126,13 +126,13 @@ app.put("/upload/:id?", (req, res) => {
             , req.uploader
             ).then(()=>{}, err => 
             {
-                console.log("QYE", err.toString()); 
-                statusman.record_error(def_owner, id, err, "QUEUE JOB ERROR");
+                console.log('QYE', err.toString()); 
+                statusman.record_error(def_owner, id, err, 'QUEUE JOB ERROR');
             }
             );
     }
 
-    res.send("OK");
+    res.send('OK');
 
     
 });
@@ -142,7 +142,7 @@ app.put("/upload/:id?", (req, res) => {
 app.use(express.static(distdir));
 
 app.listen(port, function () {
-    console.log("app listening on port " + port + "!");
+    console.log('app listening on port ' + port + '!');
 });
 
 

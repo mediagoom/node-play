@@ -1,0 +1,48 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true,
+        "node": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": 2017
+      , "sourceType": "module"
+    }
+  , "rules": {
+      "indent": [
+          "error",
+          4
+      ],
+      "linebreak-style": [
+        "warn"
+        , "unix"
+      ],
+      "quotes": [
+          "warn",
+          "single"
+      ],
+      "semi": [
+          "warn",
+          "always"
+      ]
+      , "no-console" : [
+          "off"
+      ]
+      , "comma-style" : [
+            "warn"
+          , "first"
+      ]
+    } 
+
+    , "globals"   : {
+      
+        "describe"   : false,
+        "it"         : false,
+        "before"     : false,
+        "beforeEach" : false,
+        "after"      : false,
+        "afterEach"  : false
+    }
+    
+}

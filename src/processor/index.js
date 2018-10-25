@@ -1,11 +1,11 @@
-import { EventEmitter } from "events";
-import path from "path";
-import cp   from "child_process";
-import fs   from "fs";
-import {parse} from "parse-spawn-args";
+import { EventEmitter } from 'events';
+import path from 'path';
+import cp   from 'child_process';
+import fs   from 'fs';
+import {parse} from 'parse-spawn-args';
 
 function pad(num, size) {
-    var s = "000000000000" + num;
+    var s = '000000000000' + num;
     return s.substr(s.length-size);
 }
 
@@ -17,11 +17,11 @@ export default class Processor extends EventEmitter {
 
         let defop = {
 
-            destination : "./"
-            , cmd_img : "ffmpeg -t 100 -i \"$(file)\" -vf fps=1/10 \"$(dir)/img%03d.jpg\""
-            , duration_rx : "Duration: (\\d\\d):(\\d\\d):(\\d\\d).(\\d\\d), start: ([\\d\\.]+), bitrate: (\\d+) kb/s"
-            , stream_rx : "Stream\\s#0:(\\d+)(?:[\\(\\[](\\w+)[\\)\\]]){0,1}:\\s(Audio|Video):.*?(?:(?:,\\s(\\d+)x(\\d+))|(?:(\\d+) Hz)).*?, (?:(?:(\\d+) kb/s)|(?:stereo)|(?:.*? fps))"
-            , cmd_encode : "-i \"$(file)\" -vf \"scale=w=$(width):h=$(height)\" -codec:v libx264 -profile:v high -level 31 -b:v $(vb)k -r 25 -g 50 -sc_threshold 0 -x264opts ratetol=0.1 -minrate $(vb)k -maxrate $(vb)k -bufsize $(vb)k -b:a $(ab)k -codec:a aac -profile:a aac_low -ar 44100 -ac 2 -y \"$(outputfile)\""
+            destination : './'
+            , cmd_img : 'ffmpeg -t 100 -i "$(file)" -vf fps=1/10 "$(dir)/img%03d.jpg"'
+            , duration_rx : 'Duration: (\\d\\d):(\\d\\d):(\\d\\d).(\\d\\d), start: ([\\d\\.]+), bitrate: (\\d+) kb/s'
+            , stream_rx : 'Stream\\s#0:(\\d+)(?:[\\(\\[](\\w+)[\\)\\]]){0,1}:\\s(Audio|Video):.*?(?:(?:,\\s(\\d+)x(\\d+))|(?:(\\d+) Hz)).*?, (?:(?:(\\d+) kb/s)|(?:stereo)|(?:.*? fps))'
+            , cmd_encode : '-i "$(file)" -vf "scale=w=$(width):h=$(height)" -codec:v libx264 -profile:v high -level 31 -b:v $(vb)k -r 25 -g 50 -sc_threshold 0 -x264opts ratetol=0.1 -minrate $(vb)k -maxrate $(vb)k -bufsize $(vb)k -b:a $(ab)k -codec:a aac -profile:a aac_low -ar 44100 -ac 2 -y "$(outputfile)"'
             , quality : [
                               {videobitrate: 120  , height : 144 }
                             , {videobitrate: 320  , height : 288 }
@@ -32,7 +32,7 @@ export default class Processor extends EventEmitter {
 
             ]  
 
-             , outputfile : "$(name)_$(width)_$(height)_$(vb).mp4"
+             , outputfile : '$(name)_$(width)_$(height)_$(vb).mp4'
              , audiobitrate : 96
              , max_encoders: 2
             
@@ -54,7 +54,7 @@ export default class Processor extends EventEmitter {
             let seconds = (this._anchor - this._create) / 1000;
             let n = pad(seconds.toFixed(0), 12);
 
-            this.id = n + "_" + this.name;
+            this.id = n + '_' + this.name;
         }
         else
         {
@@ -79,7 +79,7 @@ export default class Processor extends EventEmitter {
     get_streams(output){
 
         
-        let regexpd = new RegExp(this.options.duration_rx, "g");
+        let regexpd = new RegExp(this.options.duration_rx, 'g');
         let m = null;
         let kb = 0;
 
@@ -89,7 +89,7 @@ export default class Processor extends EventEmitter {
         
         }
 
-        let regexp = new RegExp(this.options.stream_rx, "g");
+        let regexp = new RegExp(this.options.stream_rx, 'g');
         
         let streams = [];
         while ((m = regexp.exec(output)) !== null) {
@@ -102,11 +102,11 @@ export default class Processor extends EventEmitter {
                     , bps   : m[7]
             };
 
-            if(s.kind == "Video" && s.bps == null)
+            if(s.kind == 'Video' && s.bps == null)
                 s.bps = kb;
 
             if(s.lang == null)
-                s.lang = "und";
+                s.lang = 'und';
 
             streams.push(s);
 
@@ -129,13 +129,13 @@ export default class Processor extends EventEmitter {
 
         let dir  = path.dirname(cpath);
 
-        let last = "";
+        let last = '';
 
         //console.log(cpath, ld, dir);
 
         while(ld != last)
         {
-            if(ld != "")
+            if(ld != '')
                 dirs.push(ld);
 
             last = ld;
@@ -156,7 +156,7 @@ export default class Processor extends EventEmitter {
             //console.log("mk", dirc, dd, idx);
 
             fs.mkdir(dirc, (e) => {
-                if(!e || (e && e.code === "EEXIST")){
+                if(!e || (e && e.code === 'EEXIST')){
                     
                     if(idx < (dd.length - 1))
                     {
@@ -187,8 +187,8 @@ export default class Processor extends EventEmitter {
                 
             let dir     = this.get_target_dir();
             let cmdline = this.options.cmd_img;
-            cmdline = cmdline.replace("$(file)", filepath);
-            cmdline = cmdline.replace("$(dir)" , dir);
+            cmdline = cmdline.replace('$(file)', filepath);
+            cmdline = cmdline.replace('$(dir)' , dir);
 
             this.mkdirr(dir, (e) => {
                 if(null != e){
@@ -196,7 +196,7 @@ export default class Processor extends EventEmitter {
                 }
                 else{
 
-                    this.emit("processing", new Number(0.05));
+                    this.emit('processing', new Number(0.05));
 
                     cp.exec(cmdline/*, {env: process.env}*/, (err, stdout, stderr) =>{
                                     
@@ -205,7 +205,7 @@ export default class Processor extends EventEmitter {
                         }
                         else{
                             
-                            resolve(this.get_streams(stdout + "\n" + stderr));
+                            resolve(this.get_streams(stdout + '\n' + stderr));
                         }
                     });
                 }
@@ -220,32 +220,32 @@ export default class Processor extends EventEmitter {
         let quality = qua;
         let idx = i;
 
-        const outs = fs.openSync(path.join(this.get_target_dir(), quality[idx].filename + "_out.log"), "a");
-        const errs = fs.openSync(path.join(this.get_target_dir(), quality[idx].filename + "_err.log"), "a");
+        const outs = fs.openSync(path.join(this.get_target_dir(), quality[idx].filename + '_out.log'), 'a');
+        const errs = fs.openSync(path.join(this.get_target_dir(), quality[idx].filename + '_err.log'), 'a');
 
-        quality[idx].status = "running";
+        quality[idx].status = 'running';
 
-        console.log("FFSPAWN", idx); //, quality[idx].args);
+        console.log('FFSPAWN', idx); //, quality[idx].args);
         
-        let child = cp.spawn("ffmpeg", quality[idx].args
+        let child = cp.spawn('ffmpeg', quality[idx].args
         , {                           
-            stdio: [ "ignore", outs, errs ]
+            stdio: [ 'ignore', outs, errs ]
             , cwd: process.cwd()
             //, env: process.env
         });
 
-        child.on("close", (code, signal) => {
+        child.on('close', (code, signal) => {
             
-            console.log("FFCLOSE", idx, code, signal, /*quality,*/ this.finished);
+            console.log('FFCLOSE', idx, code, signal, /*quality,*/ this.finished);
 
             if(this.finished)
                 return;
 
             if(0 != code)
             {
-                let msg = "Invalid Return Code [" + code + " " + signal + "]";
+                let msg = 'Invalid Return Code [' + code + ' ' + signal + ']';
                 if(null == code)
-                    msg += " The process is being terminated. Check you have enough resources to run it.";
+                    msg += ' The process is being terminated. Check you have enough resources to run it.';
                 reject(new Error(msg ));
                 return;
             }
@@ -263,10 +263,10 @@ export default class Processor extends EventEmitter {
                 if(!quality[k].done){
                     completed = false;
                     
-                    if(quality[k].status == "running")
+                    if(quality[k].status == 'running')
                         running++;
 
-                    if(quality[k].status == "ready" && spawn_id === -1)
+                    if(quality[k].status == 'ready' && spawn_id === -1)
                         spawn_id = k;
 
                 }
@@ -285,13 +285,13 @@ export default class Processor extends EventEmitter {
                 if(running < this.options.max_encoders && spawn_id >= 0)
                 {
                     //console.log(">>PP", quality.length, done);
-                    this.emit("processing", new Number( (done / quality.length * 0.7) + 0.1) );
+                    this.emit('processing', new Number( (done / quality.length * 0.7) + 0.1) );
                     this.encode_file(resolve, reject, quality, spawn_id);
                 }
             }
         });
 
-        child.on("error", (err) => {
+        child.on('error', (err) => {
             
             if(err){
 
@@ -310,16 +310,16 @@ export default class Processor extends EventEmitter {
             
             if(!streams)
             {
-                reject(new Error("invalid streams"));
+                reject(new Error('invalid streams'));
                 return;
             }
                 
             if(streams.length != 2)
             {
 
-                console.log("INVALID STREAMS", streams, streams.length);
+                console.log('INVALID STREAMS', streams, streams.length);
 
-                let err = new Error("at the moment only audio / video supported [" + streams.length.toString() + "]");
+                let err = new Error('at the moment only audio / video supported [' + streams.length.toString() + ']');
                 reject(err);
                 return;
             }
@@ -328,9 +328,9 @@ export default class Processor extends EventEmitter {
             let max   = 10000;
 
             for(let i = 0; i < streams.length; i++){
-                if(streams[i].kind === "Video"){
+                if(streams[i].kind === 'Video'){
                     if(video != null){
-                        reject( new Error("more than one video stream unsupported"));
+                        reject( new Error('more than one video stream unsupported'));
                         return;
                     }
 
@@ -365,35 +365,35 @@ export default class Processor extends EventEmitter {
                 if(quality[i].height % 2)
                     quality[i].height = (new Number(quality[i].height) + 1);
 
-                filepath = filepath.replace(/\\/g, "/");
+                filepath = filepath.replace(/\\/g, '/');
 
-                quality[i].status = "none";
+                quality[i].status = 'none';
 
                 if(quality[i].videobitrate > 0){
 
-                    let outputf = this.options.outputfile.replace("$(name)", this.name);
-                    let cmdline = this.options.cmd_encode.replace("$(file)", filepath);
+                    let outputf = this.options.outputfile.replace('$(name)', this.name);
+                    let cmdline = this.options.cmd_encode.replace('$(file)', filepath);
                                                    
-                    cmdline = cmdline.replace("$(width)", quality[i].width);
-                    outputf = outputf.replace("$(width)", quality[i].width);
+                    cmdline = cmdline.replace('$(width)', quality[i].width);
+                    outputf = outputf.replace('$(width)', quality[i].width);
 
-                    cmdline = cmdline.replace("$(height)", quality[i].height);
-                    outputf = outputf.replace("$(height)", quality[i].height);
+                    cmdline = cmdline.replace('$(height)', quality[i].height);
+                    outputf = outputf.replace('$(height)', quality[i].height);
 
                     cmdline = cmdline.replace(/\$\(vb\)/g, quality[i].videobitrate);
                     outputf = outputf.replace(/\$\(vb\)/g, quality[i].videobitrate);
 
                     quality[i].audiobitrate = this.options.audiobitrate;
 
-                    cmdline = cmdline.replace("$(ab)", quality[i].audiobitrate);
-                    outputf = outputf.replace("$(ab)", quality[i].audiobitrate);
+                    cmdline = cmdline.replace('$(ab)', quality[i].audiobitrate);
+                    outputf = outputf.replace('$(ab)', quality[i].audiobitrate);
 
                     quality[i].filename = outputf;
 
                     outputf = path.join(this.get_target_dir(), outputf);
-                    outputf = outputf.replace(/\\/g, "/");
+                    outputf = outputf.replace(/\\/g, '/');
 
-                    cmdline = cmdline.replace("$(outputfile)", outputf);
+                    cmdline = cmdline.replace('$(outputfile)', outputf);
 
                     quality[i].file = outputf;
 
@@ -401,7 +401,7 @@ export default class Processor extends EventEmitter {
                     
                     quality[i].args = parse(cmdline);
 
-                    quality[i].status = "ready";
+                    quality[i].status = 'ready';
 
                 }
                 else{
@@ -439,32 +439,32 @@ export default class Processor extends EventEmitter {
                 //this.emit("processing", 0.85);
 
                 let args = [];
-                args.push("-k:adaptive");
-                args.push("-o:" + outdir);
+                args.push('-k:adaptive');
+                args.push('-o:' + outdir);
                 let first   = true;
-                let cmdline = "";
+                let cmdline = '';
 
                 for(let i = 0; i < quality.length; i++){
                     if(null != quality[i].file){
             
 
                         if(first){
-                            cmdline += "-i:";
+                            cmdline += '-i:';
                         }
                         else{
-                            cmdline += "-j:";
+                            cmdline += '-j:';
                         }
 
                         cmdline += quality[i].file;
                         
                         args.push(cmdline);
-                        cmdline = "";
+                        cmdline = '';
 
-                        args.push("-b:" + quality[i].videobitrate);
+                        args.push('-b:' + quality[i].videobitrate);
                         
                         if(first){
-                            args.push("-s:0");
-                            args.push("-e:0");
+                            args.push('-s:0');
+                            args.push('-e:0');
                         }
                         
                         first = false;
@@ -473,11 +473,11 @@ export default class Processor extends EventEmitter {
 
                 //console.log(args);
                 
-                const outs = fs.openSync(path.join(this.get_target_dir(), "mgout.log"), "a");
-                const errs = fs.openSync(path.join(this.get_target_dir(), "mgerr.log"), "a");
+                const outs = fs.openSync(path.join(this.get_target_dir(), 'mgout.log'), 'a');
+                const errs = fs.openSync(path.join(this.get_target_dir(), 'mgerr.log'), 'a');
                 
-                let child = cp.spawn("mg", args, {                           
-                    stdio: [ "ignore", outs, errs ]
+                let child = cp.spawn('mg', args, {                           
+                    stdio: [ 'ignore', outs, errs ]
                         , cwd: process.cwd()
                         // , env: process.env
                 });
@@ -496,17 +496,17 @@ export default class Processor extends EventEmitter {
                 });
                 */
 
-                child.on("close", (code/*, signal*/) => {
+                child.on('close', (code/*, signal*/) => {
                     if(0 == code){
                         resolve();
-                        this.emit("processing", 1);
+                        this.emit('processing', 1);
                     }
                     else{
-                        reject(new Error("mg invalid return code " + code));
+                        reject(new Error('mg invalid return code ' + code));
                     }
                 });
 
-                child.on("error", (err) => {
+                child.on('error', (err) => {
                     reject(err);
                 });
 

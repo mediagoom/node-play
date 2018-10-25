@@ -1,10 +1,10 @@
 {
-  "name": "node-webplay",
-  "version": "0.0.4",
+  "name": "@mediagoom/node-play",
+  "version": "0.0.6",
   "description": "A nodejs streaming server implementation",
   "main": "bin/server/index.js",
-  "bin" : {
-    "webplay" : "bin/server/index.js"
+  "bin": {
+    "nodeplay": "bin/server/index.js"
   },
   "scripts": {
     "buildserver": "node ./node_modules/gulp/bin/gulp.js server",
@@ -57,11 +57,13 @@
     "url": "^0.11.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.9.0"
-    , "@mediagoom/devman": "^0.0.6"
+    "watchify": "^3.9.0",
+    "@mediagoom/devman": "^0.0.6"
   },
   "dependencies": {
+    "@mediagoom/opflow": "0.0.1",
     "chokidar": "^1.6.1",
+    "debug": "^4.1.0",
     "express": "^4.14.1",
     "npm": "^5.3.0",
     "parse-spawn-args": "^1.0.2"

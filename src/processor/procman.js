@@ -19,8 +19,8 @@ export default class ProcMan  {
 
         let defop = {
 
-            processor : "./index.js"
-            , statusman : "./statmanfs.js"
+            processor : './index.js'
+            , statusman : './statmanfs.js'
         };
         
         if(null != opt)

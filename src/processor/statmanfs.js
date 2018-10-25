@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+import fs from 'fs';
+import path from 'path';
 
 
 
@@ -10,11 +10,11 @@ export default class StateManFs  {
 
         if(null == processor)
         {
-            throw "Invalid option.processor";
+            throw 'Invalid option.processor';
         }
 
         let defop = {
-            destination : path.normalize(path.join(__dirname, "../.."))
+            destination : path.normalize(path.join(__dirname, '../..'))
         };
         
         if(null != opt)
@@ -22,8 +22,8 @@ export default class StateManFs  {
         else
             this.options = defop;
 
-        this.options.subdir = this.options.subdir || "STATIC";
-        this.options.statusfile = this.options.statusfile || "status.json";
+        this.options.subdir = this.options.subdir || 'STATIC';
+        this.options.statusfile = this.options.statusfile || 'status.json';
 
         this.processor = processor;
         
@@ -47,35 +47,35 @@ export default class StateManFs  {
 
         let p = new this.processor(name,  procopt);
         
-        p.on("processing", (perc) =>{
-            console.log("--PROCESSING: ", perc);
+        p.on('processing', (perc) =>{
+            console.log('--PROCESSING: ', perc);
             //this.set_quick_processing(p, perc);
         });
 
         //TODO: change it to pass and determine the directory from the statman
-        p["statman_target_dir"] = p.get_target_dir();
+        p['statman_target_dir'] = p.get_target_dir();
 
         return p;
     }
 
     update_status(fspath, status, fail_if_exist)
     {
-        let flags = (fail_if_exist)?"wx+":"a+";
+        let flags = (fail_if_exist)?'wx+':'a+';
 
         return new Promise( (resolve, reject) => {
-            fs.readFile(fspath, {flag: flags, encoding: "utf8"}, (err, data) => {
+            fs.readFile(fspath, {flag: flags, encoding: 'utf8'}, (err, data) => {
                 
-                if(err && ( (err.code != "ENOENT") || (!fail_if_exist)) ){reject(err);}
+                if(err && ( (err.code != 'ENOENT') || (!fail_if_exist)) ){reject(err);}
                 else{
 
-                    if(err || "" == data)
+                    if(err || '' == data)
                     {                        
-                        data = "{}";
+                        data = '{}';
                     }
 
                     let j = {};
 
-                    try{ j = JSON.parse(data);}catch(e){console.log("JSON PARSE ERR:", e.code, "[", data, "]", flags, fspath, "----", e);}
+                    try{ j = JSON.parse(data);}catch(e){console.log('JSON PARSE ERR:', e.code, '[', data, ']', flags, fspath, '----', e);}
 
                     if(null != status)
                     {
@@ -97,7 +97,7 @@ export default class StateManFs  {
                             j.creationtime = new Date();
                         }
 
-                        fs.writeFile(fspath, JSON.stringify(j), {flag: "w+"}, (err) =>{
+                        fs.writeFile(fspath, JSON.stringify(j), {flag: 'w+'}, (err) =>{
                     
                             if(err){reject(err);}
                             else{
@@ -119,7 +119,7 @@ export default class StateManFs  {
 
     status_path(p)
     {
-        return path.join(p["statman_target_dir"], this.options.statusfile);
+        return path.join(p['statman_target_dir'], this.options.statusfile);
     }
 
     set_quick_status(p, status)
@@ -164,7 +164,7 @@ export default class StateManFs  {
 
             let p = this.create_processor(owner, id, id);
 
-            this.update_status(this.status_path(p), {status: "error", err : err.toString(), errinfo: (info + " ["  +err.toString() + "]") }, false).then( () => resolve(), err => reject(err));
+            this.update_status(this.status_path(p), {status: 'error', err : err.toString(), errinfo: (info + ' ['  +err.toString() + ']') }, false).then( () => resolve(), err => reject(err));
         
         });
     }
@@ -180,7 +180,7 @@ export default class StateManFs  {
 
             let p = this.create_processor(owner, name); //new this.processor(name, {destination: path.join(this.options.destination, owner)} );
 
-            p.mkdirr(p["statman_target_dir"], (err) => {
+            p.mkdirr(p['statman_target_dir'], (err) => {
                     
                 if(err)
                 {
@@ -189,7 +189,7 @@ export default class StateManFs  {
                 else
                 {
 
-                    let j = { status: "reserved"
+                    let j = { status: 'reserved'
                         , name : name
                         , id : p.id
                     };
@@ -226,30 +226,30 @@ export default class StateManFs  {
                        
                         //console.log("STREAMS: ", st.streams, "\n--------\n", st);
 
-                        this.set_quick_status(p, "analized").then(()=> {
-                            console.log("analized");
+                        this.set_quick_status(p, 'analyzed').then(()=> {
+                            console.log('analyzed');
                         }, err => reject(err));
 
                         p.encode(file, st.streams).then(
                                     (quality) => {
 
-                                        this.set_quick_status(p, "encoded").then(()=> {}, err => reject(err));
+                                        this.set_quick_status(p, 'encoded').then(()=> {}, err => reject(err));
 
-                                        console.log(">>PACKAGE", this.options.subdir, "<<", p["statman_target_dir"], ">>");
+                                        console.log('>>PACKAGE', this.options.subdir, '<<', p['statman_target_dir'], '>>');
 
-                                        let package_dir = path.join(p["statman_target_dir"], "STATIC");
+                                        let package_dir = path.join(p['statman_target_dir'], 'STATIC');
                                         
-                                        console.log(">>PACKAGE2", "<<", package_dir, ">>");
+                                        console.log('>>PACKAGE2', '<<', package_dir, '>>');
 
                                         p.package(quality, package_dir).then(
                                               ()=>{  
 
                                                   let res = {
-                                                      status   : "ok"
+                                                      status   : 'ok'
                                                         , owner  : owner
-                                                        , hls3   : "STATIC/main.m3u8"
-                                                        , dash   : "STATIC/index.mpd"
-                                                        , thumb  : ["img001.jpg", "img002.jpg"]
+                                                        , hls3   : 'STATIC/main.m3u8'
+                                                        , dash   : 'STATIC/index.mpd'
+                                                        , thumb  : ['img001.jpg', 'img002.jpg']
                                                         , hls4   : null
                                                         , playready : null
                                                         , widevine: null
@@ -338,7 +338,7 @@ export default class StateManFs  {
             let p = this.create_processor(owner, id, id);
             
             //we call update status passing null as the new status
-            //in this way the currunt status is returned
+            //in this way the current status is returned
             this.update_status(this.status_path(p), null, false).then( j => resolve(j), err => reject(err));
         
         });
