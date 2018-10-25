@@ -111,7 +111,7 @@ function test_proc_man(require_string, owner)
                     , hls3   : 'STATIC/main.m3u8'
                     , dash   : 'STATIC/index.mpd'
                     , thumb  : ['img001.jpg', 'img002.jpg']
-                    , previus: ['reserved','analyzed','encoded']
+                    , previous: ['reserved','analyzed','encoded']
                     , hls4   : null
                     , playready : null
                     , widevine: null

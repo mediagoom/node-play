@@ -81,13 +81,13 @@ export default class StateManFs  {
                     {
                         if(null != status.status)
                         {
-                            if(null == j.previus)
+                            if(null == j.previous)
                             {
-                                j.previus = [];
+                                j.previous = [];
                             }
 
                             if(null != j.status)
-                                j.previus.push(j.status);
+                                j.previous.push(j.status);
                         }
 
                         j = Object.assign(j, status);

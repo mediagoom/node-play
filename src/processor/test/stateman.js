@@ -6,7 +6,7 @@ export default class FakeStateMan  {
 
         if(null == processor)
         {
-            throw "Invalid option.processor";
+            throw 'Invalid option.processor';
         }
 
         let defop = {
@@ -20,7 +20,7 @@ export default class FakeStateMan  {
         
         let procopt = Object.assign(this.options, {});
 
-        /*let p =*/ new processor("TEST", procopt);
+        /*let p =*/ new processor('TEST', procopt);
     }
 
     reserve_name(/*owner, name*/)
@@ -28,7 +28,7 @@ export default class FakeStateMan  {
         
         return new Promise( (resolve/*, reject*/) => {
         
-            resolve("9999999999_TEST");
+            resolve('9999999999_TEST');
         
         });
     }
@@ -52,7 +52,7 @@ export default class FakeStateMan  {
                     assets : [
                         {
                             owner : owner
-                            , id : "9999999999_TEST"
+                            , id : '9999999999_TEST'
                         }
                     ]
                 }
@@ -68,17 +68,17 @@ export default class FakeStateMan  {
         
             resolve(
                 {
-                    status   : "ok"
-                    , name   : "TEST"        
+                    status   : 'ok'
+                    , name   : 'TEST'        
                     , id     : id
                     , owner  : owner
-                    , hls3   : "STATIC/main.m3u8"
-                    , dash   : "STATIC/index.mpd"
-                    , thumb  : ["img001.jpg", "img002.jpg"]
-                    , "previus": [
-                        "reserved"
-                        , "analized"
-                        , "encoded"
+                    , hls3   : 'STATIC/main.m3u8'
+                    , dash   : 'STATIC/index.mpd'
+                    , thumb  : ['img001.jpg', 'img002.jpg']
+                    , 'previous': [
+                        'reserved'
+                        , 'analyzed'
+                        , 'encoded'
                     ]
                     , hls4   : null
                     , playready : null
