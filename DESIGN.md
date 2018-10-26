@@ -26,4 +26,27 @@ ProcMan => queue_job return jobid
 Derive From StatusManFs => override queue_job to use opflow 
                         => transformer => from media settings to opflow
 
-                        
+
+
+ProcMan
+                          - list
+                          - status
+                          - reserve_name (init upload)
+                          - queue_job (upload)
+                          |
+                          |
+                          |
+                       StatusMan
+                          |\
+                          | \
+                          |  \
+                          |   \
+                          |    \
+                          |     \
+                          |     opflow
+                          |
+                          |
+                       Transformer  <= MEDIA INFO
+                                          |
+                                          |
+                                        MEDIA SETTINGS
