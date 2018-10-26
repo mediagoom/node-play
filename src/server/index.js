@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const express = require('express');
-const uploader = require('chunk-upload/bin/server');
+const uploader = require('chunk-upload/bin/server.js');
 const ProcMan   = require('../processor/procman.js');
 const modpath  = require('path');
 
@@ -53,7 +53,7 @@ app.use(function(req, res, next) {
 
 app.use('/play', express.static(rootdir));
 
-app.use('/upload', uploader());
+app.use('/upload', uploader.default());
 
 app.get('/clientaccesspolicy.xml', function (req, res) {
   
@@ -83,7 +83,7 @@ app.get('/api/list', (req, res, next) => {
         (list) => {res.json(list);}
         , (err) => { next(err);}
         
-        );
+    );
 
 });
 
@@ -94,7 +94,7 @@ app.get('/api/status/:id', (req, res, next) => {
     statusman.status(def_owner, id).then(
         (stat) => { res.json(stat);}
         , (err) => { next(err); }
-        );
+    );
 
 });
 
@@ -112,7 +112,7 @@ app.get('/api/upload/:name', (req, res, next) => {
 app.put('/upload/:id?', (req, res) => {
     
     console.log('-------------****');
-       //console.log(JSON.stringify(req.headers));
+    //console.log(JSON.stringify(req.headers));
     console.log(req.uploader);
     console.log('-------------**--');
 
@@ -124,12 +124,12 @@ app.put('/upload/:id?', (req, res) => {
         statusman.queue_job(def_owner
             , id //, path.basename(req.uploader)
             , req.uploader
-            ).then(()=>{}, err => 
-            {
-                console.log('QYE', err.toString()); 
-                statusman.record_error(def_owner, id, err, 'QUEUE JOB ERROR');
-            }
-            );
+        ).then(()=>{}, err => 
+        {
+            console.log('QYE', err.toString()); 
+            statusman.record_error(def_owner, id, err, 'QUEUE JOB ERROR');
+        }
+        );
     }
 
     res.send('OK');

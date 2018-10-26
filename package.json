@@ -9,7 +9,7 @@
   "scripts": {
     "test": "mocha --reporter spec --timeout 800000 ./src//**/test/index.js ./src//**/test/*.test.js",
     "start": "node ./node_modules/@mediagoom/devman start server",
-    "server": "node ./bin/server/index.js",
+    "server": "node ./src/server/index.js",
     "stop": "node ./node_modules/@mediagoom/devman stop",
     "install": "node ./dowloadtools.js"
   },

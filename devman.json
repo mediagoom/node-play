@@ -3,8 +3,7 @@
         {
               "name"  : "server"
             , "watch" : ["src/**/*.js", "!src/**/client/*", "!src/**/test/*"]
-            , "exec"  : ["npm run buildserver"]
-            , "cmd"   : {"proc": "node", "args": ["./bin/server/index.js"]}
+            , "cmd"   : {"proc": "node", "args": ["./src/server/index.js"]}
             , "debug" : false 
             , "break" : false
             , "options" : { "env":{
@@ -13,36 +12,7 @@
                           }
                           
          }
-        ,
-        {
-             "name"    : "client"
-           , "watch"   : ["src/**/*.js", "src/**/*.html", "!src/**/server/*", "!src/**/server.js", "!src/test/*"]
-           , "exec"    : ["npm run build"]
-           
-        }
-        ,
-        {
-             "name"    : "test"
-           , "watch"   : ["src//**/test/*.js", "src/**/*.js", "!src/**/client/*"]
-           , "exec"    : ["npm run buildserver"]
-           , "cmd"     : {"proc": "node", "args": [
-                                "./node_modules/mocha/bin/mocha"
-                                , "-t"
-                                , "200000"
-                                , "--reporter" 
-                                , "spec"
-                                , "-g"
-                                , "cases"
-                                , "./bin/processor/test/index.js"
-                                ]
-                         }
-           , "dbg_idx" : 1
-           , "options" : { "env":{
-                                    "TESTMEDIAFILE" : "F:/IOMEGA/NEWMEDIA/sample.flv"
-                                 }
-                         }         
-           
-        }
+       
     ]
 
     , "server" : { "url" : "http://localhost:3000/clientaccesspolicy.xml", "timeout" : 8000 }
