@@ -1,9 +1,9 @@
-import fs from 'fs';
-import path from 'path';
+const fs = require('fs');
+const path = require('path');
 
 
 
-export default class StateManFs  {
+module.exports =  class StateManFs  {
     
     constructor(processor, opt) {
         //super();

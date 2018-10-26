@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import express from 'express';
-import uploader from '../uploader/server.js';
-import ProcMan  from '../processor/procman.js';
-import modpath from 'path';
+const express = require('express');
+const uploader = require('chunk-upload/bin/server');
+const ProcMan   = require('../processor/procman.js');
+const modpath  = require('path');
 
 function optval(name, def)
 {

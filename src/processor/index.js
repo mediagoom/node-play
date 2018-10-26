@@ -1,8 +1,8 @@
-import { EventEmitter } from 'events';
-import path from 'path';
-import cp   from 'child_process';
-import fs   from 'fs';
-import {parse} from 'parse-spawn-args';
+const EventEmitter = require('events');
+const path = require('path');
+const cp   = require('child_process');
+const fs   = require('fs');
+const parse = require('parse-spawn-args').parse;
 
 function pad(num, size) {
     var s = '000000000000' + num;
@@ -10,7 +10,7 @@ function pad(num, size) {
 }
 
 
-export default class Processor extends EventEmitter {
+module.exports = class Processor extends EventEmitter {
 
     constructor(name, opt) {
         super();

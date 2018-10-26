@@ -1,5 +1,5 @@
-import chai from 'chai';
-import ProcMan  from '../../processor/procman.js';
+const chai = require('chai');
+const ProcMan  = require('../../processor/procman.js');
 
 var expect = chai.expect;
 

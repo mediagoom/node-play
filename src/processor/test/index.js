@@ -1,7 +1,8 @@
-import chai      from 'chai';
-import Processor from '../../processor/index.js';
-import cp        from 'child_process';
-import path      from 'path';
+
+const chai      = require('chai');
+const Processor = require('../../processor/index.js');
+const cp        = require('child_process');
+const path      = require('path');
 
 var expect = chai.expect;
 

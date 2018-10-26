@@ -1,5 +1,5 @@
 
-export default class FakeStateMan  {
+module.exports =  class FakeStateMan  {
     
     constructor(processor, opt) {
         //super();
@@ -91,4 +91,4 @@ export default class FakeStateMan  {
 
     
 
-}
+};

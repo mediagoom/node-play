@@ -11,7 +11,7 @@ function es6req(objname)
 }
 
 
-export default class ProcMan  {
+module.exports =  class ProcMan  {
     
     constructor(opt) {
         //super();
