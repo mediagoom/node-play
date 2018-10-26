@@ -10,7 +10,6 @@ before_install:
 - python ./version.py
 - npm install
 script:
-- npm run build
 - npm start
 - cat ./out.log
 - npm test
