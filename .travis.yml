@@ -12,7 +12,7 @@ before_install:
 script:
 - npm start
 - cat ./out.log
-- npm test
+- npm run testOld
 after_script:
 - npm stop
 deploy:

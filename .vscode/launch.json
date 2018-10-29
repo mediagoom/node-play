@@ -18,13 +18,29 @@
             "request": "launch",
             "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
             "stopOnEntry": false,
-            "args": ["-d", "./test/**/*.js"],
+            "args": ["-d", "./unit-test//**/*.js"],
             "cwd": "${workspaceRoot}",
             "preLaunchTask": null,
-            
-            "env": {
+            "console": "integratedTerminal"
+            , "env": {
                 "NODE_ENV": "development"
-                , "DEBUG" : "opflow:*"
+                , "DEBUG" : "opflow:coordinator"
+            }
+            
+        }
+        , {
+            "name": "Debug Mocha old tests",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+            "stopOnEntry": false,
+            "args": ["--reporter",  "spec", "--timeout", "800000", "./src//**/test/index.js", "./src//**/test/*.test.js"],
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": null,
+            "console": "integratedTerminal"
+            , "env": {
+                "NODE_ENV": "development"
+                , "DEBUG" : "opflow:coordinator"
             }
             
         }
@@ -32,7 +48,7 @@
             "name": "Debug Mocha regex",
             "type": "node",
             "request": "launch",
-            "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+            "program": "${workspaceRoot}/node_modules/.bin/mocha",
             "stopOnEntry": false,
             "args": ["-d", "./test/**/*.js", "-g", "WIRE", "--no-timeouts"],
             "cwd": "${workspaceRoot}",

@@ -28,8 +28,10 @@ module.exports =  class ProcMan  {
         else
             this.options = defop;
 
+        let processor  = this.options.processor;
+        if( typeof processor === 'string')
+            processor = es6req(processor);
 
-        let processor  = es6req(this.options.processor);
         this.statman   = es6req(this.options.statusman);
 
         let statopt    = Object.assign(this.options, {  });

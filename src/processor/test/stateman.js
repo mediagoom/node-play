@@ -1,4 +1,6 @@
 
+const ID = '9999999999_TEST';
+
 module.exports =  class FakeStateMan  {
     
     constructor(processor, opt) {
@@ -9,18 +11,18 @@ module.exports =  class FakeStateMan  {
             throw 'Invalid option.processor';
         }
 
-        let defop = {
-
+        let default_option = {
+            id : ID
         };
         
         if(null != opt)
-            this.options = Object.assign(defop, opt);
+            this.options = Object.assign(default_option, opt);
         else
-            this.options = defop;
+            this.options = default_option;
         
-        let procopt = Object.assign(this.options, {});
+        let builded_options = Object.assign(this.options, {});
 
-        /*let p =*/ new processor('TEST', procopt);
+        /*let p =*/ new processor('TEST', builded_options);
     }
 
     reserve_name(/*owner, name*/)
@@ -28,7 +30,7 @@ module.exports =  class FakeStateMan  {
         
         return new Promise( (resolve/*, reject*/) => {
         
-            resolve('9999999999_TEST');
+            resolve(ID);
         
         });
     }
@@ -56,7 +58,7 @@ module.exports =  class FakeStateMan  {
                         }
                     ]
                 }
-                );
+            );
         
         });
     }

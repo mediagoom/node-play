@@ -1,5 +1,38 @@
 const fs = require('fs');
 const path = require('path');
+const util   = require('util');
+const dbg = require('debug')('node-play:statmanfs');
+
+const Stat = util.promisify(fs.stat);
+const Mkdir = util.promisify(fs.mkdir);
+
+function pad(num, size) {
+    var s = '000000000000' + num;
+    return s.substr(s.length-size);
+}
+
+const anchor = new Date(2100, 0, 0).getTime();
+
+function new_id(name)
+{
+    let create = Date.now();
+    let seconds = (anchor - create) / 1000;
+    let n = pad(seconds.toFixed(0), 12);
+
+    return n + '_' + name;
+}
+
+async function directory_exist_or_create(path) {
+    //const stat = await Stat(path);
+    try{
+        await Mkdir(path, { recursive: true });
+    }catch(err)
+    {
+        dbg('directory_exist_or_create error %O', err);
+        if(err.code !== 'EEXIST')
+            throw err;
+    }
+}
 
 
 
@@ -33,27 +66,37 @@ module.exports =  class StateManFs  {
 
     create_processor(owner, name, id, out_opt)
     {
+        if(undefined === name)
+        {
+            throw new Error('Cannot work with a processor without a name');
+        }
+
         let opt = {destination: path.join(this.options.destination, owner)};
 
-        let procopt = Object.assign({}, this.options, opt);
+        let processor_option = Object.assign({}, this.options, opt);
 
         if(null != out_opt)
         {
-            Object.assign(procopt, out_opt);
+            Object.assign(processor_option, out_opt);
         }
 
-        if(null != id)
-            procopt.id = id;
+        if(undefined === id)
+        {
+            processor_option.id = new_id(name);
+        }else
+        {
+            processor_option.id = id;
+        }
 
-        let p = new this.processor(name,  procopt);
+        let p = new this.processor(name,  processor_option);
         
-        p.on('processing', (perc) =>{
-            console.log('--PROCESSING: ', perc);
+        p.on('processing', (percentage) =>{
+            dbg('--PROCESSING: ', percentage);
             //this.set_quick_processing(p, perc);
         });
 
-        //TODO: change it to pass and determine the directory from the statman
-        p['statman_target_dir'] = p.get_target_dir();
+        
+        p['statman_target_dir'] = path.join(opt.destination, processor_option.id);
 
         return p;
     }
@@ -75,7 +118,7 @@ module.exports =  class StateManFs  {
 
                     let j = {};
 
-                    try{ j = JSON.parse(data);}catch(e){console.log('JSON PARSE ERR:', e.code, '[', data, ']', flags, fspath, '----', e);}
+                    try{ j = JSON.parse(data);}catch(e){dbg('JSON PARSE ERR:', e.code, '[', data, ']', flags, fspath, '----', e);}
 
                     if(null != status)
                     {
@@ -169,40 +212,28 @@ module.exports =  class StateManFs  {
         });
     }
 
-    
-
-    //TODO: processor should get the id and the destination. Should not create an id and should not
-    // change the destination
-    reserve_name(owner, name)
+    async reserve_name(owner, name)
     {
+        let dir1 = this.options.destination;
+        let dir2 = path.join(this.options.destination, owner);
+
+        await directory_exist_or_create(dir1, { recursive: true });
+        await directory_exist_or_create(dir2, { recursive: true });
+
+        let p = this.create_processor(owner, name);
         
-        return new Promise( (resolve, reject) => {
+        await Mkdir(p['statman_target_dir'], { recursive: true });
 
-            let p = this.create_processor(owner, name); //new this.processor(name, {destination: path.join(this.options.destination, owner)} );
+        let j = { status: 'reserved'
+            , name : name
+            , id : p.id
+        };
 
-            p.mkdirr(p['statman_target_dir'], (err) => {
-                    
-                if(err)
-                {
-                    reject(err);
-                }
-                else
-                {
+        await this.update_status( 
+            this.status_path(p), j, true
+        );
 
-                    let j = { status: 'reserved'
-                        , name : name
-                        , id : p.id
-                    };
-
-                    this.update_status( 
-                        this.status_path(p), j, true
-                        ).then( (/*k*/) => {resolve(p.id);}
-                            , (err)=> {reject(err);}
-                            );
-                }
-            });
-        
-        });
+        return j.id;
     }
 
     queue_job(owner, id, file, opt)
@@ -222,53 +253,53 @@ module.exports =  class StateManFs  {
             let p = this.create_processor(owner, id, id, opt);
 
             p.read_stream_info(file).then(
-                    (st) => {
+                (st) => {
                        
-                        //console.log("STREAMS: ", st.streams, "\n--------\n", st);
+                    //dbg("STREAMS: ", st.streams, "\n--------\n", st);
 
-                        this.set_quick_status(p, 'analyzed').then(()=> {
-                            console.log('analyzed');
-                        }, err => reject(err));
+                    this.set_quick_status(p, 'analyzed').then(()=> {
+                        dbg('analyzed');
+                    }, err => reject(err));
 
-                        p.encode(file, st.streams).then(
-                                    (quality) => {
+                    p.encode(file, st.streams).then(
+                        (quality) => {
 
-                                        this.set_quick_status(p, 'encoded').then(()=> {}, err => reject(err));
+                            this.set_quick_status(p, 'encoded').then(()=> {}, err => reject(err));
 
-                                        console.log('>>PACKAGE', this.options.subdir, '<<', p['statman_target_dir'], '>>');
+                            dbg('>>PACKAGE', this.options.subdir, '<<', p['statman_target_dir'], '>>');
 
-                                        let package_dir = path.join(p['statman_target_dir'], 'STATIC');
+                            let package_dir = path.join(p['statman_target_dir'], 'STATIC');
                                         
-                                        console.log('>>PACKAGE2', '<<', package_dir, '>>');
+                            dbg('>>PACKAGE2', '<<', package_dir, '>>');
 
-                                        p.package(quality, package_dir).then(
-                                              ()=>{  
+                            p.package(quality, package_dir).then(
+                                ()=>{  
 
-                                                  let res = {
-                                                      status   : 'ok'
-                                                        , owner  : owner
-                                                        , hls3   : 'STATIC/main.m3u8'
-                                                        , dash   : 'STATIC/index.mpd'
-                                                        , thumb  : ['img001.jpg', 'img002.jpg']
-                                                        , hls4   : null
-                                                        , playready : null
-                                                        , widevine: null
-                                                  };
+                                    let res = {
+                                        status   : 'ok'
+                                        , owner  : owner
+                                        , hls3   : 'STATIC/main.m3u8'
+                                        , dash   : 'STATIC/index.mpd'
+                                        , thumb  : ['img001.jpg', 'img002.jpg']
+                                        , hls4   : null
+                                        , playready : null
+                                        , widevine: null
+                                    };
 
-                                                  this.update_status( 
-                                                        this.status_path(p), res, false
-                                                        ).then((/*k*/)=> {resolve();}
-                                                            , (err)=> {reject(err);}
-                                                            );
-                                                                                  
-                                              }
-                                            , (err) => { reject(err);}
-                                            );
-                                    }, (err) => {reject(err);}
+                                    this.update_status( 
+                                        this.status_path(p), res, false
+                                    ).then((/*k*/)=> {resolve();}
+                                        , (err)=> {reject(err);}
                                     );
-
-                    }, (err)=> {reject(err);}
+                                                                                  
+                                }
+                                , (err) => { reject(err);}
+                            );
+                        }, (err) => {reject(err);}
                     );
+
+                }, (err)=> {reject(err);}
+            );
 
         });
     }
@@ -278,14 +309,14 @@ module.exports =  class StateManFs  {
         
         return new Promise( (resolve, reject) => {
 
-            //console.log(this.options, opt);
+            //dbg(this.options, opt);
 
             let procopt = Object.assign({}, this.options, opt);
 
             // procopt.id = id;
             procopt.destination = path.join(procopt.destination, owner);
 
-            //console.log(procopt);
+            //dbg(procopt);
 
             // let p = new this.processor("list", procopt);
 
@@ -326,7 +357,7 @@ module.exports =  class StateManFs  {
         return new Promise( (resolve, reject) => {
        
             /*
-            console.log(owner, id, this.options);
+            dbg(owner, id, this.options);
 
             let procopt = Object.assign({}, this.options, {id: id});
             procopt.destination = path.join(procopt.destination, owner);
@@ -348,5 +379,5 @@ module.exports =  class StateManFs  {
 
     
 
-}
+};
 

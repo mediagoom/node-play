@@ -1,12 +1,13 @@
 const chai = require('chai');
 const ProcMan  = require('../../processor/procman.js');
+const dbg = require('debug')('node-play:integration-test-proc-man');
 
 var expect = chai.expect;
 
 function tval(name, def)
 {
     if(null == process.env[name])
-        {
+    {
         return def;
     }
 
@@ -23,9 +24,11 @@ function check( done, f ) {
     }
 }
 
-function test_proc_man(require_string, owner)
+
+
+function test_proc_man(require_status_man_string, owner)
 {
-    let p     = new ProcMan({statusman : require_string});
+    let p     = new ProcMan({statusman : require_status_man_string});
     let id    = '';
     //let owner = "uploader";
     let name  = 'TEST';
@@ -40,11 +43,11 @@ function test_proc_man(require_string, owner)
                     
                 id = idx;
 
-                console.log('-----', id, '------');
+                dbg('-----', id, '------');
                         
             });
         }
-            , (err) => {
+        , (err) => {
             done(err);
         });
 
@@ -71,28 +74,28 @@ function test_proc_man(require_string, owner)
     it('list', (done) => {
         
         p.list(owner).then(
-                 (list) => {
+            (list) => {
                     
-                     check(done, ()=> {
+                check(done, ()=> {
                         
-                         let r = {
-                             assets : [
-                                 {
-                                     owner : owner
-                                            , id : id
-                                 }
-                             ]
-                         };
+                    let r = {
+                        assets : [
+                            {
+                                owner : owner
+                                , id : id
+                            }
+                        ]
+                    };
 
-                         expect(list).to.be.deep.equal(r);
+                    expect(list).to.be.deep.equal(r);
 
-                     });
+                });
                  
-                 }
+            }
 
-               , (err) => {done(err);}
+            , (err) => {done(err);}
 
-           );
+        );
         
     });
 
@@ -102,39 +105,39 @@ function test_proc_man(require_string, owner)
         
         let r = {
             status   : 'ok'
-                    , name   : 'TEST'        
-                    , id     : id
-                    , datetime : null
-                    , creationtime : null
-                    , processing: null
-                    , owner  : owner
-                    , hls3   : 'STATIC/main.m3u8'
-                    , dash   : 'STATIC/index.mpd'
-                    , thumb  : ['img001.jpg', 'img002.jpg']
-                    , previous: ['reserved','analyzed','encoded']
-                    , hls4   : null
-                    , playready : null
-                    , widevine: null
+            , name   : 'TEST'        
+            , id     : id
+            , datetime : null
+            , creationtime : null
+            , processing: null
+            , owner  : owner
+            , hls3   : 'STATIC/main.m3u8'
+            , dash   : 'STATIC/index.mpd'
+            , thumb  : ['img001.jpg', 'img002.jpg']
+            , previous: ['reserved','analyzed','encoded']
+            , hls4   : null
+            , playready : null
+            , widevine: null
         };
 
         p.status(owner, id).then(
-                  (status) => {
+            (status) => {
 
-                      status.datetime = null;
-                      status.creationtime  = null;
-                      status.processing = null;
+                status.datetime = null;
+                status.creationtime  = null;
+                status.processing = null;
                      
                       
                       
-                      check(done, () => {
+                check(done, () => {
                       
-                          expect(status).to.be.deep.equal(r);
+                    expect(status).to.be.deep.equal(r);
                       
-                      });
+                });
 
-                  }
-                , (err) => {done(err);}
-            );
+            }
+            , (err) => {done(err);}
+        );
         
         
     });
