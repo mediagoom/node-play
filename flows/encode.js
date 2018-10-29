@@ -1,5 +1,78 @@
+
+const duration_rx = 'Duration: (\\d\\d):(\\d\\d):(\\d\\d).(\\d\\d), start: ([\\d\\.]+), bitrate: (\\d+) kb/s';
+const stream_rx = 'Stream\\s#0:(\\d+)(?:[\\(\\[](\\w+)[\\)\\]]){0,1}:\\s(Audio|Video):.*?(?:(?:,\\s(\\d+)x(\\d+))|(?:(\\d+) Hz)).*?, (?:(?:(\\d+) kb/s)|(?:stereo)|(?:.*? fps))';
+           
+const probe_code = `
+          let output = propertyBag.parent.result;
+
+          let regexpd = new RegExp(config.duration_rx, 'g');
+          let m = null;
+            let kb = 0;
+
+            if ((m = regexpd.exec(output)) !== null) {
+                
+                kb = m[6];
+
+            }
+
+           let regexp = new RegExp(config.stream_rx, 'g');
+
+           const streams = [];
+        
+        while ((m = regexp.exec(output)) !== null) {
+            let s = { index : m[1]
+                , lang  : m[2]
+                , kind  : m[3]
+                , width : m[4]
+                , height: m[5]
+                , kz    : m[6]
+                , bps   : m[7]
+            };
+
+            if(s.kind == 'Video' && s.bps == null)
+                s.bps = kb;
+
+            if(s.lang == null)
+                s.lang = 'und';
+
+            streams.push(s);
+
+        }
+    
+    streams.splice(-1, 1);
+
+    JSON.stringify(streams, null, 4);
+
+`;
+
+
 module.exports = {
-    encode : {
+
+
+    probe_parse :
+    {
+        root : {
+            type : 'START', name : 'START', children : [
+                { type : 'code', name : 'run ffprobe'
+                    , config : {
+                        cmd : 'ffprobe'
+                        , args : 'TODO: file-path'
+                        , code : ' "this is the ffprobe return" '
+                    }
+                    , children : [
+                        {type : 'code', name : 'process streams and config', config : { code : ' "do code processing pre encoding" '}
+                            , children : [
+                                {type : 'END', name : 'PACKAGE'}
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+
+
+    , encode : {
         root : {
             type : 'START', name : 'START', children : [
                 { type : 'code', name : 'run ffprobe'

@@ -26,9 +26,16 @@ function check( done, f ) {
 
 
 
-function test_proc_man(require_status_man_string, owner)
+function test_proc_man(require_status_man_string, owner, require_proc_man_string)
 {
-    let p     = new ProcMan({statusman : require_status_man_string});
+    const proc_man_options = {statusman : require_status_man_string};
+    
+    if(undefined !== require_proc_man_string)
+    {
+        proc_man_options.processor = require_proc_man_string;
+    }
+
+    let p     = new ProcMan(proc_man_options);
     let id    = '';
     //let owner = "uploader";
     let name  = 'TEST';
@@ -175,5 +182,11 @@ describe('PROCESS MANAGER', () => {
 
     describe('Fs StatMan', () => {
         test_proc_man('./statmanfs.js', 'statman');
+    });
+
+    describe('Fs StatMan - opflow', () => {
+       
+        test_proc_man('./statmanfs.js', 'opflow-dir', '../../flows/processor.js');
+
     });
 });
