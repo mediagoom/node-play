@@ -47,7 +47,7 @@
     "url": "^0.11.0"
   },
   "dependencies": {
-    "@mediagoom/opflow": "0.0.2",
+    "@mediagoom/opflow": "0.0.22",
     "chokidar": "^2.0.4",
     "chunk-upload": "0.0.4",
     "debug": "^4.1.0",
