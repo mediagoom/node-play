@@ -10,6 +10,10 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}\\src\\server\\index.js"
+
+            , "runtimeArgs": [
+                "--preserve-symlinks"
+            ]
         }
 
         , {
@@ -21,11 +25,13 @@
             "args": ["-d", "./unit-test//**/*.js"],
             "cwd": "${workspaceRoot}",
             "preLaunchTask": null,
-            "console": "integratedTerminal"
-            , "env": {
+             "env": {
                 "NODE_ENV": "development"
                 , "DEBUG" : "opflow:coordinator"
             }
+            , "runtimeArgs": [
+                "--preserve-symlinks"
+            ]
             
         }
         , {
@@ -50,14 +56,18 @@
             "request": "launch",
             "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
             "stopOnEntry": false,
-            "args": ["-g", "opflow", "--no-timeouts", "./src//**/test/*.test.js"],
+            "args": ["-g", "probe_parse", "--no-timeouts", "./unit-test//**/*.js"],
             "cwd": "${workspaceRoot}",
             "preLaunchTask": null,
             "console": "integratedTerminal"
+            , "runtimeArgs": [
+                "--preserve-symlinks"
+            ]
+        
             
             , "env": {
-                "NODE_ENV": "production"
-                , "DEBUG" : "opflow:*"
+                "NODE_ENV": "development"
+                , "DEBUG" : ""
             }
             
         }
