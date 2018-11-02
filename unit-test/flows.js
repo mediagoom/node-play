@@ -15,8 +15,12 @@ describe('OPERATIONS', () => {
         const key = keys[idx];
 
         it('should run unit test for flow ' + key , async () => {
+           
+            const flow = flows[key]; 
+           
+            dbg('FLOW-TEST', JSON.stringify(flow, null, 4));
             
-            const operations = await unitTest(flows[key]);
+            const operations = await unitTest(flow);
 
             const end = operations.find ( (el) => {return el.type === 'END';} );
 

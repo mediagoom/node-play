@@ -5,6 +5,7 @@ const stream_rx = 'Stream\\s#0:(\\d+)(?:[\\(\\[](\\w+)[\\)\\]]){0,1}:\\s(Audio|V
 
 const begin_config_code = `
     const file = propertyBag.input_file = config.input_file;
+    propertyBag.output_dir = config.output_dir;
     //let configure next operation file probe
     propertyBag.config.args = [ file ];
 
@@ -15,11 +16,11 @@ const probe_code = `
 
           let output = propertyBag.parent.result;
 
-          let regexpd = new RegExp(config.duration_rx, 'g');
+          let regex_duration = new RegExp(config.duration_rx, 'g');
           let m = null;
             let kb = 0;
 
-            if ((m = regexpd.exec(output)) !== null) {
+            if ((m = regex_duration.exec(output)) !== null) {
                 
                 kb = m[6];
 
@@ -51,18 +52,24 @@ const probe_code = `
     
     //streams.splice(-1, 1);
 
+    propertyBag.streams = streams;
+
     JSON.stringify(streams, null, 4);
 
 `;
+
+
+/* eslint-disable */
+
 
 const encode_config_code = `
 
         const streams = JSON.parse(propertyBag.parent.result);
 
-        cmd_video = '-vf "scale=w=$(width):h=$(height)" -codec:v libx264 -profile:v high -level 31 -b:v $(vb)k -r 25 -g 50 -sc_threshold 0 -x264opts ratetol=0.1 -minrate $(vb)k -maxrate $(vb)k -bufsize $(vb)k'
+        cmd_video = '-vf "scale=w=$(width):h=$(height)" -codec:v libx264 -profile:v high -level 31 -b:v $(video_bitrate)k -r 25 -g 50 -sc_threshold 0 -x264opts ratetol=0.1 -minrate $(video_bitrate)k -maxrate $(video_bitrate)k -bufsize $(video_bitrate)k'
         cmd_audio = '-b:a $(ab)k -codec:a aac -profile:a aac_low -ar 44100 -ac 2 -y'
 
-        cmd_encode = '-i "$(file)" $(map)$(video)$(audio) "$(outputfile)"'
+        cmd_encode = '-i "$(file)" $(map)$(video)$(audio) "$(output_file)"'
         const file = propertyBag.input_file;
        
         cmd_encode = cmd_encode.replace('$(file)', file);
@@ -104,22 +111,75 @@ const encode_config_code = `
             cmd_video = '';
         }
 
+        if(null !== video && null !== audio)
+        {
+            cmd_encode = cmd_encode.replace('$(video)$(audio)', '$(video) $(audio)');
+        }
+
         cmd_encode = cmd_encode.replace('$(map)', map);
         cmd_encode = cmd_encode.replace('$(video)', cmd_video);
         cmd_encode = cmd_encode.replace('$(audio)', cmd_audio);
-        
+
         cmd_encode = cmd_encode.replace('$(width)', config.width);
         cmd_encode = cmd_encode.replace('$(height)', config.height);
 
+        dbg('pre-bitrate: const cmd_encode = "', cmd_encode, '"', config.video_bitrate);
+        cmd_encode = cmd_encode.replace(/\\$\\(video_bitrate\\)/g, config.video_bitrate);
+        dbg('post-bitrate', cmd_encode);
         
 
+        cmd_encode = cmd_encode.replace(/\\$\\(ab\\)/g, config.audio_bitrate);
+
+        cmd_encode = cmd_encode.replace('$(output_file)', propertyBag.output_dir + '/encoded_' + config.video_bitrate + '.mp4');
+        
         let j = cmd_encode.split(' ');
 
-        propertyBag.info = JSON.stringify(j);
+        //propertyBag.cmd = cmd_encode;
+
+        dbg(cmd_encode);
+
+        propertyBag.config.args = j;
 
         cmd_encode
 
 `;
+
+/* eslint-enable */
+
+function generate_config_encode(name, height, bitrate, end)
+{
+    const ops =
+    {type : 'code', 'name' : ('CONFIGURE ') + name, config : {code : encode_config_code, height,  width: (height / 9 * 16), video_bitrate : bitrate, audio_bitrate: 128}
+        , children : [ {type : 'code', 'name' : ('ENCODE ') + name, config : {cmd : 'ffmpeg', args : [], code : `
+            
+            if(config.args == null){
+                 throw new Error('null args');
+            }
+
+            if(config.args.length === 0){
+                throw new Error('0 args');
+            }
+
+            if(/$(video_bitrate)/.test(propertyBag.parent.result))
+            {
+                throw new Error('no video bitrate set');
+            }
+                 
+            JSON.stringify(config.args) 
+            ` }
+        , target_type : 'execute'
+        , children : [{ type : 'JOIN', name : 'AFTER ENCODING'}]
+        }]
+    };
+
+    if(undefined !== end)
+    {
+        ops.children[0].children[0].children =  end;//[{type : 'END', name : 'PACKAGE'}];
+    }
+
+    return JSON.parse(JSON.stringify(ops));
+                                        
+}
 
 
 module.exports = {
@@ -132,6 +192,7 @@ module.exports = {
                 { type : 'code', name : 'pre configuration'
                     , config : {
                         input_file : '/tmp/media/file.mp4'
+                        , output_dir : '/tmp'
                         , code : begin_config_code
                     }
                     , children : [
@@ -144,9 +205,7 @@ module.exports = {
                         propertyBag.ff_arg = '[' + config.args[0] + ']';
                                 
                         \`
-                           
-                            
-
+                          
                             ${ffprobe_output}
                         \`
                         `
@@ -160,7 +219,10 @@ module.exports = {
                                     , children : [
                                         {type : 'code', name : 'preprocess 1'
                                             , config : { code : encode_config_code
-                                              
+                                                , width : 1280
+                                                , height : 720
+                                                , video_bitrate : 3500
+                                                , audio_bitrate : 128 
                                             }
                                             , children : [
                                                 {type : 'END', name : 'PACKAGE'}
@@ -180,48 +242,57 @@ module.exports = {
     , encode : {
         root : {
             type : 'START', name : 'START', children : [
-                { type : 'code', name : 'run ffprobe'
+                { type : 'code', name : 'pre configuration'
                     , config : {
-                        cmd : 'ffprobe'
-                        , args : 'TODO: file-path'
-                        , code : ' "this is the ffprobe return" '
+                        input_file : '/tmp/media/file.mp4'
+                        , output_dir : '/tmp'
+                        , code : begin_config_code
                     }
                     , children : [
-                        {type : 'JOIN', name : 'AFTER-IMAGES'
+                        { type : 'code', name : 'run ffprobe', target_type : 'execute'
+                            , config : {
+                                cmd : 'ffprobe'
+                                , args : ['this is configured by the previous operation']
+                                , code : ` \`${ffprobe_output}\` ` 
+                            }
                             , children : [
-                                {type : 'code', name : 'process streams and config', config : { code : ' "do code processing pre encoding" '}
+                                {type : 'code', name : 'process streams and config'
+                                    , config : { code : probe_code
+                                        , duration_rx
+                                        , stream_rx 
+                                    }
                                     , children : [
-                                        {type : 'code', name: 'ENCODE QUALITY 1', config : {code : ' "ENC Q1"'}
-                                            , children : [
-                                                { type : 'JOIN', name : 'AFTER ENCODING'
-                                                    , children : [
-                                                        {type : 'END', name : 'PACKAGE'}
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                        , {type : 'code', name: 'ENCODE QUALITY 2', config : {code : ' "ENC Q2"'}, children : [{ type : 'JOIN', name : 'AFTER ENCODING'}]}
-                                        , {type : 'code', name: 'ENCODE QUALITY 3', config : {code : ' "ENC Q3"'}, children : [{ type : 'JOIN', name : 'AFTER ENCODING'}]}
-                                        , {type : 'code', name: 'ENCODE QUALITY 4', config : {code : ' "ENC Q4"'}, children : [{ type : 'JOIN', name : 'AFTER ENCODING'}]}
-                                        , {type : 'code', name: 'ENCODE QUALITY 5', config : {code : ' "ENC Q5"'}, children : [{ type : 'JOIN', name : 'AFTER ENCODING'}]}
-                                        , {type : 'code', name: 'ENCODE QUALITY 6', config : {code : ' "ENC Q6"'}, children : [{ type : 'JOIN', name : 'AFTER ENCODING'}]}
+                                        generate_config_encode('GEN-1', 144, 120,  [
+                                            { type : 'code', name : 'PACKAGE', config : { code : '"PACKAGE"'}, target_type : 'code'
+                                                , children : [
+                                                    {type : 'JOIN', name : 'AFTER-IMAGES'
+                                                        , children : [
+                                                            {type : 'END', name : 'FINISH'}
+                                                        ]}
+                                                ]
+                                            }
+                                        ])        
+                                        , generate_config_encode('GEN-2', 288, 320) 
+                                        , generate_config_encode('GEN-3', 576, 750) 
+                                        , generate_config_encode('GEN-4', 720, 1200)
+                                        , generate_config_encode('GEN-5', 720, 2000) 
+                                        , generate_config_encode('GEN-6', 720, 3500)
                                     ]
-
+                        
                                 }
-                               
-                            ]    
+                            ]
+                        
                         }
-                    ]    
-                }
-                , { type : 'code', name : 'run ffmpeg images'
-                    , config : {
-                        exec : 'ffmpeg -t 100 -i "$(file)" -vf fps=1/10 "$(dir)/img%03d.jpg"'
-                        , code : ' "this is the ffmpeg image return" '
-                    }
-                    , children : [
-                        {type : 'JOIN', name : 'AFTER-IMAGES'}
-                    ] 
-                }
+                        , { type : 'code', name : 'run ffmpeg images', target_type : 'execute'
+                            , config : {
+                                exec : 'ffmpeg -t 100 -i "$(file)" -vf fps=1/10 "$(dir)/img%03d.jpg"'
+                                , code : ' "this is the ffmpeg image return" '
+                            }
+                            , children : [
+                                {type : 'JOIN', name : 'AFTER-IMAGES'}
+                            ] 
+                        }
+                    ]}
             ]
         }
     }
