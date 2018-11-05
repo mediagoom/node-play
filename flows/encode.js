@@ -144,6 +144,22 @@ const encode_config_code = `
 
 `;
 
+const images_config_code = `
+    let cmd_images = '-t 100 -i "$(file)" -vf fps=1/10 "$(dir)/img%03d.jpg"'
+
+    const file = propertyBag.input_file;
+       
+    cmd_images = cmd_images.replace('$(file)', file);
+    cmd_images = cmd_images.replace('$(dir)', propertyBag.output_dir);
+
+    let j = cmd_images.split(' ');
+    dbg(cmd_images);
+
+    propertyBag.config.args = j;
+
+    cmd_images
+`;
+
 /* eslint-enable */
 
 function generate_config_encode(name, height, bitrate, end)
@@ -203,9 +219,7 @@ module.exports = {
                                 , code : ` 
                         
                         propertyBag.ff_arg = '[' + config.args[0] + ']';
-                                
                         \`
-                          
                             ${ffprobe_output}
                         \`
                         `
@@ -263,14 +277,17 @@ module.exports = {
                                     }
                                     , children : [
                                         generate_config_encode('GEN-1', 144, 120,  [
-                                            { type : 'code', name : 'PACKAGE', config : { code : '"PACKAGE"'}, target_type : 'code'
+                                            { type : 'code', name : 'CONFIGURE PACKAGE', config : { code : '"PACKAGE"'}, target_type : 'code'
                                                 , children : [
-                                                    {type : 'JOIN', name : 'AFTER-IMAGES'
+                                                    {type: 'code', name : 'MG PACKAGE', config: {code : '"MG"'}, target_type : 'execute'
                                                         , children : [
-                                                            {type : 'END', name : 'FINISH'}
+                                                            {type : 'JOIN', name : 'AFTER-IMAGES'
+                                                                , children : [
+                                                                    {type : 'END', name : 'FINISH'}
+                                                                ]}
+                                                
                                                         ]}
-                                                ]
-                                            }
+                                                ]}
                                         ])        
                                         , generate_config_encode('GEN-2', 288, 320) 
                                         , generate_config_encode('GEN-3', 576, 750) 
@@ -278,20 +295,24 @@ module.exports = {
                                         , generate_config_encode('GEN-5', 720, 2000) 
                                         , generate_config_encode('GEN-6', 720, 3500)
                                     ]
-                        
                                 }
                             ]
                         
                         }
-                        , { type : 'code', name : 'run ffmpeg images', target_type : 'execute'
+                        , { type : 'code', name : 'configure ffmpeg images'
                             , config : {
-                                exec : 'ffmpeg -t 100 -i "$(file)" -vf fps=1/10 "$(dir)/img%03d.jpg"'
-                                , code : ' "this is the ffmpeg image return" '
+                                code : images_config_code 
                             }
-                            , children : [
-                                {type : 'JOIN', name : 'AFTER-IMAGES'}
-                            ] 
-                        }
+                            , children : [{ type : 'code', name : 'run ffmpeg images', target_type : 'execute'
+                                , config : {
+                                    cmd : 'ffmpeg'
+                                    , args : []
+                                    , code : ' "this is the ffmpeg image return" '
+                                }
+                                , children : [
+                                    {type : 'JOIN', name : 'AFTER-IMAGES'}
+                                ] 
+                            }]}
                     ]}
             ]
         }
