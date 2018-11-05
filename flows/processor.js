@@ -1,5 +1,6 @@
 const opflow = require('@mediagoom/opflow');
 const dbg = require('debug')('node-play:opflow-processor');
+const path = require('path');
 const EventEmitter = require('events');
 //const path = require('path');
 const encode_flow = require('./encode').encode;
@@ -30,6 +31,20 @@ const default_options = {
 
 };
 
+function re_target_flow(operation)
+{
+    if(undefined !== operation.children)
+    {
+        operation.children.forEach(element => {
+            re_target_flow(element);
+        });
+    }
+    
+    if(undefined !== operation.target_type)
+    {
+        operation.type = operation.target_type;
+    }
+}
 
 
 module.exports = class opflow_processor extends EventEmitter {
@@ -70,7 +85,18 @@ module.exports = class opflow_processor extends EventEmitter {
 
         dbg('read_stream_info %s', file_path);
 
-        this.flow_id = await opflow.add_flow(encode_flow);
+        const fl = JSON.parse(JSON.stringify(encode_flow));
+
+        fl.root.children[0].config.input_file = file_path;
+        fl.root.children[0].config.output_dir = path.join(this.options.destination, this.id);
+
+        fl.root.children[0].config.output_dir = fl.root.children[0].config.output_dir.replace(/\\/g, '/');
+
+        re_target_flow(fl.root);
+
+        dbg('add flow', JSON.stringify(fl, null, 4));
+
+        this.flow_id = await opflow.add_flow(fl);
 
         flow_map[this.flow_id] = this;
 
@@ -82,7 +108,7 @@ module.exports = class opflow_processor extends EventEmitter {
         if(ended)
             flow_end(this.flow_id);
        
-        return { streams : { flow_id: this.flow_id } };
+        return { streams : { flow_id: this.flow_id, file_path } };
     }
 
     async encode(file_path, streams)

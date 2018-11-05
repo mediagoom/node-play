@@ -248,6 +248,8 @@ module.exports =  class StateManFs  {
                                         
         dbg('>>PACKAGE2', '<<', package_dir, '>>');
 
+        await Mkdir(package_dir, { recursive: true });
+
         await p.package(quality, package_dir);
                                 
         let res = {

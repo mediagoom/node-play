@@ -16,34 +16,20 @@
             ]
         }
 
+        
         , {
-            "name": "Debug Mocha tests",
+            "name": "Debug Mocha integration",
             "type": "node",
             "request": "launch",
             "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
             "stopOnEntry": false,
-            "args": ["-d", "./unit-test//**/*.js"],
-            "cwd": "${workspaceRoot}",
-            "preLaunchTask": null,
-             "env": {
-                "NODE_ENV": "development"
-                , "DEBUG" : "opflow:coordinator"
-            }
-            , "runtimeArgs": [
-                "--preserve-symlinks"
-            ]
-            
-        }
-        , {
-            "name": "Debug Mocha old tests",
-            "type": "node",
-            "request": "launch",
-            "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
-            "stopOnEntry": false,
-            "args": ["--reporter",  "spec", "--timeout", "800000", "./src//**/test/index.js", "./src//**/test/*.test.js"],
+            "args": ["-g", "opflow", "--reporter",  "spec", "--no-timeouts", "./src//**/test/index.js", "./src//**/test/*.test.js"],
             "cwd": "${workspaceRoot}",
             "preLaunchTask": null,
             "console": "integratedTerminal"
+            , "runtimeArgs": [
+                "--preserve-symlinks"
+            ]
             , "env": {
                 "NODE_ENV": "development"
                 , "DEBUG" : "opflow:coordinator"
@@ -51,7 +37,7 @@
             
         }
         , {
-            "name": "Debug Mocha regex",
+            "name": "Debug Mocha unit",
             "type": "node",
             "request": "launch",
             "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",

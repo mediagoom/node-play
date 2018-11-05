@@ -9,8 +9,7 @@ const begin_config_code = `
     //let configure next operation file probe
     propertyBag.config.args = [ file ];
 
-    propertyBag.qualities = [];
-
+    
     file
 `;
 
@@ -65,6 +64,8 @@ const probe_code = `
 
 
 const encode_config_code = `
+
+        const parse = require('parse-spawn-args').parse;
 
         const streams = JSON.parse(propertyBag.parent.result);
 
@@ -125,20 +126,22 @@ const encode_config_code = `
         cmd_encode = cmd_encode.replace('$(width)', config.width);
         cmd_encode = cmd_encode.replace('$(height)', config.height);
 
-        dbg('pre-bitrate: const cmd_encode = "', cmd_encode, '"', config.video_bitrate);
         cmd_encode = cmd_encode.replace(/\\$\\(video_bitrate\\)/g, config.video_bitrate);
-        dbg('post-bitrate', cmd_encode);
+        
         
 
         cmd_encode = cmd_encode.replace(/\\$\\(ab\\)/g, config.audio_bitrate);
 
+        dbg(propertyBag.output_dir);
+
         const output_file = propertyBag.output_dir + '/encoded_' + config.video_bitrate + '.mp4';
 
+        dbg(output_file);
         cmd_encode = cmd_encode.replace('$(output_file)', output_file);
        
-        propertyBag.qualities.push( { file : output_file, video_bitrate: config.video_bitrate} );
+        propertyBag.quality = { file : output_file, video_bitrate: config.video_bitrate} ;
 
-        let j = cmd_encode.split(' ');
+        let j = parse(cmd_encode); 
 
         //propertyBag.cmd = cmd_encode;
 
@@ -152,6 +155,8 @@ const encode_config_code = `
 
 const images_config_code = `
 
+    const parse = require('parse-spawn-args').parse;
+
     let cmd_images = '-t 100 -i "$(file)" -vf fps=1/10 "$(dir)/img%03d.jpg"'
 
     const file = propertyBag.input_file;
@@ -159,7 +164,7 @@ const images_config_code = `
     cmd_images = cmd_images.replace('$(file)', file);
     cmd_images = cmd_images.replace('$(dir)', propertyBag.output_dir);
 
-    let j = cmd_images.split(' ');
+    let j = parse(cmd_images);//cmd_images.split(' ');
     dbg(cmd_images);
 
     propertyBag.config.args = j;
@@ -169,10 +174,10 @@ const images_config_code = `
 
 const package_config_code = `
 
-    const quality = propertyBag.qualities;
+    const quality = propertyBag.quality;
     let args = [];
     args.push('-k:adaptive');
-    args.push('-o:' + propertyBag.output_dir);
+    args.push('-o:' + propertyBag.output_dir + '/STATIC');
     let first   = true;
     let cmd_line = '';
 
@@ -264,6 +269,7 @@ module.exports = {
                             , config : {
                                 cmd : 'ffprobe'
                                 , args : ['TODO: file-path']
+                                , include_err: true
                                 , code : ` 
                         
                         propertyBag.ff_arg = '[' + config.args[0] + ']';
@@ -307,7 +313,7 @@ module.exports = {
                 { type : 'code', name : 'pre configuration'
                     , config : {
                         input_file : '/tmp/media/file.mp4'
-                        , output_dir : '/tmp'
+                        , output_dir : 'C:/tmp'
                         , code : begin_config_code
                     }
                     , children : [
@@ -315,6 +321,7 @@ module.exports = {
                             , config : {
                                 cmd : 'ffprobe'
                                 , args : ['this is configured by the previous operation']
+                                , include_err : true
                                 , code : ` \`${ffprobe_output}\` ` 
                             }
                             , children : [

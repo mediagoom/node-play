@@ -184,7 +184,7 @@ describe('PROCESS MANAGER', () => {
 
     });
 
-   
+    /*
     describe('Fake StatMan', () => {
 
         test_proc_man('./test/stateman.js', 'uploader');
@@ -194,7 +194,8 @@ describe('PROCESS MANAGER', () => {
     describe('Fs StatMan', () => {
         test_proc_man('./statmanfs.js', 'statman');
     });
-
+    */
+   
     describe('Fs StatMan - opflow', () => {
        
         test_proc_man('./statmanfs.js', 'opflow-dir', '../../flows/processor.js');
