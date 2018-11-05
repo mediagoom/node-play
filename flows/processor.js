@@ -109,4 +109,9 @@ module.exports = class opflow_processor extends EventEmitter {
         });
     }
 
+    stop()
+    {
+        opflow.end();
+    }
+
 };

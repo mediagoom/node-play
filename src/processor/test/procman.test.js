@@ -61,18 +61,29 @@ function test_proc_man(require_status_man_string, owner, require_proc_man_string
     });
 
     it('queue job', (done) => {
-               
-
+    
         let file = tval('TESTMEDIAFILE', './src/processor/test/MEDIA1.MP4');
-
-        
-
+       
         p.queue_job(owner, id, file).then(
+
             () => {check(done, ()=> {
+                
                 expect(id).to.be.a('string');     
                 expect(id).to.be.match(/\d{10,12}_TEST/);
+
+                if(typeof p.stop === 'function')
+                {
+                    p.stop();
+                }
+
             });
-            }, (err) => done(err));
+            }, (err) => {
+                if(typeof p.stop === 'function')
+                {
+                    p.stop();
+                }
+                done(err);
+            });
                    
 
     });
@@ -187,6 +198,8 @@ describe('PROCESS MANAGER', () => {
     describe('Fs StatMan - opflow', () => {
        
         test_proc_man('./statmanfs.js', 'opflow-dir', '../../flows/processor.js');
+
+        
 
     });
 });

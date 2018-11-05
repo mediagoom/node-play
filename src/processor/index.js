@@ -4,11 +4,6 @@ const cp   = require('child_process');
 const fs   = require('fs');
 const parse = require('parse-spawn-args').parse;
 
-function pad(num, size) {
-    var s = '000000000000' + num;
-    return s.substr(s.length-size);
-}
-
 
 module.exports = class Processor extends EventEmitter {
 

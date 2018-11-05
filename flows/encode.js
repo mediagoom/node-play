@@ -9,6 +9,8 @@ const begin_config_code = `
     //let configure next operation file probe
     propertyBag.config.args = [ file ];
 
+    propertyBag.qualities = [];
+
     file
 `;
 
@@ -130,8 +132,12 @@ const encode_config_code = `
 
         cmd_encode = cmd_encode.replace(/\\$\\(ab\\)/g, config.audio_bitrate);
 
-        cmd_encode = cmd_encode.replace('$(output_file)', propertyBag.output_dir + '/encoded_' + config.video_bitrate + '.mp4');
-        
+        const output_file = propertyBag.output_dir + '/encoded_' + config.video_bitrate + '.mp4';
+
+        cmd_encode = cmd_encode.replace('$(output_file)', output_file);
+       
+        propertyBag.qualities.push( { file : output_file, video_bitrate: config.video_bitrate} );
+
         let j = cmd_encode.split(' ');
 
         //propertyBag.cmd = cmd_encode;
@@ -145,6 +151,7 @@ const encode_config_code = `
 `;
 
 const images_config_code = `
+
     let cmd_images = '-t 100 -i "$(file)" -vf fps=1/10 "$(dir)/img%03d.jpg"'
 
     const file = propertyBag.input_file;
@@ -158,6 +165,47 @@ const images_config_code = `
     propertyBag.config.args = j;
 
     cmd_images
+`;
+
+const package_config_code = `
+
+    const quality = propertyBag.qualities;
+    let args = [];
+    args.push('-k:adaptive');
+    args.push('-o:' + propertyBag.output_dir);
+    let first   = true;
+    let cmd_line = '';
+
+    for(let i = 0; i < quality.length; i++){
+        if(null != quality[i].file){
+
+            if(first){
+                cmd_line += '-i:';
+            }
+            else{
+                cmd_line += '-j:';
+            }
+
+            cmd_line += quality[i].file;
+            
+            args.push(cmd_line);
+            cmd_line = '';
+
+            args.push('-b:' + quality[i].video_bitrate);
+            
+            if(first){
+                args.push('-s:0');
+                args.push('-e:0');
+            }
+        
+            first = false;
+        }
+    }
+
+    propertyBag.config.args = args;
+
+    JSON.stringify(args);
+
 `;
 
 /* eslint-enable */
@@ -277,9 +325,9 @@ module.exports = {
                                     }
                                     , children : [
                                         generate_config_encode('GEN-1', 144, 120,  [
-                                            { type : 'code', name : 'CONFIGURE PACKAGE', config : { code : '"PACKAGE"'}, target_type : 'code'
+                                            { type : 'code', name : 'CONFIGURE PACKAGE', config : { code : package_config_code}, target_type : 'code'
                                                 , children : [
-                                                    {type: 'code', name : 'MG PACKAGE', config: {code : '"MG"'}, target_type : 'execute'
+                                                    {type: 'code', name : 'MG PACKAGE', config: {cmd : 'mg', args : [], code : '"MG"'}, target_type : 'execute'
                                                         , children : [
                                                             {type : 'JOIN', name : 'AFTER-IMAGES'
                                                                 , children : [
