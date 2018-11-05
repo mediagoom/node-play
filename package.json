@@ -7,7 +7,7 @@
     "nodeplay": "bin/server/index.js"
   },
   "scripts": {
-    "integration": "mocha --reporter spec --timeout 800000 ./src//**/test/index.js ./src//**/test/*.test.js"
+    "integration": "mocha --reporter spec --timeout 1200000 ./src//**/test/index.js ./src//**/test/*.test.js"
     , "link-integration" : "node --preserve-symlinks ./node_modules/mocha/bin/_mocha --timeout 400000 ./src//**/test/index.js ./src//**/test/*.test.js"
     , "test": "node --preserve-symlinks ./node_modules/mocha/bin/_mocha ./unit-test//**/*.js"
     , "start": "node ./node_modules/@mediagoom/devman start server",
