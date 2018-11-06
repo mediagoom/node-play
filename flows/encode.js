@@ -174,16 +174,19 @@ const images_config_code = `
 
     let fps = '1/10';
 
-    if(propertyBag.duration < 50)
+    if(propertyBag.duration < 100)
         fps = '1/5';
     
-    if(propertyBag.duration < 15)
+    if(propertyBag.duration < 50)
+        fps = '1/2';
+    
+    if(propertyBag.duration < 20)
         fps = '1';
     
-    if(propertyBag.duration < 5)
+    if(propertyBag.duration < 10)
         fps = '2';
     
-    if(propertyBag.duration < 2)
+    if(propertyBag.duration < 5)
         fps = '10';
 
     let cmd_images = '-t 100 -i "$(file)" -vf fps=$(fps) "$(dir)/img%03d.jpg"'
@@ -279,6 +282,8 @@ function generate_config_encode(name, height, bitrate, end)
     return JSON.parse(JSON.stringify(ops));
                                         
 }
+
+
 
 
 module.exports = {
