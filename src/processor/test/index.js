@@ -1,14 +1,15 @@
-import chai      from 'chai';
-import Processor from '../../processor/index.js';
-import cp        from 'child_process';
-import path      from 'path';
+
+const chai      = require('chai');
+const Processor = require('../../processor/index.js');
+const cp        = require('child_process');
+const path      = require('path');
 
 var expect = chai.expect;
 
 function tval(name, def)
 {
     if(null == process.env[name])
-        {
+    {
         return def;
     }
 
@@ -25,20 +26,23 @@ function check( done, f ) {
 }
 
 var result = [ { index: '0'
-                                   ,  lang: 'und'
-                                   ,  kind: 'Video'
-                                   ,  width: '1024'
-                                   ,  height: '576'
-                                   ,  kz: undefined
-                                   ,  bps: '674' }
-                                  , { index: '1'
-                                    , lang: 'und'
-                                    , kind: 'Audio'
-                                    , width: undefined
-                                    , height: undefined
-                                    , kz: '48000'
-                                    , bps: '96' } 
+    ,  lang: 'und'
+    ,  kind: 'Video'
+    ,  width: '1024'
+    ,  height: '576'
+    ,  kz: undefined
+    ,  bps: '674' }
+, { index: '1'
+    , lang: 'und'
+    , kind: 'Audio'
+    , width: undefined
+    , height: undefined
+    , kz: '48000'
+    , bps: '96' } 
 ];
+
+let n    = tval('TESTNAME', 'TEST');
+let tid  = tval('TESTID'  , '9999999999_' + n);
 
  
 describe('PROCESSOR', () => {
@@ -47,29 +51,29 @@ describe('PROCESSOR', () => {
         
         let cases = [
             { name : 'flv'
-              , input : `
+                , input : `
     Duration: 00:01:54.66, start: 0.000000, bitrate: 962 kb/s
     Stream #0:0: Video: h264 (High), yuv420p, 640x352 [SAR 44:45 DAR 16:9], 30.30 fps, 29.97 tbr, 1k tbn, 59.94 tbc
     Stream #0:1: Audio: aac (HE-AAC), 44100 Hz, stereo, fltp
 
                 
                 `
-              , expected : [{ index: '0'
-                                   ,  lang: 'und'
-                                   ,  kind: 'Video'
-                                   ,  width: '640'
-                                   ,  height: '352'
-                                   ,  kz: undefined
-                                   ,  bps: '962' }
-                                  , { index: '1'
-                                    , lang: 'und'
-                                    , kind: 'Audio'
-                                    , width: undefined
-                                    , height: undefined
-                                    , kz: '44100'
-                                    , bps: undefined } 
+                , expected : [{ index: '0'
+                    ,  lang: 'und'
+                    ,  kind: 'Video'
+                    ,  width: '640'
+                    ,  height: '352'
+                    ,  kz: undefined
+                    ,  bps: '962' }
+                , { index: '1'
+                    , lang: 'und'
+                    , kind: 'Audio'
+                    , width: undefined
+                    , height: undefined
+                    , kz: '44100'
+                    , bps: undefined } 
 
-              ]
+                ]
             }
             , { name : 'mp4'
                 , input : `
@@ -83,7 +87,7 @@ describe('PROCESSOR', () => {
      creation_time   : 2016-11-28T16:36:40.000000Z
      handler_name    : FOUNDATION MEDIA HANDLER
 `
-            , expected : result
+                , expected : result
             }
 
             , {name : 'hdtv.ts'
@@ -96,22 +100,22 @@ Input #0, mpegts, from 'F:\\IOMEGA\\NEWMEDIA\\MORE\\2\\hdtv.ts':
     Stream #0:2[0x801](eng): Audio: ac3 ([129][0][0][0] / 0x0081), 48000 Hz, 5.1(side), fltp, 384 kb/s
     Stream #0:3[0x102]: Audio: ac3 ([129][0][0][0] / 0x0081), 0 channels, fltp
 `                    
-        , expected : [{ index: '0'
-                                   ,  lang: 'und'
-                                   ,  kind: 'Video'
-                                   ,  width: '1920'
-                                   ,  height: '1080'
-                                   ,  kz: undefined
-                                   ,  bps: '14138' }
-                                  , { index: '1'
-                                    , lang: 'eng'
-                                    , kind: 'Audio'
-                                    , width: undefined
-                                    , height: undefined
-                                    , kz: '48000'
-                                    , bps: undefined } 
+                , expected : [{ index: '0'
+                    ,  lang: 'und'
+                    ,  kind: 'Video'
+                    ,  width: '1920'
+                    ,  height: '1080'
+                    ,  kz: undefined
+                    ,  bps: '14138' }
+                , { index: '1'
+                    , lang: 'eng'
+                    , kind: 'Audio'
+                    , width: undefined
+                    , height: undefined
+                    , kz: '48000'
+                    , bps: undefined } 
 
-        ]
+                ]
                 , enabled : false
 
             }
@@ -129,9 +133,9 @@ Input #0, mpegts, from 'F:\\IOMEGA\\NEWMEDIA\\MORE\\2\\hdtv.ts':
 
             if(cases[i].enabled || undefined == cases[i].enabled)
             {
-           // console.log(name);
+                // console.log(name);
                 it(name, () => {
-                    let p    = new Processor(name);
+                    let p    = new Processor(name, {id : 'ID'});
                     let s    = p.get_streams(cases[i].input + output_stream);
 
                     // console.log(s.streams);
@@ -163,18 +167,18 @@ Input #0, mpegts, from 'F:\\IOMEGA\\NEWMEDIA\\MORE\\2\\hdtv.ts':
         cp.exec('ffmpeg -version', {env: process.env},  (err/*, stdout, stderr*/) =>{
                 
             if(err)
-                {
+            {
                 done(err);
             }
 
             cp.exec('mg --help', (err/*, stdout, stderr*/) => {
                 
                 if(err)
-                    {
+                {
                     done(err);
                 }
                 else
-                    {
+                {
                     done();
                 }
                     
@@ -190,7 +194,7 @@ Input #0, mpegts, from 'F:\\IOMEGA\\NEWMEDIA\\MORE\\2\\hdtv.ts':
         expect(Processor).to.be.a('function');
                   
         let n = tval('TESTNAME', 'TEST');
-        let p = new Processor(n);
+        let p = new Processor(n, {id : 'ID'});
                   
         expect(p).to.be.a('object');
 
@@ -205,10 +209,6 @@ Input #0, mpegts, from 'F:\\IOMEGA\\NEWMEDIA\\MORE\\2\\hdtv.ts':
     });//return 200
 
     describe('Elaborate', () => {
-
-
-        let n    = tval('TESTNAME', 'TEST');
-        let tid  = tval('TESTID'  , '9999999999_' + n);
 
         let p    = new Processor(n, {destination: './uploader', id : tid});
         let file = tval('TESTMEDIAFILE', './src/processor/test/MEDIA1.MP4');
@@ -245,9 +245,9 @@ Input #0, mpegts, from 'F:\\IOMEGA\\NEWMEDIA\\MORE\\2\\hdtv.ts':
             , width: '1024'
             , done: true
             , file: path.join(dir, 'TEST_1024_576_750.mp4').replace(/\\/g, '/') }
-                          , { videobitrate: 0, height: 720, width: '1280', done: true, status: 'none' }
-                          , { videobitrate: 0, height: 720, width: '1280', done: true, status: 'none' }
-                          , { videobitrate: 0, height: 720, width: '1280', done: true, status: 'none' } 
+        , { videobitrate: 0, height: 720, width: '1280', done: true, status: 'none' }
+        , { videobitrate: 0, height: 720, width: '1280', done: true, status: 'none' }
+        , { videobitrate: 0, height: 720, width: '1280', done: true, status: 'none' } 
         ];                           
                          
 
@@ -260,8 +260,8 @@ Input #0, mpegts, from 'F:\\IOMEGA\\NEWMEDIA\\MORE\\2\\hdtv.ts':
                             
                     expect(streams).to.be.a('object');
 
-                            //console.log(streams);
-                            //
+                    //console.log(streams);
+                    //
 
                     expect(streams.streams).to.be.deep.equal(result);
                             

@@ -1,16 +1,11 @@
-import { EventEmitter } from 'events';
-import path from 'path';
-import cp   from 'child_process';
-import fs   from 'fs';
-import {parse} from 'parse-spawn-args';
-
-function pad(num, size) {
-    var s = '000000000000' + num;
-    return s.substr(s.length-size);
-}
+const EventEmitter = require('events');
+const path = require('path');
+const cp   = require('child_process');
+const fs   = require('fs');
+const parse = require('parse-spawn-args').parse;
 
 
-export default class Processor extends EventEmitter {
+module.exports = class Processor extends EventEmitter {
 
     constructor(name, opt) {
         super();
@@ -23,18 +18,18 @@ export default class Processor extends EventEmitter {
             , stream_rx : 'Stream\\s#0:(\\d+)(?:[\\(\\[](\\w+)[\\)\\]]){0,1}:\\s(Audio|Video):.*?(?:(?:,\\s(\\d+)x(\\d+))|(?:(\\d+) Hz)).*?, (?:(?:(\\d+) kb/s)|(?:stereo)|(?:.*? fps))'
             , cmd_encode : '-i "$(file)" -vf "scale=w=$(width):h=$(height)" -codec:v libx264 -profile:v high -level 31 -b:v $(vb)k -r 25 -g 50 -sc_threshold 0 -x264opts ratetol=0.1 -minrate $(vb)k -maxrate $(vb)k -bufsize $(vb)k -b:a $(ab)k -codec:a aac -profile:a aac_low -ar 44100 -ac 2 -y "$(outputfile)"'
             , quality : [
-                              {videobitrate: 120  , height : 144 }
-                            , {videobitrate: 320  , height : 288 }
-                            , {videobitrate: 750  , height : 576 }
-                            , {videobitrate: 1200 , height : 720 }
-                            , {videobitrate: 2000 , height : 720 }
-                            , {videobitrate: 3500 , height : 720 }
+                {videobitrate: 120  , height : 144 }
+                , {videobitrate: 320  , height : 288 }
+                , {videobitrate: 750  , height : 576 }
+                , {videobitrate: 1200 , height : 720 }
+                , {videobitrate: 2000 , height : 720 }
+                , {videobitrate: 3500 , height : 720 }
 
             ]  
 
-             , outputfile : '$(name)_$(width)_$(height)_$(vb).mp4'
-             , audiobitrate : 96
-             , max_encoders: 2
+            , outputfile : '$(name)_$(width)_$(height)_$(vb).mp4'
+            , audiobitrate : 96
+            , max_encoders: 2
             
         };
 
@@ -44,17 +39,19 @@ export default class Processor extends EventEmitter {
             this.options = defop;
         
 
-        this._anchor = new Date(2100, 0, 0).getTime();
-        this._create = Date.now();
+        
         this.name    = name;
 
         if(null == this.options.id)
         {
 
+            throw 'do not let processor to manage id';
+            /*
             let seconds = (this._anchor - this._create) / 1000;
             let n = pad(seconds.toFixed(0), 12);
 
             this.id = n + '_' + this.name;
+            */
         }
         else
         {
@@ -94,12 +91,12 @@ export default class Processor extends EventEmitter {
         let streams = [];
         while ((m = regexp.exec(output)) !== null) {
             let s = { index : m[1]
-                    , lang  : m[2]
-                    , kind  : m[3]
-                    , width : m[4]
-                    , height: m[5]
-                    , kz    : m[6]
-                    , bps   : m[7]
+                , lang  : m[2]
+                , kind  : m[3]
+                , width : m[4]
+                , height: m[5]
+                , kz    : m[6]
+                , bps   : m[7]
             };
 
             if(s.kind == 'Video' && s.bps == null)
@@ -111,9 +108,9 @@ export default class Processor extends EventEmitter {
             streams.push(s);
 
         }
-         //return { raw : output, match : m };
-         //
-         //
+        //return { raw : output, match : m };
+        //
+        //
         
         streams.splice(-1, 1);
 
@@ -178,7 +175,7 @@ export default class Processor extends EventEmitter {
         }
 
         mk(path.join(dir, dirs[0])
-                , dirs, 0, callback);
+            , dirs, 0, callback);
     }
 
     read_stream_info(filepath){
@@ -228,11 +225,11 @@ export default class Processor extends EventEmitter {
         console.log('FFSPAWN', idx); //, quality[idx].args);
         
         let child = cp.spawn('ffmpeg', quality[idx].args
-        , {                           
-            stdio: [ 'ignore', outs, errs ]
-            , cwd: process.cwd()
+            , {                           
+                stdio: [ 'ignore', outs, errs ]
+                , cwd: process.cwd()
             //, env: process.env
-        });
+            });
 
         child.on('close', (code, signal) => {
             
@@ -478,8 +475,8 @@ export default class Processor extends EventEmitter {
                 
                 let child = cp.spawn('mg', args, {                           
                     stdio: [ 'ignore', outs, errs ]
-                        , cwd: process.cwd()
-                        // , env: process.env
+                    , cwd: process.cwd()
+                    // , env: process.env
                 });
                 
                 /*
@@ -514,4 +511,4 @@ export default class Processor extends EventEmitter {
             });
         });
     }
-}
+};

@@ -1,0 +1,65 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "program": "${workspaceFolder}\\src\\server\\index.js"
+            , "console": "integratedTerminal"
+            , "runtimeArgs": [
+                "--preserve-symlinks"
+            ]
+            , "env": {
+                "NODE_ENV": "development"
+                , "DEBUG" : "opflow:coordinator"
+            }
+        }
+
+        
+        , {
+            "name": "Debug Mocha integration",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+            "stopOnEntry": false,
+            "args": ["-g", "opflow", "--reporter",  "spec", "--no-timeouts", "./src//**/test/index.js", "./src//**/test/*.test.js"],
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": null,
+            "console": "integratedTerminal"
+            , "runtimeArgs": [
+                "--preserve-symlinks"
+            ]
+            , "env": {
+                "NODE_ENV": "development"
+                , "DEBUG" : "opflow:coordinator"
+            }
+            
+        }
+        , {
+            "name": "Debug Mocha unit",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+            "stopOnEntry": false,
+            "args": ["-g", "encode", "--no-timeouts", "./unit-test//**/*.js"],
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": null,
+            "console": "integratedTerminal"
+            , "runtimeArgs": [
+                "--preserve-symlinks"
+            ]
+        
+            
+            , "env": {
+                "NODE_ENV": "development"
+                , "DEBUG" : ""
+            }
+            
+        }
+    ]
+}

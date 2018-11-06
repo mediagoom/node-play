@@ -3,6 +3,8 @@ node_js:
 - 10
 - 9
 - 8
+env:
+  - DEBUG: opflow:processor
 branches:
   except:
   - dev-wia
@@ -10,10 +12,10 @@ before_install:
 - python ./version.py
 - npm install
 script:
-- npm run build
 - npm start
 - cat ./out.log
 - npm test
+- npm run integration
 after_script:
 - npm stop
 deploy:
