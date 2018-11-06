@@ -19,11 +19,24 @@ const probe_code = `
 
           let regex_duration = new RegExp(config.duration_rx, 'g');
           let m = null;
-            let kb = 0;
+          let kb = 0;
+          let duration = 0;
 
             if ((m = regex_duration.exec(output)) !== null) {
                 
                 kb = m[6];
+
+                const hh = new Number(m[1]);
+                const mm = new Number(m[2]);
+                const ss = new Number(m[3]);
+                const ml = new Number(m[4]);
+
+                duration = hh * 60 * 60;
+                duration += mm * 60;
+                duration += ss;
+
+                duration += ml / 1000;
+
 
             }
 
@@ -53,6 +66,8 @@ const probe_code = `
     
     //streams.splice(-1, 1);
 
+    propertyBag.kb = kb;
+    propertyBag.duration = duration;
     propertyBag.streams = streams;
 
     JSON.stringify(streams, null, 4);
@@ -157,10 +172,25 @@ const images_config_code = `
 
     const parse = require('parse-spawn-args').parse;
 
-    let cmd_images = '-t 100 -i "$(file)" -vf fps=1/10 "$(dir)/img%03d.jpg"'
+    let fps = '1/10';
+
+    if(propertyBag.duration < 50)
+        fps = '1/5';
+    
+    if(propertyBag.duration < 15)
+        fps = '1';
+    
+    if(propertyBag.duration < 5)
+        fps = '2';
+    
+    if(propertyBag.duration < 2)
+        fps = '10';
+
+    let cmd_images = '-t 100 -i "$(file)" -vf fps=$(fps) "$(dir)/img%03d.jpg"'
 
     const file = propertyBag.input_file;
-       
+    
+    cmd_images = cmd_images.replace('$(fps)', fps);
     cmd_images = cmd_images.replace('$(file)', file);
     cmd_images = cmd_images.replace('$(dir)', propertyBag.output_dir);
 
@@ -331,15 +361,29 @@ module.exports = {
                                         , stream_rx 
                                     }
                                     , children : [
-                                        generate_config_encode('GEN-1', 144, 120,  [
+                                        { type : 'code', name : 'configure ffmpeg images'
+                                            , config : {
+                                                code : images_config_code 
+                                            }
+                                            , children : [{ type : 'code', name : 'run ffmpeg images', target_type : 'execute'
+                                                , config : {
+                                                    cmd : 'ffmpeg'
+                                                    , args : []
+                                                    , code : ' "this is the ffmpeg image return" '
+                                                }
+                                                , children : [
+                                                    {type : 'JOIN', name : 'AFTER-IMAGES' , children : [
+                                                        {type : 'END', name : 'FINISH'}
+                                                    ]}
+                                                ] 
+                                            }]}
+                                        , generate_config_encode('GEN-1', 144, 120,  [
                                             { type : 'code', name : 'CONFIGURE PACKAGE', config : { code : package_config_code}, target_type : 'code'
                                                 , children : [
                                                     {type: 'code', name : 'MG PACKAGE', config: {cmd : 'mg', args : [], code : '"MG"'}, target_type : 'execute'
                                                         , children : [
                                                             {type : 'JOIN', name : 'AFTER-IMAGES'
-                                                                , children : [
-                                                                    {type : 'END', name : 'FINISH'}
-                                                                ]}
+                                                            }
                                                 
                                                         ]}
                                                 ]}
@@ -351,23 +395,9 @@ module.exports = {
                                         , generate_config_encode('GEN-6', 720, 3500)
                                     ]
                                 }
+                                
                             ]
-                        
                         }
-                        , { type : 'code', name : 'configure ffmpeg images'
-                            , config : {
-                                code : images_config_code 
-                            }
-                            , children : [{ type : 'code', name : 'run ffmpeg images', target_type : 'execute'
-                                , config : {
-                                    cmd : 'ffmpeg'
-                                    , args : []
-                                    , code : ' "this is the ffmpeg image return" '
-                                }
-                                , children : [
-                                    {type : 'JOIN', name : 'AFTER-IMAGES'}
-                                ] 
-                            }]}
                     ]}
             ]
         }

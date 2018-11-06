@@ -11,7 +11,7 @@
     , "link-integration" : "node --preserve-symlinks ./node_modules/mocha/bin/_mocha --timeout 400000 ./src//**/test/index.js ./src//**/test/*.test.js"
     , "test": "node --preserve-symlinks ./node_modules/mocha/bin/_mocha ./unit-test//**/*.js"
     , "start": "node ./node_modules/@mediagoom/devman start server",
-    "server": "node ./src/server/index.js",
+    "server": "node --preserve-symlinks ./src/server/index.js",
     "stop": "node ./node_modules/@mediagoom/devman stop",
     "install": "node ./dowloadtools.js"
   },

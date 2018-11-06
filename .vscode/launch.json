@@ -10,10 +10,14 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}\\src\\server\\index.js"
-
+            , "console": "integratedTerminal"
             , "runtimeArgs": [
                 "--preserve-symlinks"
             ]
+            , "env": {
+                "NODE_ENV": "development"
+                , "DEBUG" : "opflow:coordinator"
+            }
         }
 
         
