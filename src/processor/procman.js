@@ -75,8 +75,4 @@ module.exports =  class ProcMan  {
         
     }
 
-
-
-    
-
-}
+};
