@@ -4,7 +4,8 @@ node_js:
 - 9
 - 8
 env:
-  - DEBUG: node-play:statmanfs,xopflow:processor
+  DEBUG: xnode-play:statmanfs,xopflow:processor
+  secure: E0j8TxDtzsMW6zVLE6ix2NOOBZddl6izoKfcXL0U7PgDwTXjNlsHwJxeyBVtWgb6NMLmEfOkDwuUO+6t0Myy0CY4kxH3Q+V3pQLYq+bkwfP4NNi6Kbubb9258H/IKTdQbC2d/JrAUz2ez/oPBAG65xu6LYw9gMyl2g3tED1I2q+XkYgn15WVmOthsonDphCtIKa61DtySDU4V5r9EiuctWPtHOwx1TgnCjuAfsZk2cq7t/BdfH/PAip1tiHirosqxWhwf6DFyw005LlYioOtCMqP6xlInWbNPchJlgaZgprkuFd+n2/b1cwukA1OYsqVrpSugUnGS3KPlSC475usHljwNrW4fWM/GKrAonpbOs0L7ZeFoHSrp4LRr9RAFWvmFBTg7YUtjqvN5EfDz9qar75ERBoCMnW6GfioZ2JBGZi4Yd770i1FXa2/+uUQh9BVE/BfgE56b3di1LpukM4B4xhGu5vuq1ID1Lt7eawYN/GYDgGWpL4zHLpTkjsQvaKmoZcO00Pgbmi/ZvQv/QCv/wsyIl3Q+Bf1Wwdy+KnZtoL7tMV/73zUIjwS62BDlalr1B2oN204GyKQhOvwHpjFtbB+pXdgnFB1IWTnqjKrvNNC86Am0YWLEFbNhP+knzyjTUVnHOuQfv+grreRHKHQp5PFk6ye21u93SMEfVJX97Y=
 branches:
   except:
   - dev-wia
@@ -13,15 +14,13 @@ before_install:
 - npm install
 - npm install coveralls codecov
 script:
-- ./node_modules/.bin/nyc npm run test
+- "./node_modules/.bin/nyc npm run test"
 - mv ./.nyc_output ./.nyc_tmp
-- ./node_modules/.bin/nyc npm run integration
+- "./node_modules/.bin/nyc npm run integration"
 - mv ./.nyc_tmp/* ./.nyc_output
 - ls ./.nyc_output
-- ./node_modules/.bin/nyc report --reporter=text-lcov | coveralls
-- ./node_modules/.bin/nyc report --reporter=text-lcov > coverage.lcov && codecov
-
-
+- "./node_modules/.bin/nyc report --reporter=text-lcov | coveralls"
+- "./node_modules/.bin/nyc report --reporter=text-lcov > coverage.lcov && codecov"
 after_script:
 - npm stop
 deploy:

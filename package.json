@@ -1,5 +1,8 @@
 {
   "name": "@mediagoom/node-play",
+  "publishConfig": {
+    "access": "public"
+  },
   "version": "0.0.7",
   "description": "A nodejs streaming server implementation",
   "main": "bin/server/index.js",
