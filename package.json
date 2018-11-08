@@ -4,7 +4,7 @@
   "description": "A nodejs streaming server implementation",
   "main": "bin/server/index.js",
   "bin": {
-    "nodeplay": "bin/server/index.js"
+    "nodeplay": "src/server/index.js"
   },
   "scripts": {
     "integration": "mocha --reporter spec --timeout 1200000 ./src//**/test/index.js ./src//**/test/*.test.js"

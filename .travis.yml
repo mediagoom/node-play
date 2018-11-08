@@ -12,7 +12,6 @@ before_install:
 - python ./version.py
 - npm install
 script:
-- cat ./out.log
 - npm test
 - npm run integration
 - ./node_modules/.bin/nyc npm run test
