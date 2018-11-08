@@ -4,17 +4,24 @@ node_js:
 - 9
 - 8
 env:
-  - DEBUG: xopflow:processor
+  - DEBUG: node-play:statmanfs,xopflow:processor
 branches:
   except:
   - dev-wia
 before_install:
 - python ./version.py
 - npm install
+- npm install coveralls codecov
 script:
-- npm test
-- npm run integration
 - ./node_modules/.bin/nyc npm run test
+- mv ./nyc_output ./nyc_tmp
+- ./node_modules/.bin/nyc npm run integration
+- mv ./nyc_tmp/* ./nyc_output
+- ls ./nyc_output
+- ./node_modules/.bin/nyc report --reporter=text-lcov | coveralls
+- ./node_modules/.bin/nyc report --reporter=text-lcov | codecov
+
+
 after_script:
 - npm stop
 deploy:

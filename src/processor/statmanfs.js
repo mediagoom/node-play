@@ -285,6 +285,8 @@ module.exports =  class StateManFs  {
 
         if('ok' != j.status)
         {
+            dbg('ask processor for status %O', j);
+            assert(j.queue_id, 'invalid queue_id', j.queue_id);
             j.status = await p.processor.get_status(j.queue_id);
         }
 
