@@ -71,7 +71,7 @@ function test_proc_man(require_status_man_string, owner, require_proc_man_string
         
         while('ok' != status.status)
         {
-            util.Wait(500);
+            await util.Wait(500);
 
             const now = new Date();
             if( timeout_ms < (now.getTime() - start.getTime()))
