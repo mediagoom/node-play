@@ -16,6 +16,7 @@ branches:
 before_install:
 - python ./version.py
 - npm install
+- npm install --only=dev
 - npm install coveralls codecov
 script:
 - "./node_modules/.bin/nyc npm run test"
