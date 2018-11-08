@@ -1,6 +1,7 @@
 const chai = require('chai');
 const ProcMan  = require('../../processor/procman.js');
 const dbg = require('debug')('node-play:integration-test-proc-man');
+const util = require('@mediagoom/opflow/util');
 
 var expect = chai.expect;
 
@@ -40,51 +41,59 @@ function test_proc_man(require_status_man_string, owner, require_proc_man_string
     //let owner = "uploader";
     let name  = 'TEST';
 
-    it('reserve name', (done) => {
+    it('reserve name', async () => {
                
-        p.reserve_name(owner, name).then( (idx) => {
-
-            check(done, () => {
-                            
-                expect(idx).to.be.a('string');
+        const idx = await p.reserve_name(owner, name);
+        expect(idx).to.be.a('string');
                     
-                id = idx;
+        id = idx;
 
-                dbg('-----', id, '------');
-                        
-            });
-        }
-        , (err) => {
-            done(err);
-        });
+        dbg('-----', id, '------');
+        
 
     });
 
-    it('queue job', (done) => {
+    it('queue job', async () => {
     
         let file = tval('TESTMEDIAFILE', './src/processor/test/MEDIA1.MP4');
        
-        p.queue_job(owner, id, file).then(
+        const timeout_ms = 15000;
+        
+        await p.queue_job(owner, id, file);
+        
+        expect(id).to.be.a('string');     
+        expect(id).to.be.match(/\d{10,12}_TEST/);
 
-            () => {check(done, ()=> {
-                
-                expect(id).to.be.a('string');     
-                expect(id).to.be.match(/\d{10,12}_TEST/);
+        const start = new Date();
 
-                if(typeof p.stop === 'function')
-                {
-                    p.stop();
-                }
+        let status = (await p.status(owner, id));
+        expect(status).to.have.property('status');
+        
+        while('ok' != status.status)
+        {
+            util.Wait(500);
 
-            });
-            }, (err) => {
-                if(typeof p.stop === 'function')
-                {
-                    p.stop();
-                }
-                done(err);
-            });
-                   
+            const now = new Date();
+            if( timeout_ms < (now.getTime() - start.getTime()))
+            {
+                throw new Error('timeout');
+            }
+        
+            dbg('STATUS %O %s', status, now);
+
+            expect(status.status).to.be.oneOf(['queued', 'working']);
+            
+            status = (await p.status(owner, id));
+            expect(status).to.have.property('status');
+        }
+
+        expect(status.status).to.be.eq('ok');
+
+        if(typeof p.stop === 'function')
+        {
+            p.stop();
+        }
+                 
 
     });
 
@@ -117,8 +126,6 @@ function test_proc_man(require_status_man_string, owner, require_proc_man_string
         
     });
 
-
-
     it('status', (done) => {
         
         let r = {
@@ -131,8 +138,8 @@ function test_proc_man(require_status_man_string, owner, require_proc_man_string
             , owner  : owner
             , hls3   : 'STATIC/main.m3u8'
             , dash   : 'STATIC/index.mpd'
-            , thumb  : ['img001.jpg', 'img002.jpg']
-            , previous: ['reserved','analyzed','encoded']
+            , thumb  : ['img001.jpg', 'img002.jpg', 'img003.jpg', 'img004.jpg']
+            , previous: ['reserved']
             , hls4   : null
             , playready : null
             , widevine: null
@@ -144,7 +151,8 @@ function test_proc_man(require_status_man_string, owner, require_proc_man_string
                 status.datetime = null;
                 status.creationtime  = null;
                 status.processing = null;
-                     
+                
+                delete status.queue_id;
                       
                       
                 check(done, () => {

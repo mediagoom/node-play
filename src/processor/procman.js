@@ -19,7 +19,7 @@ module.exports =  class ProcMan  {
 
         let defop = {
 
-            processor : './index.js'
+            processor : '../../flows/processor.js'
             , statusman : './statmanfs.js'
         };
         

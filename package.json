@@ -1,6 +1,6 @@
 {
   "name": "@mediagoom/node-play",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A nodejs streaming server implementation",
   "main": "bin/server/index.js",
   "bin": {
@@ -14,6 +14,10 @@
     "server": "node --preserve-symlinks ./src/server/index.js",
     "stop": "node ./node_modules/@mediagoom/devman stop",
     "install": "node ./dowloadtools.js"
+    , "cov-test": "nyc -t ./.nyc_output_unit npm test"
+    , "cov-integration-test": ".nyc npm run 'link-integration';"
+    , "cov-html": "nyc report --reporter=html"
+    , "cov-lcov": "nyc report --reporter=text-lcov > coverage.lcov"
   },
   "repository": {
     "type": "git",

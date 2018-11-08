@@ -4,7 +4,7 @@ node_js:
 - 9
 - 8
 env:
-  - DEBUG: opflow:processor
+  - DEBUG: xopflow:processor
 branches:
   except:
   - dev-wia
@@ -16,6 +16,7 @@ script:
 - cat ./out.log
 - npm test
 - npm run integration
+- ./node_modules/.bin/nyc npm run test
 after_script:
 - npm stop
 deploy:
