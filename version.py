@@ -56,6 +56,8 @@ if travis:
 
 cnt = get_file_content(v)
 
+print lversion
+
 cnt = re.sub(r'"version": "\d+\.\d+\.\d+"', "\"version\": \"" + lversion + "\"", cnt)
 
 print cnt
