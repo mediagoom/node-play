@@ -18,7 +18,7 @@
     "stop": "node ./node_modules/@mediagoom/devman stop",
     "install": "node ./dowloadtools.js",
     "cov-test": "nyc -t ./.nyc_output_unit npm test",
-    "cov-integration-test": ".nyc npm run 'link-integration';",
+    "cov-integration-test": "nyc npm run link-integration",
     "cov-html": "nyc report --reporter=html",
     "cov-lcov": "nyc report --reporter=text-lcov > coverage.lcov"
   },
@@ -60,7 +60,6 @@
     "chunk-upload": "0.0.4",
     "debug": "^4.1.0",
     "express": "^4.16.4",
-    "npm": "^6.4.1",
     "parse-spawn-args": "^1.0.2"
   }
 }

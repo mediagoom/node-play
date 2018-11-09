@@ -17,15 +17,15 @@ before_install:
 - python ./version.py
 - npm install
 - npm install --only=dev
-- npm install coveralls codecov
+- npm install coveralls codecov nyc
 script:
-- ./node_modules/nyc/bin/nyc.js npm run test
+- npm run cov-test
 - mv ./.nyc_output ./.nyc_tmp
-- ./node_modules/nyc/bin/nyc.js npm run integration
+- ./node_modules/.bin/nyc npm run integration
 - mv ./.nyc_tmp/* ./.nyc_output
 - ls ./.nyc_output
-- ./node_modules/nyc/bin/nyc.js report --reporter=text-lcov | coveralls
-- ./node_modules/nyc/bin/nyc.js report --reporter=text-lcov > coverage.lcov && codecov
+- ./node_modules/.bin/nyc report --reporter=text-lcov | coveralls
+- ./node_modules/.bin/nyc report --reporter=text-lcov > coverage.lcov && codecov
 after_script:
 - npm stop
 deploy:
