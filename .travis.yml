@@ -19,13 +19,14 @@ before_install:
 - npm install --only=dev
 - npm install coveralls codecov
 script:
-- "./node_modules/.bin/nyc npm run test"
+- ls ./node_modules/.bin
+- ./node_modules/.bin/nyc npm run test
 - mv ./.nyc_output ./.nyc_tmp
 - "./node_modules/.bin/nyc npm run integration"
 - mv ./.nyc_tmp/* ./.nyc_output
 - ls ./.nyc_output
-- "./node_modules/.bin/nyc report --reporter=text-lcov | coveralls"
-- "./node_modules/.bin/nyc report --reporter=text-lcov > coverage.lcov && codecov"
+- ./node_modules/.bin/nyc report --reporter=text-lcov | coveralls
+- ./node_modules/.bin/nyc report --reporter=text-lcov > coverage.lcov && codecov
 after_script:
 - npm stop
 deploy:
