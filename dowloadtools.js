@@ -68,7 +68,7 @@ function get_proxy(cb)
         return;
     }
     
-    var myConfigObject = {};
+    /*var myConfigObject = {};
     npm.load(myConfigObject, function (er) {
         if (er) 
             cb(er, null);
@@ -76,7 +76,19 @@ function get_proxy(cb)
         {            
             cb(null, npm.config.get('https-proxy'));
         }
-    });
+    });*/
+
+    var proxy_info = cp.execSync('npm config get https-proxy');
+
+    var proxy = proxy_info.toString().replace(/\n/g, '');
+
+    if(proxy.toLowerCase().startsWith('http'))
+    {
+        cb(null, proxy);
+        return;
+    }
+
+    cb(null, null);
 }
 
 function geturl(who)
@@ -124,8 +136,8 @@ var download = function(proxy, address, dest, cb) {
 
         options = {
             host: p.hostname
-        ,port: (p.port)?p.port:((p.protocol == 'https')?443:80)
-        ,path: u.href
+            ,port: (p.port)?p.port:((p.protocol == 'https')?443:80)
+            ,path: u.href
             ,headers: {
                 Host: u.host
             }
@@ -206,14 +218,14 @@ function downloadcb(er, who, next, proxy)
        
         console.log('download ', mg);
         download(proxy, mg, dir
-                        , function(e){
-                            if('linux' == proc.platform)
-                            {
-                                cp.execSync('chmod 777 "' + dir + '"');
-                            }
-                            downloadcb(e, next, getnext(), proxy);
-                        }
-                    );
+            , function(e){
+                if('linux' == proc.platform)
+                {
+                    cp.execSync('chmod 777 "' + dir + '"');
+                }
+                downloadcb(e, next, getnext(), proxy);
+            }
+        );
    
     }
 }
@@ -229,7 +241,7 @@ if(null != geturl('mg'))
         if(!e || (e && e.code === 'EEXIST')){
                     
             get_proxy(function(er, proxy)
-                {
+            {
                 if(er)
                     console.error('cannot get proxy: ' + er.toString());
                 else
