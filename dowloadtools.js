@@ -260,4 +260,4 @@ else
 }
 
 
-fs.mkdir(dirup, (e) => {});
+fs.mkdir(dirup, () => {});

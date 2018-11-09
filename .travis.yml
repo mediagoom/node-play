@@ -15,6 +15,7 @@ branches:
   - dev-wia
 before_install:
 - python ./version.py
+- npm i -g npm@5.6.0
 - npm install
 - npm install --only=dev
 - npm install coveralls codecov nyc
@@ -27,7 +28,7 @@ script:
 - ./node_modules/.bin/nyc report --reporter=text-lcov | coveralls
 - ./node_modules/.bin/nyc report --reporter=text-lcov > coverage.lcov && codecov
 after_script:
-- npm stop
+
 deploy:
 - provider: npm
   email: info@mediagoom.com
