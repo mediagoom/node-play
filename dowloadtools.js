@@ -4,7 +4,7 @@ var fs       = require('fs');
 var path     = require('path');
 var proc     = require('process');
 
-var npm      = require('npm');
+
 var url      = require('url');
 var cp       = require('child_process');
 
