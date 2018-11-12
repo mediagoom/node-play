@@ -56,12 +56,12 @@ if None == lversion:
 if appveyor:
     if None != appv:
         lversion=appv
-    else
+    else:
         lversion=appbuild
 if travis:
     if None != travistag:
         lversion=travistag
-    else
+    else:
         lversion=trbn
 
 
