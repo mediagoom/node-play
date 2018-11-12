@@ -1,3 +1,4 @@
+const assert = require('assert');//.strict;
 const fs = require('fs');
 const path = require('path');
 const util   = require('util');
@@ -62,46 +63,43 @@ module.exports =  class StateManFs  {
         this.options.statusfile = this.options.statusfile || 'status.json';
 
         this.processor = processor;
+
+        this.processor_obj = null;
         
     }
 
     //PRIVATE
 
-    create_processor(owner, name, id, out_opt)
+    get_processor(owner, name, id, out_opt)
     {
-        if(undefined === name)
+        assert(undefined !== name);
+
+        const destination = path.join(this.options.destination, owner);
+        let statman_target_dir = null; //path.join(destination, id);
+
+        if(null !== this.processor_obj)
         {
-            throw new Error('Cannot work with a processor without a name');
+            assert(undefined !== id);
+            statman_target_dir = path.join(destination, id);
+
+            return { processor : this.processor_obj
+                , statman_target_dir
+                , id
+            };
         }
-
-        let opt = {destination: path.join(this.options.destination, owner)};
-
-        let processor_option = Object.assign({}, this.options, opt);
-
-        if(null != out_opt)
-        {
-            Object.assign(processor_option, out_opt);
-        }
-
+      
+        this.processor_obj = new this.processor();
+               
         if(undefined === id)
-        {
-            processor_option.id = new_id(name);
-        }else
-        {
-            processor_option.id = id;
-        }
-
-        let p = new this.processor(name,  processor_option);
+            id = new_id(name);       
         
-        p.on('processing', (percentage) =>{
-            dbg('--PROCESSING: ', percentage);
-            //this.set_quick_processing(p, perc);
-        });
+        statman_target_dir = path.join(destination, id);
 
-        
-        p['statman_target_dir'] = path.join(opt.destination, processor_option.id);
+        return { processor : this.processor_obj
+            , statman_target_dir
+            , id
+        };
 
-        return p;
     }
 
     update_status(fspath, status, fail_if_exist)
@@ -175,6 +173,7 @@ module.exports =  class StateManFs  {
         return path.join(p['statman_target_dir'], this.options.statusfile);
     }
 
+    /*
     async set_quick_status(p, status)
     {
         let stpath = this.status_path(p);
@@ -195,13 +194,14 @@ module.exports =  class StateManFs  {
         return this.update_status(stpath, j, false);
        
     }
+    */
 
     //PUBLIC: ISTATEMAN
 
     async record_error(owner, id, err, info)
     {        
 
-        let p = this.create_processor(owner, id, id);
+        let p = this.get_processor(owner, id, id);
 
         await this.update_status(this.status_path(p), {status: 'error', err : err.toString(), errinfo: (info + ' ['  +err.toString() + ']') }, false);
 
@@ -215,13 +215,16 @@ module.exports =  class StateManFs  {
         await directory_exist_or_create(dir1, { recursive: true });
         await directory_exist_or_create(dir2, { recursive: true });
 
-        let p = this.create_processor(owner, name);
+        let p = this.get_processor(owner, name);
         
         await Mkdir(p['statman_target_dir'], { recursive: true });
+        //TODO: move to opflow operations
+        await Mkdir(path.join(p['statman_target_dir'], 'STATIC'), { recursive: true });
 
         let j = { status: 'reserved'
             , name : name
             , id : p.id
+            , owner
         };
 
         await this.update_status( 
@@ -233,38 +236,19 @@ module.exports =  class StateManFs  {
 
     async queue_job(owner, id, file, opt)
     {
-        const p = this.create_processor(owner, id, id, opt);
-
-        const st = await p.read_stream_info(file);
-        
-        await this.set_quick_status(p, 'analyzed');
-
-        const quality = await p.encode(file, st.streams);
-        await this.set_quick_status(p, 'encoded');
-
-        dbg('>>PACKAGE', this.options.subdir, '<<', p['statman_target_dir'], '>>');
-
-        const package_dir = path.join(p['statman_target_dir'], 'STATIC');
-                                        
-        dbg('>>PACKAGE2', '<<', package_dir, '>>');
-
-        await Mkdir(package_dir, { recursive: true });
-
-        await p.package(quality, package_dir);
+        const p = this.get_processor(owner, id, id, opt);
+               
+        const queue_id = await p.processor.queue_process(file, id, p.statman_target_dir);
                                 
         let res = {
-            status   : 'ok'
-            , owner  : owner
-            , hls3   : 'STATIC/main.m3u8'
-            , dash   : 'STATIC/index.mpd'
-            , thumb  : ['img001.jpg', 'img002.jpg']
-            , hls4   : null
-            , playready : null
-            , widevine: null
+            status   : 'queued'
+            , queue_id
+            
         };
 
         await this.update_status(this.status_path(p), res, false);
-        
+
+        return queue_id;
     }
 
     async list(owner, opt)
@@ -295,18 +279,22 @@ module.exports =  class StateManFs  {
     async status(owner, id)
     {      
 
-        let p = this.create_processor(owner, id, id);
+        let p = this.get_processor(owner, id, id);
             
         //we call update status passing null as the new status
         //in this way the current status is returned
         const j = await this.update_status(this.status_path(p), null, false);
 
+        if('ok' != j.status)
+        {
+            dbg('ask processor for status %O', j);
+            assert(j.queue_id, 'invalid queue_id', j.queue_id);
+            j.status = await p.processor.get_status(j.queue_id);
+        }
+
         return j;
     }
 
-    
-
-    
 
 };
 

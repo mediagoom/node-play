@@ -1,4 +1,4 @@
-
+const assert = require('assert');//.strict;
 const ID = '9999999999_TEST';
 
 module.exports =  class FakeStateMan  {
@@ -6,42 +6,40 @@ module.exports =  class FakeStateMan  {
     constructor(processor, opt) {
         //super();
 
-        if(null == processor)
-        {
-            throw 'Invalid option.processor';
-        }
+        assert(undefined !== processor, 'Invalid option.processor');
 
         let default_option = {
             id : ID
+            , error_test : false
         };
         
-        if(null != opt)
-            this.options = Object.assign(default_option, opt);
+        assert(null != opt);
+        this.options = Object.assign(default_option, opt);
+        
+    }
+
+    async stop(){}
+
+    async record_error(){}
+
+    async reserve_name(/*owner, name*/)
+    {
+        if(this.options.error_test)
+        {
+            throw new Error('fake stateman testing error');
+        }
         else
-            this.options = default_option;
-        
-        let builded_options = Object.assign(this.options, {});
-
-        /*let p =*/ new processor('TEST', builded_options);
+            return ID;
     }
 
-    reserve_name(/*owner, name*/)
+    async queue_job(/*owner, name, file, opt*/)
     {
-        
-        return new Promise( (resolve/*, reject*/) => {
-        
-            resolve(ID);
-        
-        });
-    }
-
-    queue_job(/*owner, name, file, opt*/)
-    {
-        return new Promise( (resolve/*, reject*/) => {
-        
-            resolve();
-        
-        });
+        if(this.options.error_test)
+        {
+            throw new Error('fake stateman testing error');
+        }
+        else
+            return ID; 
     }
 
     list(owner/*, opt*/)
@@ -54,7 +52,7 @@ module.exports =  class FakeStateMan  {
                     assets : [
                         {
                             owner : owner
-                            , id : '9999999999_TEST'
+                            , id : ID
                         }
                     ]
                 }
@@ -74,14 +72,13 @@ module.exports =  class FakeStateMan  {
                     , name   : 'TEST'        
                     , id     : id
                     , owner  : owner
+                    , datetime : null
+                    , creationtime : null
+                    , processing: null
                     , hls3   : 'STATIC/main.m3u8'
                     , dash   : 'STATIC/index.mpd'
-                    , thumb  : ['img001.jpg', 'img002.jpg']
-                    , 'previous': [
-                        'reserved'
-                        , 'analyzed'
-                        , 'encoded'
-                    ]
+                    , thumb  : ['img001.jpg', 'img002.jpg', 'img003.jpg', 'img004.jpg']
+                    , previous: ['reserved']
                     , hls4   : null
                     , playready : null
                     , widevine: null

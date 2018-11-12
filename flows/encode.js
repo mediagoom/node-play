@@ -284,6 +284,58 @@ function generate_config_encode(name, height, bitrate, end)
 }
 
 
+const read_write = [
+    {type: 'code', name : 'config read status', config : { code : `
+            propertyBag.status_path = propertyBag.output_dir + '/status.json';
+            propertyBag.config.path = propertyBag.status_path;
+            dbg('READ FILE', propertyBag.config.path);
+            propertyBag.config.path;
+    `}, children :[
+        {type: 'code', name : 'read status', target_type : 'read-file', config :{ path : 'set by config', code : `
+        \`{
+            "previous":["reserved","analyzed","encoded"],
+            "status":"ok","name":"pippo20_mp4","id":"002560838342_pippo20_mp4"
+            ,"datetime":"2018-11-06T15:01:07.767Z","creationtime":"2018-11-06T15:00:58.253Z"
+            ,"owner":"uploader"
+            
+        }
+        \`
+        `}, children :[
+            {type : 'code', name : 'config write status', config : {code : `
+                const result = propertyBag.parent.result;
+                
+                dbg('STATUS CONTENT', result);
+                
+                let status = JSON.parse(propertyBag.parent.result);
+                let closing_info = {
+                    "status":"ok"
+                    , "hls3":"STATIC/main.m3u8"
+                    ,"dash":"STATIC/index.mpd"
+                    ,"thumb":["img001.jpg","img002.jpg", "img003.jpg", "img004.jpg"]
+                    ,"hls4":null,"playready":null
+                    ,"widevine":null
+                };
+
+                status =  Object.assign({}, status, closing_info);
+
+                const content = JSON.stringify(status);
+
+                dbg('FINAL', status);
+
+                propertyBag.config.content = content;
+                propertyBag.config.path = propertyBag.status_path;
+
+            `},children:[
+                {type : 'code', target_type : 'write-file', config : { path : '-', content : '', code : '"file-write"'} 
+                    , children : [
+                        {type : 'END', name : 'FINISH'}
+                    ]}
+            ]
+            }
+        ]
+        }
+    ]}
+];
 
 
 module.exports = {
@@ -327,9 +379,7 @@ module.exports = {
                                                 , video_bitrate : 3500
                                                 , audio_bitrate : 128 
                                             }
-                                            , children : [
-                                                {type : 'END', name : 'PACKAGE'}
-                                            ]
+                                            , children : read_write
                                         } 
                                     ]
                                 }
@@ -377,9 +427,9 @@ module.exports = {
                                                     , code : ' "this is the ffmpeg image return" '
                                                 }
                                                 , children : [
-                                                    {type : 'JOIN', name : 'AFTER-IMAGES' , children : [
-                                                        {type : 'END', name : 'FINISH'}
-                                                    ]}
+                                                    {type : 'JOIN', name : 'AFTER-IMAGES' 
+                                                        , children :  read_write
+                                                    }
                                                 ] 
                                             }]}
                                         , generate_config_encode('GEN-1', 144, 120,  [

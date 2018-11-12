@@ -1,13 +1,14 @@
-
+const assert = require('assert');//.strict;
 
 function es6req(objname)
 {
     let o = require(objname);
 
-    if(null == o.default)
-        return o;
+    assert(undefined === o.default);
+    //if(null == o.default)
+    return o;
 
-    return o.default;
+    //return o.default;
 }
 
 
@@ -19,7 +20,7 @@ module.exports =  class ProcMan  {
 
         let defop = {
 
-            processor : './index.js'
+            processor : '../../flows/processor.js'
             , statusman : './statmanfs.js'
         };
         
@@ -29,8 +30,9 @@ module.exports =  class ProcMan  {
             this.options = defop;
 
         let processor  = this.options.processor;
-        if( typeof processor === 'string')
-            processor = es6req(processor);
+        //if( typeof processor === 'string')
+        assert(typeof processor === 'string');
+        processor = es6req(processor);
 
         this.statman   = es6req(this.options.statusman);
 
@@ -48,18 +50,22 @@ module.exports =  class ProcMan  {
         return this.state.reserve_name(owner, name);
     }
 
-    queue_job(owner, name, file, opt)
+    async stop()
     {
-        return new Promise( (resolve, reject) => {
+        return this.state.stop();
+    }
 
-            this.state.queue_job(owner, name, file, opt).then( () => resolve()
-                , (err) => {
-                    this.state.record_error(owner, name, err).then( () => reject(err), (x) => reject(x) );
-                }
-            );
+    async queue_job(owner, name, file, opt)
+    {
+        try{
 
-        });
-           
+            await this.state.queue_job(owner, name, file, opt);
+
+        }catch(err){
+
+            await this.state.record_error(owner, name, err);
+
+        }
     }
 
     list(owner, opt)
@@ -75,8 +81,4 @@ module.exports =  class ProcMan  {
         
     }
 
-
-
-    
-
-}
+};
