@@ -37,6 +37,9 @@ trb=os.environ.get('TRAVIS_BRANCH')
 travis=False
 appveyor=False
 
+print 'trb'
+print trb
+
 if trb != None:
         travis=True
 
@@ -45,6 +48,10 @@ if appv != None:
 
 
 lversion=os.environ.get('VERSION')
+
+print 'version'
+print lversion
+
 if None == lversion:
         lversion='0.0.x'
 if appveyor:
