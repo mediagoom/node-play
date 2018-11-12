@@ -1,22 +1,21 @@
-
 import os, re
 
 def version_file():
-        file = os.path.dirname(os.path.realpath(__file__))
-        file = os.path.join(file, 'package.json')
-        return file
+    file = os.path.dirname(os.path.realpath(__file__))
+    file = os.path.join(file, 'package.json')
+    return file
 
 def write_file(path, cnt):
-        with open(path, 'w') as f:
-            f.write(cnt)
+    with open(path, 'w') as f:
+        f.write(cnt)
             
 
 def get_file_content(path):
-        ctx = ''
-        with open(path, 'r') as f:
-                for line in f:
-                        ctx += line
-        return ctx
+    ctx = ''
+    with open(path, 'r') as f:
+            for line in f:
+                    ctx += line
+    return ctx
 
 
 v=version_file()
@@ -41,10 +40,10 @@ print 'trb'
 print trb
 
 if trb != None:
-        travis=True
+    travis=True
 
 if appv != None:
-        appveyor=True
+    appveyor=True
 
 
 lversion=os.environ.get('VERSION')
@@ -53,13 +52,18 @@ print 'version'
 print lversion
 
 if None == lversion:
-        lversion='0.0.x'
+    lversion='0.0.x'
 if appveyor:
     if None != appv:
         lversion=appv
+    else
+        lversion=appbuild
 if travis:
     if None != travistag:
         lversion=travistag
+    else
+        lversion=trbn
+
 
 cnt = get_file_content(v)
 
