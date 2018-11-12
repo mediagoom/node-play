@@ -295,6 +295,15 @@ module.exports =  class StateManFs  {
         return j;
     }
 
+    async stop()
+    {
+        if(null != this.processor_obj)
+        {
+            this.processor_obj.stop();
+
+            this.processor_obj = null;
+        }
+    }
 
 };
 

@@ -59,7 +59,7 @@ function test_proc_man(owner, proc_man_options)
     
         let file = tval('TESTMEDIAFILE', './src/processor/test/MEDIA1.MP4');
        
-        const timeout_ms = 25000;
+        const timeout_ms = 60000;
         
         await p.queue_job(owner, id, file);
         
