@@ -39,6 +39,8 @@ appveyor=False
 print 'trb'
 print trb
 print trbn
+print travistag
+print '--'
 
 if trb != None:
     travis=True
@@ -60,10 +62,10 @@ if appveyor:
     else:
         lversion=appbuild
 if travis:
-    if None != travistag:
+    if (None != travistag) and ('' != travistag):
         lversion=travistag
     else:
-        lversion=trbn
+        lversion='0.0.' + trbn
 
 
 cnt = get_file_content(v)
