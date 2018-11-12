@@ -38,6 +38,7 @@ appveyor=False
 
 print 'trb'
 print trb
+print trbn
 
 if trb != None:
     travis=True
@@ -67,6 +68,7 @@ if travis:
 
 cnt = get_file_content(v)
 
+print 'version.f'
 print lversion
 
 cnt = re.sub(r'"version": "\d+\.\d+\.\d+"', "\"version\": \"" + lversion + "\"", cnt)
