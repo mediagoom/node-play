@@ -1,19 +1,30 @@
 
-//const chai      = require('chai');
+const expect    = require('chai').expect;
 
 const cp        = require('child_process');
 const path      = require('path');
 
-//var expect = chai.expect;
-
-
-
+async function Exec(exec, options)
+{
+    return new Promise( ( resolve, reject) => {
+        
+        cp.exec(exec, options, (err, stdout, stderr) => {
+            if(null != err)
+            {
+                reject(err);
+            }
+            else
+            {
+                resolve({stdout, stderr});
+            }
+        });
+    });
+}
 
  
 describe('PROCESSOR', () => {
 
-
-    it('has the right environment', (done) => {
+    it('has the right environment', async () => {
 
         let env_path = process.env.PATH;
 
@@ -21,39 +32,21 @@ describe('PROCESSOR', () => {
 
         process.env.PATH = dirname + path.delimiter + env_path;
 
-        /*
-        console.log("PATH: ", dirname, " ", env_path);
-        console.log("----------T-----------");
-        console.log(process.env.PATH);
-        console.log("----------T-----------");
-        */
-            
-        cp.exec('ffmpeg -version', {env: process.env},  (err/*, stdout, stderr*/) =>{
-                
-            if(err)
-            {
-                done(err);
-            }
+        await Exec('ffmpeg -version', {env: process.env});
 
-            cp.exec('mg --help', (err/*, stdout, stderr*/) => {
-                
-                if(err)
-                {
-                    done(err);
-                }
-                else
-                {
-                    done();
-                }
-                    
-                
-            });
+        await Exec('mg --help', {} );
 
-            
-        });
+        let thrown = false;
+
+        try{
+            await Exec('mg -i:wrong-path', {});
+        }catch(err)
+        {
+            thrown = true;
+        }
+
+        expect(thrown).to.be.true;
+
     });
-
-    
-   
 
 });

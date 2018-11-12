@@ -27,14 +27,16 @@ function check( done, f ) {
 
 
 
-function test_proc_man(require_status_man_string, owner, require_proc_man_string)
+function test_proc_man(owner, proc_man_options)
 {
+    /*
     const proc_man_options = {statusman : require_status_man_string};
     
     if(undefined !== require_proc_man_string)
     {
         proc_man_options.processor = require_proc_man_string;
     }
+    */
 
     let p     = new ProcMan(proc_man_options);
     let id    = '';
@@ -132,10 +134,10 @@ function test_proc_man(require_status_man_string, owner, require_proc_man_string
             status   : 'ok'
             , name   : 'TEST'        
             , id     : id
+            , owner  : owner
             , datetime : null
             , creationtime : null
             , processing: null
-            , owner  : owner
             , hls3   : 'STATIC/main.m3u8'
             , dash   : 'STATIC/index.mpd'
             , thumb  : ['img001.jpg', 'img002.jpg', 'img003.jpg', 'img004.jpg']
@@ -192,23 +194,42 @@ describe('PROCESS MANAGER', () => {
 
     });
 
-    /*
+    const proc_man_options = {statusman : './test/fake_stateman.js'};
+    
     describe('Fake StatMan', () => {
 
-        test_proc_man('./test/stateman.js', 'uploader');
+        test_proc_man('fake', proc_man_options);
         
     });
 
-    describe('Fs StatMan', () => {
-        test_proc_man('./statmanfs.js', 'statman');
+    describe('proc-man should handle queue error', async () =>{
+        proc_man_options.error_test = true;
+
+        let proc_man = new ProcMan(proc_man_options);
+
+        let thrown = false;
+
+        try{
+            await proc_man.reserve_name('no-one', 'file-name');
+        }
+        catch(err)
+        {
+            thrown = true;
+        }
+
+        expect(thrown).to.be.true;
+        await proc_man.queue_job('no-one');
+
     });
-    */
-   
-    describe('Fs StatMan - opflow', () => {
        
-        test_proc_man('./statmanfs.js', 'opflow-dir', '../../flows/processor.js');
-
-        
-
+    describe('Fs StatMan - opflow', () => {
+    
+        proc_man_options.processor = '../../flows/processor.js';
+        proc_man_options.statusman = './statmanfs.js';
+           
+        test_proc_man('opflow-dir', proc_man_options);
+ 
     });
+
+    
 });

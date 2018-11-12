@@ -108,7 +108,7 @@ module.exports = class opflow_processor extends EventEmitter {
         return 'queued';
     }
     
-    stop()
+    async stop()
     {
         opflow.end();
     }

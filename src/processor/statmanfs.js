@@ -173,6 +173,7 @@ module.exports =  class StateManFs  {
         return path.join(p['statman_target_dir'], this.options.statusfile);
     }
 
+    /*
     async set_quick_status(p, status)
     {
         let stpath = this.status_path(p);
@@ -193,6 +194,7 @@ module.exports =  class StateManFs  {
         return this.update_status(stpath, j, false);
        
     }
+    */
 
     //PUBLIC: ISTATEMAN
 
