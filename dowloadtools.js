@@ -214,14 +214,23 @@ function downloadcb(er, who, next, proxy)
         }        
         
         var file =  next + (('win32' == proc.platform)?'.exe':'');
-        var dir  = path.join(dirname, file);
+        var dest  = path.join(dirname, file);
        
         console.log('download ', mg);
-        download(proxy, mg, dir
+        download(proxy, mg, dest
             , function(e){
                 if('linux' == proc.platform)
                 {
-                    cp.execSync('chmod 777 "' + dir + '"');
+                    var cmd = 'chmod 777 "' + dest + '"';
+                    console.log(cmd);
+                    try{
+
+                        cp.execSync(cmd);
+                        
+                    }catch(err)
+                    {
+                        console.error(err.message, err.stack);
+                    }
                 }
                 downloadcb(e, next, getnext(), proxy);
             }

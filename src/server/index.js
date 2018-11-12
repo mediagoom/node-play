@@ -17,7 +17,7 @@ function optval(name, def)
 
 
 let status_man_use = optval('NODEPLAYSTATUSMAN', '../processor/statmanfs.js');
-let processor_use  = optval('NODEPLAYPROCESSOR', '../processor/index.js');
+let processor_use  = optval('NODEPLAYPROCESSOR', '../../flows/processor.js');
 let def_owner      = optval('NODEPLAYDEFOWNER', 'uploader');
 
 let port           = optval('NODEPLAYPORT', 3000);

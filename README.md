@@ -18,22 +18,41 @@ It should work on both *Linux* and *Window*.
 
 If you want to run on other platforms you may need to build the above tools yourself.
 
-To install it run:
+## Install globally
+
+To install it globally run:
 ```bash
-npm install -g @mediagoom/node-play
+sudo npm install -g @mediagoom/node-play
 ```
+
 To run it run:
 ```bash
 nodeplay
 ```
-or if you install it locally
+
+## Install locally
+
+Create a directory to host node-play
 ```bash
-node ./node_modules/.bin/nodeplay
+mkdir nodeplay
+cd nodeplay
+```
+
+then install it locally
+```bash
+npm install @mediagoom/node-play
+```
+
+run it
+```bash
+./node_modules/.bin/nodeplay
 ```
 
 - navigate to http://localhost:3000
 
-### Contribution are very welcome
+## Configure 
+
+If you set the environment variable NODE_ENV to production *node-play* will save its works flows to disk. In this way in case something should happen in an encoding it will be restarted when *node-play* is restarted.
 
 
 
