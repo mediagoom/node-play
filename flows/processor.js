@@ -110,7 +110,7 @@ module.exports = class opflow_processor extends EventEmitter {
     
     async stop()
     {
-        opflow.end();
+        opflow.stop();
     }
 
 };
