@@ -27,7 +27,7 @@
             "request": "launch",
             "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
             "stopOnEntry": false,
-            "args": ["-g", "opflow", "--reporter",  "spec", "--no-timeouts", "./src//**/test/index.js", "./src//**/test/*.test.js"],
+            "args": ["--no-timeouts", "./test/integration//**/*.js"],
             "cwd": "${workspaceRoot}",
             "preLaunchTask": null,
             "console": "integratedTerminal"

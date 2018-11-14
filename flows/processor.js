@@ -1,6 +1,7 @@
 const opflow = require('@mediagoom/opflow');
+const assert = require('assert');//.strict;
 const dbg = require('debug')('node-play:opflow-processor');
-const path = require('path');
+//const path = require('path');
 const EventEmitter = require('events');
 //const path = require('path');
 const encode_flow = require('./encode').encode;
@@ -61,6 +62,8 @@ module.exports = class opflow_processor extends EventEmitter {
         fl.root.children[0].config.input_file = file_path;
         fl.root.children[0].config.output_dir = destination;
 
+        fl.root.children[0].config.input_file = fl.root.children[0].config.input_file.replace(/\\\\/g, '/');
+        fl.root.children[0].config.input_file = fl.root.children[0].config.input_file.replace(/\\/g, '/');
         fl.root.children[0].config.output_dir = fl.root.children[0].config.output_dir.replace(/\\/g, '/');
 
         re_target_flow(fl.root);
@@ -80,6 +83,9 @@ module.exports = class opflow_processor extends EventEmitter {
     async get_operation_list(flow_id)
     {
         const operations = await opflow.get_runtime_flow(flow_id);
+
+        assert(undefined !== operations, 'operations not found ' + flow_id);
+        
 
         operations.sort((a, b) => { return a.modified > b.modified;});
 

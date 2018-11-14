@@ -81,4 +81,15 @@ module.exports =  class ProcMan  {
         
     }
 
+    queue_status(owner, id)
+    {
+        
+        return this.state.queue_status(owner, id);
+        
+    }
+
+    queue_operation_list(owner, id)
+    {
+        return this.state.queue_operation_list(owner, id);
+    }
 };

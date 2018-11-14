@@ -1,4 +1,4 @@
-#!/usr/bin/env
+#!/usr/bin/env node
 
 var fs       = require('fs');
 var path     = require('path');
@@ -219,20 +219,27 @@ function downloadcb(er, who, next, proxy)
         console.log('download ', mg);
         download(proxy, mg, dest
             , function(e){
-                if('linux' == proc.platform)
+                if(null != e)
                 {
-                    var cmd = 'chmod 777 "' + dest + '"';
-                    console.log(cmd);
-                    try{
-
-                        cp.execSync(cmd);
-                        
-                    }catch(err)
-                    {
-                        console.error(err.message, err.stack);
-                    }
+                    console.error(e);
                 }
-                downloadcb(e, next, getnext(), proxy);
+                else
+                {
+                    if('linux' == proc.platform)
+                    {
+                        var cmd = 'chmod 777 "' + dest + '"';
+                        //console.log(cmd);
+                        try{
+
+                            cp.execSync(cmd);
+
+                        }catch(err)
+                        {
+                            console.error(err.message, err.stack);
+                        }
+                    }
+                    downloadcb(e, next, getnext(), proxy);
+                }
             }
         );
    

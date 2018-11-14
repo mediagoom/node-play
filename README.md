@@ -22,7 +22,7 @@ If you want to run on other platforms you may need to build the above tools your
 
 To install it globally run:
 ```bash
-sudo npm install -g @mediagoom/node-play
+sudo -E npm install -g @mediagoom/node-play
 ```
 
 To run it run:

@@ -3,6 +3,7 @@
 /statman
 /uploader
 /pippo
+/bin
 .travis.yml
 devman.*
 Dockerfile

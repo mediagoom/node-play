@@ -9,6 +9,7 @@ const Mkdir = util.promisify(fs.mkdir);
 //const ReadFile = util.promisify(fs.readFile);
 //const WriteFile = util.promisify(fs.writeFile);
 const ReadDir = util.promisify(fs.readdir);
+const Stat = util.promisify(fs.stat);
 
 function pad(num, size) {
     var s = '000000000000' + num;
@@ -33,8 +34,7 @@ async function directory_exist_or_create(path) {
     }catch(err)
     {
         dbg('directory_exist_or_create error %O', err);
-        if(err.code !== 'EEXIST')
-            throw err;
+        assert(err.code === 'EEXIST', err.message);
     }
 }
 
@@ -45,10 +45,8 @@ module.exports =  class StateManFs  {
     constructor(processor, opt) {
         //super();
 
-        if(null == processor)
-        {
-            throw 'Invalid option.processor';
-        }
+        assert(null != processor,'Invalid option.processor');
+        
 
         let defop = {
             destination : path.normalize(path.join(__dirname, '../..'))
@@ -70,12 +68,18 @@ module.exports =  class StateManFs  {
 
     //PRIVATE
 
-    get_processor(owner, name, id, out_opt)
+    get_processor(owner, name, id)
     {
         assert(undefined !== name);
 
         const destination = path.join(this.options.destination, owner);
         let statman_target_dir = null; //path.join(destination, id);
+
+        if(undefined === id)
+        {
+            assert(undefined !== name);
+            id = new_id(name); 
+        }
 
         if(null !== this.processor_obj)
         {
@@ -89,9 +93,7 @@ module.exports =  class StateManFs  {
         }
       
         this.processor_obj = new this.processor();
-               
-        if(undefined === id)
-            id = new_id(name);       
+              
         
         statman_target_dir = path.join(destination, id);
 
@@ -258,13 +260,26 @@ module.exports =  class StateManFs  {
         
         procopt.destination = path.join(procopt.destination, owner);
 
-        const files = await ReadDir(procopt.destination);
+        let files = null;
+        
+        try{
+
+            files = await ReadDir(procopt.destination);
+        
+        }catch(err)
+        {
+            if(err.code === 'ENOENT')
+            {
+                dbg('dir not found', procopt.destination);
+                return {assets : []};
+            }
+        }
            
         let j = [];
         
         for(let i = 0; i < files.length; i++)
         {
-            let fstat = fs.statSync(path.join(procopt.destination, files[i]));
+            let fstat = await Stat(path.join(procopt.destination, files[i]));
             
             if(fstat.isDirectory())
             {
@@ -274,6 +289,32 @@ module.exports =  class StateManFs  {
 
         return {assets: j};
         
+    }
+
+    async queue_status(owner, id)
+    {    
+
+        let p = this.get_processor(owner, id, id);
+            
+        //we call update status passing null as the new status
+        //in this way the current status is returned
+        const j = await this.update_status(this.status_path(p), null, false);
+
+        j.status = await p.processor.get_status(j.queue_id);
+        
+        return j;
+    }
+
+    async queue_operation_list(owner, id)
+    {    
+
+        let p = this.get_processor(owner, id, id);
+            
+        //we call update status passing null as the new status
+        //in this way the current status is returned
+        const j = await this.update_status(this.status_path(p), null, false);
+
+        return p.processor.get_operation_list(j.queue_id);
     }
 
     async status(owner, id)

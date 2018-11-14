@@ -1,145 +1,61 @@
 #!/usr/bin/env node
-
-const express = require('express');
-const uploader = require('chunk-upload/bin/server.js');
-const ProcMan   = require('../processor/procman.js');
 const modpath  = require('path');
+const App      = require('./app');
+const fs       = require('fs');
+const dbg      = require('debug')('node-play:app');
 
-function optval(name, def)
+function optval(name)
 {
     if(null == process.env[name])
     {
-        return def;
+        let ret = null;
+
+        for(let j = arguments.length - 1; j > 0; j--)
+        {
+            if(arguments[j] != null)
+            {
+                ret = arguments[j];
+            }
+        }
+
+        return ret;
     }
 
     return process.env[name];
 }
 
+function dir(d)
+{
+    try{
+        fs.mkdirSync(d);
+    }catch(err)
+    {
+        dbg('mkdir error %O', err);
+    }
+}
 
-let status_man_use = optval('NODEPLAYSTATUSMAN', '../processor/statmanfs.js');
-let processor_use  = optval('NODEPLAYPROCESSOR', '../../flows/processor.js');
-let def_owner      = optval('NODEPLAYDEFOWNER', 'uploader');
+const home_destination = optval('NODEPLAYDESTINATION', process.env.HOME, process.env.APPDATA);
+const status_man_use   = optval('NODEPLAYSTATUSMAN', '../processor/statmanfs.js');
+const processor_use    = optval('NODEPLAYPROCESSOR', '../../flows/processor.js');
+const def_owner        = optval('NODEPLAYDEFOWNER', 'uploader');
+const destination      = modpath.join(home_destination, '.node_play');
 
-let port           = optval('NODEPLAYPORT', 3000);
-
-let statusman = new ProcMan({statusman : status_man_use,  processor : processor_use});
-
-express.static.mime.define({'application/dash+xml': ['mpd']});
-
-let app = express();
+const port             = optval('NODEPLAYPORT', 3000);
 
 let env_path = process.env.PATH;
 
-let rootdir = modpath.normalize(modpath.join(__dirname, '../..'));
-let dirname = modpath.normalize(modpath.join(rootdir, './bin'));
-let distdir = modpath.normalize(modpath.join(rootdir, './dist'));
-
+const root_dir = modpath.normalize(modpath.join(__dirname, '../..'));
+const dirname  = modpath.normalize(modpath.join(root_dir, './bin'));
+const dist_dir = modpath.normalize(modpath.join(root_dir, './dist'));
 
 process.env.PATH = dirname + modpath.delimiter + env_path;
+process.env.OPFLOWDISKPATH = modpath.join(destination, 'storage');
 
-/*
-console.log("PATH: ", dirname, " ", env_path);
-console.log("---------------------");
-console.log(process.env.PATH);
-console.log("---------------------");
-*/
+dir(destination);
+dir(process.env.OPFLOWDISKPATH);
 
+const app = App({ status_man_use , processor_use, def_owner, root_dir, dist_dir, destination});
 
-app.use(function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'X-Requested-With');
-    next();
-});
-
-app.use('/play', express.static(rootdir));
-
-app.use('/upload', uploader.default());
-
-app.get('/clientaccesspolicy.xml', function (req, res) {
-  
-    let clientaccesspolicy = `<?xml version="1.0" encoding="utf-8" ?> 
-<access-policy>
-<cross-domain-access>
-<policy>
-<allow-from http-methods="*" http-request-headers="*">
-<domain uri="http://*" /> 
-</allow-from>
-<grant-to>
-<resource path="/" include-subpaths="true" /> 
-</grant-to>
-</policy>
-</cross-domain-access>
-</access-policy>
-`;    
-    
-    res.send(clientaccesspolicy);
-});
-
-
-app.get('/api/list', (req, res, next) => {
-    
-    statusman.list(def_owner).then(
-        
-        (list) => {res.json(list);}
-        , (err) => { next(err);}
-        
-    );
-
-});
-
-app.get('/api/status/:id', (req, res, next) => {
-
-    let id = req.params.id;
-
-    statusman.status(def_owner, id).then(
-        (stat) => { res.json(stat);}
-        , (err) => { next(err); }
-    );
-
-});
-
-app.get('/api/upload/:name', (req, res, next) => {
-  
-    let name = req.params.name;
-
-    statusman.reserve_name(def_owner, name).then(
-        id => res.json({id : id})
-        , err => next(err)
-    );
-
-});
-
-app.put('/upload/:id?', (req, res) => {
-    
-    console.log('-------------****');
-    //console.log(JSON.stringify(req.headers));
-    console.log(req.uploader);
-    console.log('-------------**--');
-
-    let id = req.params.id;
-
-    if(null != id)
-    {
-
-        statusman.queue_job(def_owner
-            , id //, path.basename(req.uploader)
-            , req.uploader
-        ).then(()=>{}, err => 
-        {
-            console.log('QYE', err.toString()); 
-            statusman.record_error(def_owner, id, err, 'QUEUE JOB ERROR');
-        }
-        );
-    }
-
-    res.send('OK');
-
-    
-});
-
-
-
-app.use(express.static(distdir));
 
 app.listen(port, function () {
     console.log('app listening on port ' + port + '!');
