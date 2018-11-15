@@ -5,7 +5,7 @@ node_js:
 - 8
 env:
   global:
-    DEBUG: opflow:processor
+    DEBUG: nolog_opflow:processor
     COVERALLS_REPO_TOKEN:
       secure: hQFwRYJYpC7h7YNGlnHH73+dFxDbTM0gvtu5ef5gYfw5NlcE3QFUbnmyU4JYKaQL6W2UxpxP+5GVI2FnJH/bha1K2TskPGdxBc5W75hyT6wBafrkqCcVF3HkXPiQJCwLd2/87LqC31H2olsWLDV40avFRjqXD8tEIorI+asdXoYxR6plw9BZnLzitRpv3GUxjqEyGYz6dhB2qGtdp8xXLVcnwnXEGdQKXQrqJQ5jN8dhfG4jfgr0rZ7xMEPZCSEpZOvR/1eKZK/OSa9Ny5+6IRV6Arhqy1Ztf6AV2Y8+IUNcGsPDOrgA3cZre7i6EfofokrHH3EVNUfP4NblDzGSvAfU1E6CefkTBeVZiMYp2xs7MceID304V/UlI6xnekHC8CW8WGbnWfmM+eD6SV8CVtv3Ap279clinMbqZGpyqmu2ocMavlx6e/l44BbEwe7Tpo3eSLWLHqGVpycfp+eRQVsXVRCwcnkgFSGmd+OGkvyYYuZ9YXAGPoiE+tL9k22KBHBGzOGSSXHPLhefItczNs8OJRfoTKyF9Clf8Pxzp89DX6nCvLFSm7rK4gsTAb9Zgv20B6lNnfbSTSHmTzjJkJZq0QB1r9mKr8x9iWWwYWgzewaAubC1vV+ThcUzLFhSQlAyW+ZixVisbW8sXfXZ/kHTLzK5m7pJRv3APYLPO40=
   matrix:
@@ -17,6 +17,7 @@ branches:
 before_install:
 - python ./version.py
 - npm i -g npm@5.6.0
+install:
 - npm install
 - npm install --only=dev
 - npm install coveralls codecov nyc
