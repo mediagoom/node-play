@@ -317,6 +317,14 @@ module.exports =  class StateManFs  {
         return p.processor.get_operation_list(j.queue_id);
     }
 
+    async redo(owner, id, operation_id)
+    {    
+
+        let p = this.get_processor(owner, id, id);
+        
+        return p.processor.redo(operation_id);
+    }
+
     async status(owner, id)
     {      
 
@@ -326,10 +334,15 @@ module.exports =  class StateManFs  {
         //in this way the current status is returned
         const j = await this.update_status(this.status_path(p), null, false);
 
+        if('reserved'=== j.status)
+        {
+            return j;
+        }
+
         if('ok' != j.status)
         {
             dbg('ask processor for status %O', j);
-            assert(j.queue_id, 'invalid queue_id', j.queue_id);
+            assert(j.queue_id, 'invalid queue_id ' + owner + '-' + id);
             j.status = await p.processor.get_status(j.queue_id);
         }
 

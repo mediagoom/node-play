@@ -33,7 +33,7 @@ describe('API-TEST', () => {
         let res = await request(server)
             .get('/api/list');
             
-        dbg('response: ', res.status, res.body);
+        dbg('/api/list response: ', res.status, res.body);
 
         expect(res.status).to.be.eq(200);
         expect(res.body.assets).to.be.an('array').that.is.not.empty;
@@ -42,24 +42,60 @@ describe('API-TEST', () => {
 
         res = await request(server).get(`/api/status/${id}`);
 
-        dbg('response: ', res.status, res.body);
+        dbg('/api/status/ response: ', res.status, res.body);
         expect(res.status).to.be.eq(200, 'api status');
-
+        
         expect(res.body.status).to.be.eq('ok');
         expect(res.body).to.have.property('queue_id');
 
         res = await request(server).get(`/api/queue/${id}`);
 
-        dbg('response: ', res.status, res.body);
+        dbg('api/queue response: ', res.status, res.body);
         expect(res.status).to.be.eq(200, 'api queue');
+        expect(res.body.length).to.be.above(1);
+
+        const end_op = res.body.filter(el => {return el.type === 'END';});
+
+        expect(end_op).to.not.be.an('undefined');
 
         res = await request(server).get(`/api/queue/status/${id}`);
 
-        dbg('response: ', res.status, res.body);
+        dbg('/api/queue/status response: ', res.status, res.body);
         expect(res.status).to.be.eq(200, 'api queue status');
+
+        res = await request(server).get(`/api/queue/redo/${id}/${end_op.id}`);
+
+        dbg('/api/queue/redo response: ', res.status, res.body);
+        expect(res.status).to.be.eq(500, 'api queue redo');
+
+        res = await request(server).get('/api/upload/test_name');
+       
+        dbg('/api/upload response: ', res.status, res.body);
+        expect(res.status).to.be.eq(200, 'api upload name');
+
 
         //const queue_id = res.body.queue_id;
         
+    });
+
+    it('should handle errors', async () => {
+        const id = 'none';
+
+        let res = await request(server)
+            .get(`/api/status/${id}`);
+
+        dbg('/api/status/ response: ', res.status, res.body);
+        expect(res.status).to.be.eq(500, 'api status');
+
+        res = await request(server).get(`/api/queue/${id}`);
+        
+        dbg('api/queue response: ', res.status, res.body);
+        expect(res.status).to.be.eq(500, 'api queue');
+        
+        res = await request(server).get(`/api/queue/status/${id}`);
+
+        dbg('/api/queue/status response: ', res.status, res.body);
+        expect(res.status).to.be.eq(500, 'api queue status');
     });
 
     it('should support /clientaccesspolicy.xml', async ()=>{

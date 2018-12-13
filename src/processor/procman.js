@@ -44,7 +44,7 @@ module.exports =  class ProcMan  {
 
     }
 
-    reserve_name(owner, name)
+    async reserve_name(owner, name)
     {
         
         return this.state.reserve_name(owner, name);
@@ -68,27 +68,32 @@ module.exports =  class ProcMan  {
         }
     }
 
-    list(owner, opt)
+    async list(owner, opt)
     {
         
         return this.state.list(owner, opt);
     }
 
-    status(owner, id)
+    async status(owner, id)
     {
         
         return this.state.status(owner, id);
         
     }
 
-    queue_status(owner, id)
+    async queue_status(owner, id)
     {
         
         return this.state.queue_status(owner, id);
         
     }
 
-    queue_operation_list(owner, id)
+    async redo(owner, id, operation_id)
+    {
+        return this.state.redo(owner, id , operation_id);
+    }
+
+    async queue_operation_list(owner, id)
     {
         return this.state.queue_operation_list(owner, id);
     }

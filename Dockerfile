@@ -6,7 +6,7 @@ ENV NODEPLAYDESTINATION=/node-play/media
 
 WORKDIR /node-play
 COPY . .
-RUN npm install && mkdir media
+RUN npm install --allow-root install && mkdir media
 
 EXPOSE 3000
 

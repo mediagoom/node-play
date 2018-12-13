@@ -22,10 +22,7 @@ install:
 - npm install --only=dev
 - npm install coveralls codecov nyc
 script:
-- npm run cov-test
-- mv ./.nyc_output ./.nyc_tmp
-- ./node_modules/.bin/nyc npm run integration
-- mv ./.nyc_tmp/* ./.nyc_output
+- npm run cov-all
 - ls ./.nyc_output
 - ./node_modules/.bin/nyc report --reporter=text-lcov | coveralls
 - ./node_modules/.bin/nyc report --reporter=text-lcov > coverage.lcov && codecov

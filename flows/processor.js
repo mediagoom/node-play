@@ -113,6 +113,11 @@ module.exports = class opflow_processor extends EventEmitter {
 
         return 'queued';
     }
+
+    async redo(operation_id)
+    {
+        return opflow.redo(operation_id);
+    }
     
     async stop()
     {

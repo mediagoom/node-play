@@ -1,5 +1,5 @@
 const express   = require('express');
-const uploader  = require('chunk-upload/bin/server.js');
+const uploader  = require('@mediagoom/chunk-upload');
 const ProcMan   = require('../processor/procman.js');
 const dbg       = require('debug')('node-play:app');
 const fs        = require('fs');
@@ -33,7 +33,7 @@ function get_app(config){
 
     app.use('/play', express.static(config.destination));
 
-    app.use('/upload', uploader.default({base_path: config.destination + '/'}));
+    app.use('/upload', uploader({base_path: config.destination + '/'}));
 
     app.get('/clientaccesspolicy.xml', function (req, res) {
   
@@ -100,6 +100,18 @@ function get_app(config){
 
     });
 
+    app.get('/api/queue/redo/:id/:operation_id', (req, res, next) => {
+  
+        let id = req.params.id;
+        let operation_id = req.params.operation_id;
+
+        process_manager.redo(config.def_owner, id, operation_id).then(
+            () => res.send('OK')
+            , err => next(err)
+        );
+
+    });
+
     app.get('/api/queue/status/:id', (req, res, next) => {
   
         let id = req.params.id;
@@ -138,6 +150,16 @@ function get_app(config){
     });
 
     app.use(express.static(config.dist_dir));
+
+    if('production' !== process.env.NODE_ENV)
+    {
+        app.use(function (err, req, res, next) {
+            
+            dbg(err.message, err.stack, next);
+        
+            res.status(500).send('Something broke!');
+        });
+    }
 
 
     return app;
