@@ -16,7 +16,7 @@ For packaging it uses [*mg*](https://github.com/mediagoom/mg). A free tool.
 
 It should work on both *Linux* and *Window*.
 
-If you want to run on other platforms you may need to build the above tools yourself.
+If you want to run on other platforms you may need to install the above tools yourself.
 
 ## Install globally
 
@@ -25,7 +25,7 @@ To install it globally run:
 sudo -E npm install -g @mediagoom/node-play
 ```
 
-To run it run:
+To run it type:
 ```bash
 nodeplay
 ```

@@ -10,18 +10,17 @@
     "nodeplay": "src/server/index.js"
   },
   "scripts": {
-    "integration-clean": "shx --silent rm -rf opflow-dir"
-    , "integration": "mocha --reporter spec --timeout 1200000 ./src//**/test/index.js ./src//**/test/*.test.js ./test/integration//**/*.js",
-    
+    "integration-clean": "shx --silent rm -rf opflow-dir",
+    "integration": "mocha --reporter spec --timeout 1200000 ./src//**/test/index.js ./src//**/test/*.test.js ./test/integration//**/*.js",
     "test": "node ./node_modules/mocha/bin/_mocha ./test/unit//**/*.js",
     "start": "node ./node_modules/@mediagoom/devman start server",
     "server": "node ./src/server/index.js",
     "stop": "node ./node_modules/@mediagoom/devman stop",
-    "install": "node ./dowloadtools.js",
+    "install": "node ./downloadtools.js",
     "cov-test": "nyc npm test",
     "cov-integration": "nyc --clean false npm run integration",
-    "cov-all": "run-s integration-clean cov-test cov-integration"
-    , "cov-html": "nyc report --reporter=html",
+    "cov-all": "run-s integration-clean cov-test cov-integration",
+    "cov-html": "nyc report --reporter=html",
     "cov-lcov": "nyc report --reporter=text-lcov > coverage.lcov"
   },
   "repository": {
@@ -60,7 +59,7 @@
     "url": "^0.11.0"
   },
   "dependencies": {
-    "@mediagoom/opflow": "0.0.25",
+    "@mediagoom/opflow": "0.0.26",
     "@mediagoom/chunk-upload": "0.0.8",
     "debug": "^4.1.0",
     "express": "^4.16.4",

@@ -123,6 +123,7 @@ function get_app(config){
 
     });
 
+    
     app.put('/upload/:id?', (req, res) => {
     
         dbg('queue headers %O', req.headers);
@@ -136,7 +137,9 @@ function get_app(config){
             process_manager.queue_job(config.def_owner
                 , id //, path.basename(req.uploader)
                 , req.uploader
-            ).then(()=>{}, err => 
+            ).then(()=>{
+                res.send('OK');
+            }, err => 
             {
                 console.log('QYE', err.toString()); 
                 process_manager.record_error(config.def_owner, id, err, 'QUEUE JOB ERROR');
@@ -144,7 +147,7 @@ function get_app(config){
             );
         }
 
-        res.send('OK');
+        
 
     
     });
