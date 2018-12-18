@@ -23,7 +23,6 @@ If you want to run on other platforms you may need to install the above tools yo
 docker run -d -p 80:3000 --name node-play mediagoom/node-play 
 ```
 
-
 ## Install globally
 
 To install it globally run:
