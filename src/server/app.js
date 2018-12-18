@@ -158,9 +158,16 @@ function get_app(config){
     {
         app.use(function (err, req, res, next) {
             
-            dbg(err.message, err.stack, next);
+            dbg(err.message, err.stack, next, res.status);
+
+            const body = `
+            ${err.message}
+            ${err.stack}
+            ${res.statusCode}
+            ${res.body}
+            `;
         
-            res.status(500).send('Something broke!');
+            res.status(500).send(body);
         });
     }
 

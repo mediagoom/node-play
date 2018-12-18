@@ -5,7 +5,7 @@
   },
   "version": "0.0.9",
   "description": "A nodejs streaming server implementation",
-  "main": "bin/server/index.js",
+  "main": "src/server/index.js",
   "bin": {
     "nodeplay": "src/server/index.js"
   },
