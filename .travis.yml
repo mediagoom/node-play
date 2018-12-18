@@ -5,12 +5,13 @@ node_js:
 - 8
 env:
   global:
-    DEBUG: nolog_opflow:processor
+  - DEBUG: nolog_opflow:processor
     COVERALLS_REPO_TOKEN:
       secure: hQFwRYJYpC7h7YNGlnHH73+dFxDbTM0gvtu5ef5gYfw5NlcE3QFUbnmyU4JYKaQL6W2UxpxP+5GVI2FnJH/bha1K2TskPGdxBc5W75hyT6wBafrkqCcVF3HkXPiQJCwLd2/87LqC31H2olsWLDV40avFRjqXD8tEIorI+asdXoYxR6plw9BZnLzitRpv3GUxjqEyGYz6dhB2qGtdp8xXLVcnwnXEGdQKXQrqJQ5jN8dhfG4jfgr0rZ7xMEPZCSEpZOvR/1eKZK/OSa9Ny5+6IRV6Arhqy1Ztf6AV2Y8+IUNcGsPDOrgA3cZre7i6EfofokrHH3EVNUfP4NblDzGSvAfU1E6CefkTBeVZiMYp2xs7MceID304V/UlI6xnekHC8CW8WGbnWfmM+eD6SV8CVtv3Ap279clinMbqZGpyqmu2ocMavlx6e/l44BbEwe7Tpo3eSLWLHqGVpycfp+eRQVsXVRCwcnkgFSGmd+OGkvyYYuZ9YXAGPoiE+tL9k22KBHBGzOGSSXHPLhefItczNs8OJRfoTKyF9Clf8Pxzp89DX6nCvLFSm7rK4gsTAb9Zgv20B6lNnfbSTSHmTzjJkJZq0QB1r9mKr8x9iWWwYWgzewaAubC1vV+ThcUzLFhSQlAyW+ZixVisbW8sXfXZ/kHTLzK5m7pJRv3APYLPO40=
+  - secure: AIckUDBIiUNzgLDuYauFWxCYwNZrFUD3QgGhJmagKq+GpvRE366byPAmb3NA2ILPyz3Y6CqTIG8AgrVZQC7mRcu5TjZQ5C0wNp9KqcsMjhkpIqQcZ+Wi5icyVAfxAPW050u3lwxhCPDr6nfbTZfnvigXdw21WPEH3UM7og3kejugdftsEFqlbJF5ErRp+obx2IDvBRJlQ906EeVEHc98pVnEx3Sp8t1fdBgsKdFOuQeLumXcU+E88P9hNIIZWLmP25+c2sVIZ0m6UKsCjAqmJi9Ooai71IWJS4LCwIlrNm/hfcHCWBguYlnPQnER85lfKqIfb5+760q04qBFZp92MKcYuG0gS8js675A5VSQ9WVLhmiQwhNu/b4s/E1zb7QfmfmlsLq4wUmNFOc/QCFQIvgna4EkG/ZdLxJhIw3AKuv0qaGrotmlbwBZeLckAsTx96XI1OShvlzgSgHUJeawD98VBRxm8INLEOcM5+Vv3Sa8n7Xrpu0RiPqZ/5W2WFUVeO8FF/d5LB9CHzXt3U0v9mEUj+ZkZwXhv2NsSBPN3lSQbGkJMmRCDMQCt7dFCNZ+AQix8x0A8W+x7rAlODlR0cio4eb+ePmUr8/ndoIViuXKWQ5HKBLPA5CsjlfwBH4tsn8kVcSFi6q2/DkqFPC8c3K14oNdfdWTFmfQMbLEhbk=
   matrix:
-    - NODE_ENV: development
-    - NODE_ENV: production
+  - NODE_ENV: development
+  - NODE_ENV: production
 branches:
   except:
   - dev-wia
@@ -24,16 +25,15 @@ install:
 script:
 - npm run cov-all
 - ls ./.nyc_output
-- ./node_modules/.bin/nyc report --reporter=text-lcov | coveralls
-- ./node_modules/.bin/nyc report --reporter=text-lcov > coverage.lcov && codecov
-after_script:
-
+- "./node_modules/.bin/nyc report --reporter=text-lcov | coveralls"
+- "./node_modules/.bin/nyc report --reporter=text-lcov > coverage.lcov && codecov"
+after_script: 
 deploy:
 - provider: npm
   email: info@mediagoom.com
   skip_cleanup: true
   api_key:
-    secure: l+bBmf0gBoDoXIk756Mic4vfBP5wvmHOM8FK5Yz3GQYVspM/IVVOrNCwHmcEwWUBEzCqXHq/qAcQ8SI5O7CtBSFNlIFbfKxzuWB8W2ovNWYcOCkFQ7nhCb52HvBBG2+r/GJaWtFp/vBy/Tu/FnPTXtHhprfUUdafX50FzSshfOC+KtNuI2RIhIu8yh9EXq4jdrlwdx/9NvvYTA0vSd1A4mXmeiwtJe92c9qsxiqEbtLZf+F75otf8/B7EZv4A+XZcZua/8M+tZdEApHpvxIC1jwjVQv4tvB32+mmYhOkVWsWWQKfSvXN3vxU0co5kXHm+AnOL0+XNnEVOJH54VRHd9ktyzHqfa68mqp7vzn3Qnr6vssmwRGecn6wGqZfY+Urmq0aV2d6DywPoQquzmI39MFGD4UDzHJzvKZ6G/N194jKg8Q9ofUerNlrCHFXh533T0v3JWrELJSI+D+/M7bRqrfZicnGlEziQrlOA70SpIKdrJnkchjED3xxX4nxOWZnEsX+qDnvNAJTZgXNwUdc3HAmbZkWEdQIfKQvYUMn6r7kkF3QpxvjCw32lqh5VNBTLt3DPijN47C5RaGnbeLh9su7hhouCH8UoSMUI6IKUN17Sq6GCNd1X1DAwcumHET9SzV6It+6/fcFIDEecTOkCE1if84d+7pKdqGbDGz5guQ=
+    secure: "ZG0zcsp/29E7I7WHpqPCpxgB50exaquF658JWrrMxyiesZm3tCHpO1rjj709ip6jDF8Eh/muH60xd/8FlA9acKnMd+hZbtkHdvJd55FVHp2FslA09CG+BUYSQRzAWvIhJRRrvqKt5tZtOAoF1Z4V1nzEa4rW0SCJ9V3M2bYSaYdPUPD6F/Ml3PXAVfeWOMA7xdeh7BzyROM1piVdwL4A+DjZJKvMAakBL8bvoYqAh71RP77duT1bHHHfWd9l5ScjOFOA1tWgqCzvJYF7O+kgvIYdO5xfvUjoN3TV9aYZi9uCqm0AUwPJT//zIGy/i3L22oU4L5IdHwvr+r3f/ycd+Ixk19WQ6RvN32xFBTdwyNEzpi6bjq1jQ/zxthBSfFTBLKVb1BGEeD+zwnHt+LalGLdj8bgCMKbfNXGw0gkaw9QJmOYG/jLvcheZfNWXzrcuWMJJOxRs4iQPxJ8s8niABQag+l5U4Jvp3oB0mnE/vQXJ7YHuyEw23hVld10WhPPy9wuGWnOXxr80fLzh10gIuy/M7JLY1L6QWJaTqiIIW8MxrrKZqC7XskDLAt4SGvqIw7Z8eXmMs+XxYFsV735HGpj0uxBjldHHHuF186eFNVzhd8vk92BS29ssApB+soCse3T/D/6h/+GobtK9ya3M0QZkIjUULkoHOtR68f3h28k="
   on:
     tags: true
     repo: mediagoom/node-play
