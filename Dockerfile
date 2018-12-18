@@ -14,4 +14,4 @@ RUN npm install --allow-root install && mkdir media \
 
 EXPOSE 3000
 
-CMD node ./bin/server/index.js
+CMD node ./src/server/index.js

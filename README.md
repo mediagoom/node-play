@@ -18,6 +18,12 @@ It should work on both *Linux* and *Window*.
 
 If you want to run on other platforms you may need to install the above tools yourself.
 
+## Run with docker
+```bash
+docker run -d -p 80:3000 --name node-play mediagoom/node-play 
+```
+
+
 ## Install globally
 
 To install it globally run:
