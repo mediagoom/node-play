@@ -19,6 +19,7 @@ opflow.on('end', flow_end);
 
 const default_options = {
     processor : {active_operations : 1} 
+    , coordinator : { op_batch : 1 }
 };
 
 

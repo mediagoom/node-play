@@ -11,7 +11,7 @@
   },
   "scripts": {
     "integration-clean": "shx --silent rm -rf opflow-dir",
-    "integration": "mocha --reporter spec --timeout 1200000 ./src//**/test/index.js ./src//**/test/*.test.js ./test/integration//**/*.js",
+    "integration": "mocha --reporter spec --timeout 1200000 ./test/integration//**/*.spec.js",
     "test": "node ./node_modules/mocha/bin/_mocha ./test/unit//**/*.js",
     "start": "node ./node_modules/@mediagoom/devman start server",
     "server": "node ./src/server/index.js",
@@ -59,7 +59,7 @@
     "url": "^0.11.0"
   },
   "dependencies": {
-    "@mediagoom/opflow": "0.0.28",
+    "@mediagoom/opflow": "0.0.29",
     "@mediagoom/chunk-upload": "0.0.13",
     "debug": "^4.1.0",
     "express": "^4.16.4",

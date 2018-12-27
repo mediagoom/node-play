@@ -22,13 +22,13 @@ async function Exec(exec, options)
 }
 
  
-describe('PROCESSOR', () => {
+describe('ENV', () => {
 
     it('has the right environment', async () => {
 
         let env_path = process.env.PATH;
 
-        let dirname = path.normalize(path.join(__dirname, '../../../bin'));
+        let dirname = path.normalize(path.join(__dirname, '../../bin'));
 
         process.env.PATH = dirname + path.delimiter + env_path;
 

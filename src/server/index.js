@@ -36,7 +36,7 @@ function dir(d)
 
 const home_destination = optval('NODEPLAYDESTINATION', process.env.HOME, process.env.APPDATA);
 const status_man_use   = optval('NODEPLAYSTATUSMAN', '../processor/statmanfs.js');
-const processor_use    = optval('NODEPLAYPROCESSOR', '../../flows/processor.js');
+const processor_use    = optval('NODEPLAYPROCESSOR', '../flows/processor.js');
 const def_owner        = optval('NODEPLAYDEFOWNER', 'uploader');
 const destination      = modpath.join(home_destination, '.node_play');
 

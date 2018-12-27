@@ -13,9 +13,8 @@ describe('API-TEST', () => {
 
     const root = path.normalize(path.join(__dirname, '../..'));
 
-    let config = { status_man_use : '../../flows/processor.js' 
-        , processor_use: '../../flows/processor.js'
-        , def_owner : 'opflow-dir'
+    let config = { 
+        def_owner : 'opflow-dir'
         , root_dir : root
         , dist_dir : path.join(root, './dist')
         , destination: root
@@ -31,7 +30,7 @@ describe('API-TEST', () => {
     after( ()=> {/*server.close();*/} );
     
     
-    it('should support info', async () => {
+    it('should support api calls', async () => {
        
         let res = await request(server)
             .get('/api/list');

@@ -1,6 +1,6 @@
 const chai   = require('chai');
 const dbg    = require('debug')('node-play:unit-test-flows');
-const flows  = require('../../flows/encode');
+const flows  = require('../../src/flows/encode');
 //const config = require('../config');
 
 const expect = chai.expect;

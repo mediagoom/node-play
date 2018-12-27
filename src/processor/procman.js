@@ -20,8 +20,8 @@ module.exports =  class ProcMan  {
 
         let defop = {
 
-            processor : '../../flows/processor.js'
-            , statusman : './statmanfs.js'
+            processor_use : '../flows/processor.js'
+            , status_man_use : './statmanfs.js'
         };
         
         if(null != opt)
@@ -29,12 +29,12 @@ module.exports =  class ProcMan  {
         else
             this.options = defop;
 
-        let processor  = this.options.processor;
+        let processor  = this.options.processor_use;
         //if( typeof processor === 'string')
         assert(typeof processor === 'string');
         processor = es6req(processor);
 
-        this.statman   = es6req(this.options.statusman);
+        this.statman   = es6req(this.options.status_man_use);
 
         let statopt    = Object.assign(this.options, {  });
 

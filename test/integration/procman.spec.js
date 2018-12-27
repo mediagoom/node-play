@@ -1,5 +1,5 @@
 const chai = require('chai');
-const ProcMan  = require('../../processor/procman.js');
+const ProcMan  = require('../../src/processor/procman.js');
 const dbg = require('debug')('node-play:integration-test-proc-man');
 const util = require('@mediagoom/opflow/util');
 
@@ -57,7 +57,7 @@ function test_proc_man(owner, proc_man_options)
 
     it('queue job', async () => {
     
-        let file = tval('TESTMEDIAFILE', './src/processor/test/MEDIA1.MP4');
+        let file = tval('TESTMEDIAFILE', './test/integration/MEDIA1.MP4');
        
         const timeout_ms = 60000;
         
@@ -170,8 +170,6 @@ function test_proc_man(owner, proc_man_options)
         
     });
 
-
-
 }
 
 
@@ -194,7 +192,7 @@ describe('PROCESS MANAGER', () => {
 
     });
 
-    const proc_man_options = {statusman : './test/fake_stateman.js'};
+    const proc_man_options = {status_man_use : '../../test/integration/fake_stateman.js'};
     
     describe('Fake StatMan', () => {
 
@@ -203,6 +201,7 @@ describe('PROCESS MANAGER', () => {
     });
 
     describe('proc-man should handle queue error', async () =>{
+        
         proc_man_options.error_test = true;
 
         let proc_man = new ProcMan(proc_man_options);
@@ -224,8 +223,8 @@ describe('PROCESS MANAGER', () => {
        
     describe('Fs StatMan - opflow', () => {
     
-        proc_man_options.processor = '../../flows/processor.js';
-        proc_man_options.statusman = './statmanfs.js';
+        proc_man_options.processor_use = '../../src/flows/processor.js';
+        proc_man_options.status_man_use = '../../src/processor/statmanfs.js';
            
         test_proc_man('opflow-dir', proc_man_options);
  

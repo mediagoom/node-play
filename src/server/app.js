@@ -1,18 +1,25 @@
 const express   = require('express');
 const uploader  = require('@mediagoom/chunk-upload');
-const ProcMan   = require('../processor/procman.js');
+const path      = require('path');
 const dbg       = require('debug')('node-play:app');
 const fs        = require('fs');
+
+
+const default_config = {
+    process_manager : '../processor/procman.js'
+    , destination : path.normalize(path.join(__dirname, '../../opflow-dir'))
+    , dist_dir : path.normalize(path.join(__dirname, '../../'))
+};
 
 function get_app(config){
 
     dbg('app config %O', config);
 
-    const process_manager = new ProcMan({
-        process_manager : config.status_man_use
-        ,  processor : config.processor_use
-        , destination : config.destination
-    });
+    config = Object.assign({}, default_config, config);
+
+    const ProcMan = require(config.process_manager);
+
+    const process_manager = new ProcMan(config);
 
     try{
         fs.mkdirSync(config.destination);

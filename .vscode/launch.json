@@ -18,6 +18,8 @@
                 "NODE_ENV": "development"
                 , "DEBUG" : "opflow:coordinator;opflow:processor"
                 , "NODEPLAYPORT" : "555"
+                , "NODEPLAYDESTINATION" : "C:/Users/a.surra"
+                , "OPFLOWSTORAGE" : "../storage/disk"
             }
         }
 
