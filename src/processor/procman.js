@@ -97,4 +97,11 @@ module.exports =  class ProcMan  {
     {
         return this.state.queue_operation_list(owner, id);
     }
+
+    record_error(owner, id, err, info)
+    { 
+        this.state.record_error(owner, id, err, info).then(()=>{}).catch(
+            (err)=>{console.error('record_error error', err.message, err.stack);}
+        );
+    }
 };

@@ -135,7 +135,7 @@ function get_app(config){
         if(null != id)
         {
             process_manager.queue_job(config.def_owner
-                , id //, path.basename(req.uploader)
+                , id 
                 , req.uploader
             ).then(()=>{
                 res.send('OK');

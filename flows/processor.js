@@ -16,11 +16,11 @@ function flow_end(flow_id)
 
 opflow.on('end', flow_end);
 
-/*
-const default_options = {
 
+const default_options = {
+    coordinator : {active_operations : 1} 
 };
-*/
+
 
 function re_target_flow(operation)
 {
@@ -40,12 +40,17 @@ function re_target_flow(operation)
 
 module.exports = class opflow_processor extends EventEmitter {
 
-    constructor() {
+    constructor(options) {
         
         super();
-      
         
+        if(undefined === options)
+        {
+            options = default_options;
+        }
 
+        options = Object.assign({}, default_options, options);
+        
         const already_running = !(opflow.start());
 
         dbg('started opflow ', already_running);
