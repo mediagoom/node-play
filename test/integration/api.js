@@ -3,6 +3,9 @@ const dbg      = require('debug')('node-play:integration-test-api');
 const request  = require('supertest');
 const App      = require('../../src/server/app');
 const path     = require('path');
+const upload   = require('@mediagoom/chunk-upload/test/integration/simulate');
+
+const upload_root = '/upload';
 
 describe('API-TEST', () => {
 
@@ -126,6 +129,21 @@ describe('API-TEST', () => {
             expect(res.body.assets).to.be.an('array').that.is.empty;
         
         });
+    });
+
+    describe('UPLOAD', ()=>{
+
+        it('should handle broken upload', async ()=>{
+            
+            let res = await upload(server, upload_root).broken_start();
+
+            dbg('response: ', res.status, res.body);
+
+            expect(res.status).to.be.eq(500);
+            expect(res.body).to.have.property('msg');
+
+        });
+
     });
 
 });

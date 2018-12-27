@@ -124,7 +124,7 @@ function get_app(config){
     });
 
     
-    app.put('/upload/:id?', (req, res) => {
+    app.put('/upload/:id?', (req, res, next) => {
     
         dbg('queue headers %O', req.headers);
         dbg('queue file', req.uploader);
@@ -138,18 +138,18 @@ function get_app(config){
                 , id 
                 , req.uploader
             ).then(()=>{
+
                 res.send('OK');
+
             }, err => 
             {
-                console.log('QYE', err.toString()); 
+                console.error('QYE', err.message, err.stack); 
                 process_manager.record_error(config.def_owner, id, err, 'QUEUE JOB ERROR');
-            }
-            );
+                
+                next(err);
+            });
         }
-
-        
-
-    
+   
     });
 
     app.use(express.static(config.dist_dir));
@@ -171,11 +171,7 @@ function get_app(config){
         res.status(500).json(body);
     });
     
-
-
     return app;
-
-
 }
 
 module.exports = get_app;
