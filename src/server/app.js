@@ -153,23 +153,24 @@ function get_app(config){
     });
 
     app.use(express.static(config.dist_dir));
-
-    if('production' !== process.env.NODE_ENV)
-    {
-        app.use(function (err, req, res, next) {
+    
+    app.use(function (err, req, res, next) {
             
-            dbg(err.message, err.stack, next, res.status);
+        dbg(err.message, err.stack, next, res.status);
 
-            const body = `
-            ${err.message}
-            ${err.stack}
-            ${res.statusCode}
-            ${res.body}
-            `;
+        const body = { msg : 'invalid operation'};
+
+        if(undefined !== err.message)
+            body.msg = err.message;
+
+        if('no_production' !== process.env.NODE_ENV)
+        {
+            body.error = {message: err.message, stack: err.stack, status: res.status};
+        }
         
-            res.status(500).send(body);
-        });
-    }
+        res.status(500).json(body);
+    });
+    
 
 
     return app;
