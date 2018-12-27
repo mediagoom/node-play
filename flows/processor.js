@@ -18,7 +18,7 @@ opflow.on('end', flow_end);
 
 
 const default_options = {
-    coordinator : {active_operations : 1} 
+    processor : {active_operations : 1} 
 };
 
 
@@ -50,6 +50,8 @@ module.exports = class opflow_processor extends EventEmitter {
         }
 
         options = Object.assign({}, default_options, options);
+
+        opflow.configure(options);
         
         const already_running = !(opflow.start());
 
@@ -87,6 +89,7 @@ module.exports = class opflow_processor extends EventEmitter {
 
     async get_operation_list(flow_id)
     {
+        
         const operations = await opflow.get_runtime_flow(flow_id);
 
         assert(undefined !== operations, 'operations not found ' + flow_id);
@@ -95,28 +98,38 @@ module.exports = class opflow_processor extends EventEmitter {
         operations.sort((a, b) => { return a.modified > b.modified;});
 
         return operations;
+        
+        
     }
 
     async get_status(flow_id)
     {
-        const ended = await opflow.is_flow_completed(flow_id);
+        try{
+            const ended = await opflow.is_flow_completed(flow_id);
         
-        if(ended)
-            return 'ok';
+            if(ended)
+                return 'ok';
 
-        const operations = await opflow.get_runtime_flow(flow_id);
+            const operations = await opflow.get_runtime_flow(flow_id);
 
-        const er = operations.find((op)=> { return op.completed && (!op.succeeded); });
+            const er = operations.find((op)=> { return op.completed && (!op.succeeded); });
 
-        if(undefined !== er)
+            if(undefined !== er)
+                return 'error';
+
+            const working = operations.filter((op)=> { return op.completed && op.succeeded; });
+        
+            if(undefined !== working && working.length > 0)
+                return 'working';
+
+            return 'queued';
+
+        }
+        catch(err)
+        {
+            console.error('cannot retrieve flow id', flow_id, err.message, err.stack);
             return 'error';
-
-        const working = operations.filter((op)=> { return op.completed && op.succeeded; });
-        
-        if(undefined !== working && working.length > 0)
-            return 'working';
-
-        return 'queued';
+        }
     }
 
     async redo(operation_id)

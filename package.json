@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "@mediagoom/opflow": "0.0.28",
-    "@mediagoom/chunk-upload": "0.0.10",
+    "@mediagoom/chunk-upload": "0.0.13",
     "debug": "^4.1.0",
     "express": "^4.16.4",
     "parse-spawn-args": "^1.0.2"
