@@ -214,8 +214,8 @@ module.exports =  class StateManFs  {
         let dir1 = this.options.destination;
         let dir2 = path.join(this.options.destination, owner);
 
-        await directory_exist_or_create(dir1, { recursive: true });
-        await directory_exist_or_create(dir2, { recursive: true });
+        await directory_exist_or_create(dir1);
+        await directory_exist_or_create(dir2);
 
         let p = this.get_processor(owner, name);
         

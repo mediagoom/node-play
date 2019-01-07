@@ -254,8 +254,9 @@ function filedownload(proxy)
 if(null != geturl('mg'))
 {
     fs.mkdir(dirname, (e) => {
-        if(!e || (e && e.code === 'EEXIST')){
-                    
+        
+        if((null == e) || (e && e.code === 'EEXIST')){
+         
             get_proxy(function(er, proxy)
             {
                 if(er)

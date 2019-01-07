@@ -1,10 +1,12 @@
 # node-play
 
-[![Build Status](https://travis-ci.org/mediagoom/node-play.svg?branch=master)](https://travis-ci.org/mediagoom/node-play)
+[![Build Status](https://travis-ci.org/mediagoom/node-play.svg?branch=master)](https://travis-ci.org/mediagoom/node-play) [![Coverage Status](https://coveralls.io/repos/github/mediagoom/node-play/badge.svg?branch=master)](https://coveralls.io/github/mediagoom/node-play?branch=master) [![codecov](https://codecov.io/gh/mediagoom/node-play/branch/master/graph/badge.svg)](https://codecov.io/gh/mediagoom/node-play)
+
+
 
 A nodejs web streaming server. It needs node 8 or above.
 
-![node-play streaming server](http://mediagoom.com/assets/bigbunny.gif)
+
 
 *node-play* is a web server witch expose api for encoding your videos and playing them back in either HLS (HTTP LIVE STREAMING) or MPEG-DASH.
 
