@@ -1,0 +1,29 @@
+ffprobe version 4.0.1-static https://johnvansickle.com/ffmpeg/  Copyright (c) 2007-2018 the FFmpeg developers
+  built with gcc 6.3.0 (Debian 6.3.0-18+deb9u1) 20170516
+  configuration: --enable-gpl --enable-version3 --enable-static --disable-debug --disable-ffplay --disable-indev=sndio --disable-outdev=sndio --cc=gcc-6 --enable-fontconfig --enable-frei0r --enable-gnutls --enable-gray --enable-libaom --enable-libfribidi --enable-libass --enable-libvmaf --enable-libfreetype --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librubberband --enable-libsoxr --enable-libspeex --enable-libvorbis --enable-libopus --enable-libtheora --enable-libvidstab --enable-libvo-amrwbenc --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzimg
+  libavutil      56. 14.100 / 56. 14.100
+  libavcodec     58. 18.100 / 58. 18.100
+  libavformat    58. 12.100 / 58. 12.100
+  libavdevice    58.  3.100 / 58.  3.100
+  libavfilter     7. 16.100 /  7. 16.100
+  libswscale      5.  1.100 /  5.  1.100
+  libswresample   3.  1.100 /  3.  1.100
+  libpostproc    55.  1.100 / 55.  1.100
+
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/node-play/media/.node_play/uploader/Pexels_Videos_1550080.mp4':
+  Metadata:
+    major_brand     : mp42
+    minor_version   : 0
+    compatible_brands: mp42mp41isomavc1
+    creation_time   : 2018-10-30T12:42:27.000000Z
+  Duration: 00:00:36.95, start: 0.000000, bitrate: 21513 kb/s
+    Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709), 3840x2160, 21378 kb/s, 29.97 fps, 29.97 tbr, 30k tbn, 60k tbc (default)
+    Metadata:
+      creation_time   : 2018-10-30T12:42:27.000000Z
+      handler_name    : L-SMASH Video Handler
+      encoder         : AVC Coding
+    Stream #0:1(und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 137 kb/s (default)
+    Metadata:
+      creation_time   : 2018-10-30T12:42:27.000000Z
+      handler_name    : L-SMASH Audio Handler
+    

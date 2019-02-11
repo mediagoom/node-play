@@ -85,9 +85,9 @@ const encode_config_code = `
         const streams = JSON.parse(propertyBag.parent.result);
 
         cmd_video = '-vf "scale=w=$(width):h=$(height)" -codec:v libx264 -profile:v high -level 31 -b:v $(video_bitrate)k -r 25 -g 50 -sc_threshold 0 -x264opts ratetol=0.1 -minrate $(video_bitrate)k -maxrate $(video_bitrate)k -bufsize $(video_bitrate)k'
-        cmd_audio = '-b:a $(ab)k -codec:a aac -profile:a aac_low -ar 44100 -ac 2 -y'
+        cmd_audio = '-b:a $(ab)k -codec:a aac -profile:a aac_low -ar 44100 -ac 2 '
 
-        cmd_encode = '-i "$(file)" $(map)$(video)$(audio) "$(output_file)"'
+        cmd_encode = '-y -i "$(file)" $(map)$(video)$(audio) "$(output_file)"'
         const file = propertyBag.input_file;
        
         cmd_encode = cmd_encode.replace('$(file)', file);
@@ -132,6 +132,11 @@ const encode_config_code = `
         if(null !== video && null !== audio)
         {
             cmd_encode = cmd_encode.replace('$(video)$(audio)', '$(video) $(audio)');
+        }
+
+        if(null === video && null === audio)
+        {
+            throw new Error('cannot find audio or video');
         }
 
         cmd_encode = cmd_encode.replace('$(map)', map);

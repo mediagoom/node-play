@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-play
+  labels:
+    app: node-play
+spec:
+  #clusterIP: None
+  ports:
+    - port: 3000
+      #nodePort: 32542
+ 
+    #port: 888
+    #protocol: TCP
+      targetPort: 3000
+  
+  type: NodePort
+  selector:
+    app: node-play
+ 
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: node-play-claim
+  labels:
+    app: node-play
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-play
+  labels:
+    app: node-play
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-play
+  template:
+    metadata:
+      labels:
+        app: node-play
+    spec:
+      containers:
+      - image: mediagoom/node-play:release-0.0.12
+        imagePullPolicy: Always
+        name: node-play
+        ports:
+        - containerPort: 3000
+          name: node-play
+        volumeMounts:
+        - name: node-play-persistent-storage
+          mountPath: /node-play/media/.node_play
+        resources:
+          limits:
+            memory: "400Mi"
+      volumes:
+      - name: node-play-persistent-storage
+        persistentVolumeClaim:
+          claimName: node-play-claim
+        
