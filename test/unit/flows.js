@@ -15,7 +15,7 @@ describe('OPERATIONS', () => {
 
     dbg('ffprobe path', dir);
 
-    const probes = fs.readdirSync(dir, {withFileTypes: true});
+    const probes = fs.readdirSync(dir/*, {withFileTypes: true}*/);
     
     
 
