@@ -77,4 +77,4 @@ cnt = re.sub(r'"version": "\d+\.\d+\.\d+"', "\"version\": \"" + lversion + "\"",
 
 print cnt
 
-#write_file(v, cnt)
+write_file(v, cnt)
