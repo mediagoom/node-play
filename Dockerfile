@@ -9,8 +9,10 @@ ENV NODEPLAYDESTINATION="${NODEPLAYDESTINATION}"
 
 WORKDIR /node-play
 COPY . .
-RUN npm install --allow-root install --loglevel verbose && mkdir media \
-    && node ./downloadtools.js
+RUN npm install && mkdir media \
+    && node ./downloadtools.js \
+    && npm i \
+    && ls /node-play/node_modules/@mediagoom
 
 EXPOSE 3000
 

@@ -1,22 +1,26 @@
 language: node_js
 node_js:
 - 10
-- 9
+- 11
 - 8
 env:
   global:
   - DEBUG: opflow:processor
-    COVERALLS_REPO_TOKEN:
-      secure: hQFwRYJYpC7h7YNGlnHH73+dFxDbTM0gvtu5ef5gYfw5NlcE3QFUbnmyU4JYKaQL6W2UxpxP+5GVI2FnJH/bha1K2TskPGdxBc5W75hyT6wBafrkqCcVF3HkXPiQJCwLd2/87LqC31H2olsWLDV40avFRjqXD8tEIorI+asdXoYxR6plw9BZnLzitRpv3GUxjqEyGYz6dhB2qGtdp8xXLVcnwnXEGdQKXQrqJQ5jN8dhfG4jfgr0rZ7xMEPZCSEpZOvR/1eKZK/OSa9Ny5+6IRV6Arhqy1Ztf6AV2Y8+IUNcGsPDOrgA3cZre7i6EfofokrHH3EVNUfP4NblDzGSvAfU1E6CefkTBeVZiMYp2xs7MceID304V/UlI6xnekHC8CW8WGbnWfmM+eD6SV8CVtv3Ap279clinMbqZGpyqmu2ocMavlx6e/l44BbEwe7Tpo3eSLWLHqGVpycfp+eRQVsXVRCwcnkgFSGmd+OGkvyYYuZ9YXAGPoiE+tL9k22KBHBGzOGSSXHPLhefItczNs8OJRfoTKyF9Clf8Pxzp89DX6nCvLFSm7rK4gsTAb9Zgv20B6lNnfbSTSHmTzjJkJZq0QB1r9mKr8x9iWWwYWgzewaAubC1vV+ThcUzLFhSQlAyW+ZixVisbW8sXfXZ/kHTLzK5m7pJRv3APYLPO40=
+    secure: "AjML6y6lRNgjvqibyirGVFTQDpYzBvbLit/zsBMs4XN5BvTEPdEbOha0PF189kQS5fgTUuydwbv1y1ewMHoxLiHex/OXxff7g5E8derYPTHjzNVaJK8HbKD0CGC3RwWrR2zmJG30f2yxkQisvR7DDNomkCwk4sfyfrouUoBt+zsZfcLLXRdMJQolSjr6RAiY2mE8rRpP9zCQfcOSsHKCDvLuwax2QHxNKsL5JTyQc8xpNZamt/+hKCZX7HmOJQrcyFdByfmQKue2Voy4qlFE0wBZUXyTRPsl73kRQPSdwGm2fMv6YJhOdH/55y7siNm/l1ZGJt+Llminc0aIL9iUjDAVDlsK1X9bVORtAO+ly4sTAifT8hJcSjB1GMHXyOGkddbHjCPUAzvawnGigeJsNUJK5GYnqYt17uVFe0cMMVGpX2j0Xe4dU2hs5adKQajXbiyXXDcYm1yQdoN67qtWF4xga5Ua0Q8tZqW4Eb3tY8Z+4nuC+68SDB8LlwyAS22POnbyADpwEdV6m6eT9wYjpXiOSLzzwdXsorZJ9gE3/Zvm0tt9KMu1BnzhZbPV6tBtZlP3ypy0iE+tAy/RQTjuMwP4NijCv8yQT/xLtNEcrAPReP0smNv0G6RRJhlrP1GpHcxShT3DI3meUviKHw3uTkzPm+DZ4GzGdYkbuhuYDfY="
+    secure: "ReiS+952OMFpUWFPSzDb8hFDs29/koZWxstlsbcM33J9/CsXlNbYYNAaIFhdiyo/zhnN7kuF+4f5V+dvK//IQJEV1KokRGIM5dySzT5QH51f1GnO28LpE7QAB7SfHE4PDIiL5RkfHHckxWlPi6rax4W/1ZHZoWEJ/3lc48Hg3gyxP8tI94Y5/mOt3H3clJfCs7I+9o3nSRpDR5dS0RQWQuxe4RjED6TvJ6IFJt2XTUFKBUSwzH7m92WFl6ZenBLHahXhgokb0IhyVNhcjh8KT115U58fL8tbHkCSwKgPRW5Ajc6cU8igZB8PUCK4w7kt2QzBh1dQGpAEjTbO6kuLXj/xcG4QoB+PnfVwZqgciMmiCCruclipdiAyLoqYQkOoRXtKkoCzM4hSI/N9v/oNheb+WAxInnZpD3ddJBaEWbqQmTH742fAxr7514RMTzTw+59WIYMZl4KkTyVARmY0UbJWiZzpZvnzdf8fk+THvVJS4ma1UJFFc3NcJ/U0V/YArX8EEu7K6aw2JUqn+U4KLN/i1eSF6wMqt6LVvYU2XHfnOX0eD7l9rd62+wRcNDA0DRjumrS21MeR9KUWjJWW1ur+fgnBeeEr7EDycSQNCcIfrX68k4AYh8TQa6Y8YT7H9Yq0y8ZUwcQ7w6i1mdkiNnOU8o+y/9J0YkpmtNq2ccE="
+    secure: "N/+8JUjGEynqHgKAa9tm3Kw7o5G0BLvZUck3bqPQZbhTMnF9q2MTsSaagxs84R5LZ1F+B6C20QpP/BZzLRnEp/78A+UTDcD5qBsIJdlsNsf6qHSQINjPYHGPgFtEJ8gz8z1rZW5IJ2IEnPcNHB8lfOeJHDIjVODMwskyrsFzpdY8mM4wFSyoNpJBCrhahPFXxTlr86lXxE/HXuP0caT4vK2SOdSw2iuXf2Zkc/vgDbth5nskdo9e6MVk7e0xemxekOOspraItMxhjeZVaumPYf8kiTITNyQkxIhbcm23lhEhauXSbxOxopZhOiqDlAyx7tMbC5e2neDmd7dvVqavohMi7gW6ZaaI9zfh9zgCbHXimBp+rP6RZN0SJSpNeh+7MH8xX/cXurufiOMG9YIzsSx3cHUZSd6eHyRZvOEXoivIBEh2B+gv2VS2Fmep9OCiogGsD9MxnXgGhS6MKLX3Mt8tIiGBI9vlffEqU9KTP3vnxWfnVeGVN/n8ZqdSYJ0VvHThhvahIerRHLQ6Z+86AiWdAnVNzNChwRJovXeTD1QpDaW4ARJ/e0T9WW3R5clOa+/VvF8WkE9ci3MvLcuRv2vWwK4c1gKQqkCMCeYhS/nJb656rtBfZ3+v466qZ00cCGy+9s0BPPGBMiuN8c2aLX48yrJcP/jep39DHYM/fzk="
   matrix:
   - NODE_ENV: development
   - NODE_ENV: production
 branches:
   except:
   - dev-wia
+services:
+  - docker
 before_install:
 - python ./version.py
 - npm i -g npm@5.6.0
+- echo "$DOCKERHUBPSW" | docker login -u "$DOCKERHUBUSR" --password-stdin
 install:
 - npm install
 - npm install --only=dev
@@ -26,7 +30,9 @@ script:
 - ls ./.nyc_output
 - "./node_modules/.bin/nyc report --reporter=text-lcov | coveralls"
 - "./node_modules/.bin/nyc report --reporter=text-lcov > coverage.lcov && codecov"
+- docker build -t "mediagoom/node-play:$TRAVIS_BRANCH" .
 after_script: 
+- docker push "mediagoom/node-play:$TRAVIS_BRANCH"
 deploy:
   - provider: npm
     email: info@mediagoom.com
