@@ -9,7 +9,7 @@ ENV NODEPLAYDESTINATION="${NODEPLAYDESTINATION}"
 
 WORKDIR /node-play
 COPY . .
-RUN npm install --allow-root install && mkdir media \
+RUN npm install --allow-root install --loglevel verbose && mkdir media \
     && node ./downloadtools.js
 
 EXPOSE 3000
