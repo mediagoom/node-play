@@ -49,3 +49,4 @@ deploy:
       tags: true
       repo: mediagoom/node-play
       node: 10
+      
