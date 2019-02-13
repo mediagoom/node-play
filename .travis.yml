@@ -20,7 +20,7 @@ services:
 before_install:
 - python ./version.py
 - npm i -g npm@5.6.0
-- echo "$DOCKERHUBPSW" | docker login -u "$DOCKERHUBUSR" --password-stdin
+- echo "$DOCKERHUBPSW" | docker login --username "$DOCKERHUBUSR" --password-stdin
 install:
 - npm install
 - npm install --only=dev
@@ -43,3 +43,9 @@ deploy:
       tags: true
       repo: mediagoom/node-play
       node: 8
+  - provider: script
+    script: bash -c "docker build -t 'mediagoom/node-play:latest' . && docker push 'mediagoom/node-play:latest'"
+    on:
+      tags: true
+      repo: mediagoom/node-play
+      node: 10
