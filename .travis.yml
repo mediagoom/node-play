@@ -6,9 +6,9 @@ node_js:
 env:
   global:
   - DEBUG: opflow:processor
-  - secure: "AjML6y6lRNgjvqibyirGVFTQDpYzBvbLit/zsBMs4XN5BvTEPdEbOha0PF189kQS5fgTUuydwbv1y1ewMHoxLiHex/OXxff7g5E8derYPTHjzNVaJK8HbKD0CGC3RwWrR2zmJG30f2yxkQisvR7DDNomkCwk4sfyfrouUoBt+zsZfcLLXRdMJQolSjr6RAiY2mE8rRpP9zCQfcOSsHKCDvLuwax2QHxNKsL5JTyQc8xpNZamt/+hKCZX7HmOJQrcyFdByfmQKue2Voy4qlFE0wBZUXyTRPsl73kRQPSdwGm2fMv6YJhOdH/55y7siNm/l1ZGJt+Llminc0aIL9iUjDAVDlsK1X9bVORtAO+ly4sTAifT8hJcSjB1GMHXyOGkddbHjCPUAzvawnGigeJsNUJK5GYnqYt17uVFe0cMMVGpX2j0Xe4dU2hs5adKQajXbiyXXDcYm1yQdoN67qtWF4xga5Ua0Q8tZqW4Eb3tY8Z+4nuC+68SDB8LlwyAS22POnbyADpwEdV6m6eT9wYjpXiOSLzzwdXsorZJ9gE3/Zvm0tt9KMu1BnzhZbPV6tBtZlP3ypy0iE+tAy/RQTjuMwP4NijCv8yQT/xLtNEcrAPReP0smNv0G6RRJhlrP1GpHcxShT3DI3meUviKHw3uTkzPm+DZ4GzGdYkbuhuYDfY="
-  - secure: "ReiS+952OMFpUWFPSzDb8hFDs29/koZWxstlsbcM33J9/CsXlNbYYNAaIFhdiyo/zhnN7kuF+4f5V+dvK//IQJEV1KokRGIM5dySzT5QH51f1GnO28LpE7QAB7SfHE4PDIiL5RkfHHckxWlPi6rax4W/1ZHZoWEJ/3lc48Hg3gyxP8tI94Y5/mOt3H3clJfCs7I+9o3nSRpDR5dS0RQWQuxe4RjED6TvJ6IFJt2XTUFKBUSwzH7m92WFl6ZenBLHahXhgokb0IhyVNhcjh8KT115U58fL8tbHkCSwKgPRW5Ajc6cU8igZB8PUCK4w7kt2QzBh1dQGpAEjTbO6kuLXj/xcG4QoB+PnfVwZqgciMmiCCruclipdiAyLoqYQkOoRXtKkoCzM4hSI/N9v/oNheb+WAxInnZpD3ddJBaEWbqQmTH742fAxr7514RMTzTw+59WIYMZl4KkTyVARmY0UbJWiZzpZvnzdf8fk+THvVJS4ma1UJFFc3NcJ/U0V/YArX8EEu7K6aw2JUqn+U4KLN/i1eSF6wMqt6LVvYU2XHfnOX0eD7l9rd62+wRcNDA0DRjumrS21MeR9KUWjJWW1ur+fgnBeeEr7EDycSQNCcIfrX68k4AYh8TQa6Y8YT7H9Yq0y8ZUwcQ7w6i1mdkiNnOU8o+y/9J0YkpmtNq2ccE="
-  - secure: "N/+8JUjGEynqHgKAa9tm3Kw7o5G0BLvZUck3bqPQZbhTMnF9q2MTsSaagxs84R5LZ1F+B6C20QpP/BZzLRnEp/78A+UTDcD5qBsIJdlsNsf6qHSQINjPYHGPgFtEJ8gz8z1rZW5IJ2IEnPcNHB8lfOeJHDIjVODMwskyrsFzpdY8mM4wFSyoNpJBCrhahPFXxTlr86lXxE/HXuP0caT4vK2SOdSw2iuXf2Zkc/vgDbth5nskdo9e6MVk7e0xemxekOOspraItMxhjeZVaumPYf8kiTITNyQkxIhbcm23lhEhauXSbxOxopZhOiqDlAyx7tMbC5e2neDmd7dvVqavohMi7gW6ZaaI9zfh9zgCbHXimBp+rP6RZN0SJSpNeh+7MH8xX/cXurufiOMG9YIzsSx3cHUZSd6eHyRZvOEXoivIBEh2B+gv2VS2Fmep9OCiogGsD9MxnXgGhS6MKLX3Mt8tIiGBI9vlffEqU9KTP3vnxWfnVeGVN/n8ZqdSYJ0VvHThhvahIerRHLQ6Z+86AiWdAnVNzNChwRJovXeTD1QpDaW4ARJ/e0T9WW3R5clOa+/VvF8WkE9ci3MvLcuRv2vWwK4c1gKQqkCMCeYhS/nJb656rtBfZ3+v466qZ00cCGy+9s0BPPGBMiuN8c2aLX48yrJcP/jep39DHYM/fzk="
+  - secure: ZF6lLmIb5657ZVGyl3CER9xgQmSmBisqVhq4IIWw7VbAax3QJSHFInV4INm/OVppEN3djsn5aiMltE0QJlWgqvUg+/TJQG4Lg6jaYxx9OYnaOJYhhqu1T6/Zek6dJQPRyCpYCGBSv5neQrRwEp1X80uscxcFmn2GeM7nsu6ODM9uWRNhAX4bEGbBNGFfkANtspWAsKOXWEQHMCEk2Q5utHdPlhxNBIqJFapkyAjCVqhhpnYMh8HZYh9cR9q3t6v/oubQcyYohUjYcf9WSLIl4CkTaA7XCfLF1ZsFJ8IpfRLewbMFN/mXzItwnJuxq2TRuLb9ijnXKAeIZEMg/Ffmbc4I1d8JUqDbBw3BUdpJHfrzMECGr9cv21NxQkeBips/FPna3q1edcLiRGFBE4qy5AEknyqfs4QeWnKNJWrj799Qz96ebnsPCRwoupnMoBBILsEqA2FFLLb0/0wmcXmWzTWdK+fYWnuoZ5LIqz+y63JYk6bEx4cGOrDE/Z2upTHWjd2q5hqQ9N8lFOl8fXzfCnm2as1LsUifJwznblirMq3pgg8HWYpgX5NqxdhGH7Df4YNMnPcp1nBNqzSxULH76741w5K24Mx8kwvTJC2mMo9RABovHrkJ/ezChorw48oBxk5aPwCAQM4jE1BmV1Z2qHE2QxLd+YJekOu3IBmAods=
+  - secure: Ecmk5mF9H1+LV01B7PadEZHgCwdI0nyWlsOVrhTxrOCFH/7mASg7IRP09qM3xb7ufTG2XwdBOll3FVFXhPjtNfcuPD8ugkSlMCpjeyjK47lGhl2QxRe+NKIL5tD7PvYV+91zRdczggjWFxB4dQler5u/9b/jscJoXjWhRC9ZNYr2IhwKpKwJidToJg0zO2YUaSd+jmhKjv2mOOedGdefTVItlXgDFyqhmIUgqM9TphmNeNAtjWvfyimNRBFmLmjrgbwKlR9bEbhtUzJLXLEwRyjpmlt5WaYBD1HV0asrZqN83FbtmReB3x7AHa9aPwc0yBav7brnRsT8z/np2VFwZJ/FuFwGgM2VYSSMnaMKZoPElEUM0srNmGYxN8svvhG1LVcV9gmKA5P2vefA1XXVBU+H57nCgh/qSHugEF0V4Ihd2rYPqRmQ9kpUeeheVw8QybnqlNpxt84e9dYSWjaMvvQZOXfH0gQNmLW8+/+7m43K0HBhd4yFzlc5N4kTO4s4B4xqf4vX9EbIZ8iy2a+87RtubcfyZMjpYEa6K8L5K0Cn0xEr6dSQyZeE0q2xwvL12fH774hz6kqip5DrxDzHapJ2ZIdBH6I3C7ogQ+0ZeFp7knW1nG3Y64XmM7nCREdXGHy3c1mQNicxHWv/9NwINNNUSo85LSJ7YMsTNJdzQh8=
+  - secure: j9TG6nIgznNsvrc860lOyFA7q6VrDgOoPVWEJFNIyfChJzU/VS6Dftxb53b13YJ2LSD3oSg4yQr1/+odcf4/dSHYSpk7hRrmrmZ+y3FNj7rw8a59uhiwAbFDdhMHtGfkU3JZ1RiHNRkyRpVNRzYEqCg+o5l7+8ay5UZfT064pSBfdjTuQH2fxpWIp7Ccs4oMoXL3YYcPAj41uMnuxwiJa3X4HD3m3EQknW8ZG3KzUEl70v+sdg0eKq6rYCUEC2/P5xeUUmCERdbc6nl5utVLRh3Jv1dp5bFAMQjDdtgP35iHzL1bOkrkOcUNciWMF41SdDZ6a7i2gbO6OHiLbEAyO6/tDvDdp+lCxlK21H897QNnaCB6qFOxQXsrvoY/rlHZmeGhPlFLRTqOgQPxeNrLqzqJfvep3R20ofCXg+b/dDKeCLakEAlb2kGjAKbkJuvFnou5olLytTlCUsRRdoiOevfZaKOK4SVYJU6KU5zRbWBHvOuu7MFG+h48t5fRTC4w9HRfNbRSg/3L9mMXY9cGtETWM7QGaqDH0aje7FH4cdNV/T0V7VJBc1sMAF16HyRMtZq5uuWnve3HQBo1lcdelxd9D8w9a31SxsbFnRz2XI61e9AO+Stln0g3BPMUGE6Hr0BaJd63RTGxdXh1ub5yKYmBjHFb+pIwa6OY3HWwAI0=
   matrix:
   - NODE_ENV: development
   - NODE_ENV: production
@@ -16,7 +16,7 @@ branches:
   except:
   - dev-wia
 services:
-  - docker
+- docker
 before_install:
 - python ./version.py
 - npm i -g npm@5.6.0
@@ -31,22 +31,21 @@ script:
 - "./node_modules/.bin/nyc report --reporter=text-lcov | coveralls"
 - "./node_modules/.bin/nyc report --reporter=text-lcov > coverage.lcov && codecov"
 - docker build -t "mediagoom/node-play:$TRAVIS_BRANCH" .
-after_script: 
+after_script:
 - docker push "mediagoom/node-play:$TRAVIS_BRANCH"
 deploy:
-  - provider: npm
-    email: info@mediagoom.com
-    skip_cleanup: true
-    api_key:
-      secure: GySL9YnyAUPDhUy/JQ+/e9+GZ2I8PPdyazzqJjKyrn/BDPu5v5NcEH+TlrLfiTvQ6gZAu4dJ8a+KIa92QgJNQSxEvNHU1euuUFpVX6IQAsxMIVUh2aZsHYOMmQcjCb4rzsAXVpHjjE3gTUkpxa8xKkLuWtZcx06AG7XOD++wcpFx3jar9ACzw3AJ7JuPvFnm1a+JI9tv42l+49JYzlzSIKC3/YW6s0NvLExEpGYkIm04OV7Qhp1hTg4myBre2F4WFC3s8n7NCtDomDgPSK1T4jjU64kouhyCW80wVcD00k1Op7SlmBpn/icHzMfUHW6WeTcR9iXe6QWo27JNntayLlNOB5mz2tdspULWlynDFhTZseGhQY6s8/Y5mkp3RPXKNwfplosP2ZpTBhyqbK5fNW9chWGe/kgxs4fGyiE1i0nxy3UNOVI+xabOrrqs9cGIQfWgc+WI3avOoJwJGiatTd/QGiGkEjFTwrg+kcU620NDberDClr2Hahr0DSYU+qOXELocJUIv68oJUuKW+UjaBCmpnP/fbYXx+jOuzuOuJYbk5F8BUVrFJM6T851rHaiNSNWTEQmeR1+2Na+P5dMAmanOG4dcHfqJmflhJGPhk271iMcL4loE0q87LqOYNb1C2gQiogTbY6F547gZrV8IHWNIML3B1NmxmpfaKXMDRM=
-    on:
-      tags: true
-      repo: mediagoom/node-play
-      node: 8
-  - provider: script
-    script: bash -c "docker build -t 'mediagoom/node-play:latest' . && docker push 'mediagoom/node-play:latest'"
-    on:
-      tags: true
-      repo: mediagoom/node-play
-      node: 10
-      
+- provider: npm
+  email: info@mediagoom.com
+  skip_cleanup: true
+  api_key:
+    secure: GySL9YnyAUPDhUy/JQ+/e9+GZ2I8PPdyazzqJjKyrn/BDPu5v5NcEH+TlrLfiTvQ6gZAu4dJ8a+KIa92QgJNQSxEvNHU1euuUFpVX6IQAsxMIVUh2aZsHYOMmQcjCb4rzsAXVpHjjE3gTUkpxa8xKkLuWtZcx06AG7XOD++wcpFx3jar9ACzw3AJ7JuPvFnm1a+JI9tv42l+49JYzlzSIKC3/YW6s0NvLExEpGYkIm04OV7Qhp1hTg4myBre2F4WFC3s8n7NCtDomDgPSK1T4jjU64kouhyCW80wVcD00k1Op7SlmBpn/icHzMfUHW6WeTcR9iXe6QWo27JNntayLlNOB5mz2tdspULWlynDFhTZseGhQY6s8/Y5mkp3RPXKNwfplosP2ZpTBhyqbK5fNW9chWGe/kgxs4fGyiE1i0nxy3UNOVI+xabOrrqs9cGIQfWgc+WI3avOoJwJGiatTd/QGiGkEjFTwrg+kcU620NDberDClr2Hahr0DSYU+qOXELocJUIv68oJUuKW+UjaBCmpnP/fbYXx+jOuzuOuJYbk5F8BUVrFJM6T851rHaiNSNWTEQmeR1+2Na+P5dMAmanOG4dcHfqJmflhJGPhk271iMcL4loE0q87LqOYNb1C2gQiogTbY6F547gZrV8IHWNIML3B1NmxmpfaKXMDRM=
+  on:
+    tags: true
+    repo: mediagoom/node-play
+    node: 8
+- provider: script
+  script: bash -c "docker build -t 'mediagoom/node-play:latest' . && docker push 'mediagoom/node-play:latest'"
+  on:
+    tags: true
+    repo: mediagoom/node-play
+    node: 10
