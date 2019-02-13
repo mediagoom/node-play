@@ -11,7 +11,6 @@ WORKDIR /node-play
 COPY . .
 RUN npm install && mkdir media \
     && node ./downloadtools.js \
-    && npm i \
     && ls /node-play/node_modules/@mediagoom
 
 EXPOSE 3000
