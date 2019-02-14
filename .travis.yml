@@ -43,9 +43,11 @@ deploy:
     tags: true
     repo: mediagoom/node-play
     node: 8
+    condition: $NODE_ENV = production 
 - provider: script
   script: bash -c "docker build -t 'mediagoom/node-play:latest' . && docker push 'mediagoom/node-play:latest'"
   on:
     tags: true
     repo: mediagoom/node-play
     node: 10
+    condition: $NODE_ENV = production 
