@@ -16,9 +16,15 @@ order: 1
 
 **Use MPEG-DASH and HLS to effectively serve your video.**
 
+
 <div id="devices">
     <img src="{{ "/img/iphone.png" | prepend: site.baseurl }}" class="device iphone" />
     <img src="{{ "/img/ipad.png" | prepend: site.baseurl }}" class="device ipad" />
     <img src="{{ "/img/laptop.png" | prepend: site.baseurl }}" class="device laptop" />
 </div>
+
+
+- [Upload your file]({{ "./content/Upload" | prepend: site.baseurl }})
+- Have it encoded and packaged by node-play
+- Play it in any device
 

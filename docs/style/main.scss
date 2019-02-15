@@ -23,6 +23,7 @@ $ipad-height : $device-height / 1.5;
 {
         position: relative;
         margin: 2em 1em 1em 1em;
+        height: $device-height + 2em;
 }
 
 .device
