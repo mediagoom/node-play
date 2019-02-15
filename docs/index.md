@@ -25,6 +25,6 @@ order: 1
 
 
 - [Upload your file]({{ "./content/Upload" | prepend: site.baseurl }})
-- Have it encoded and packaged by node-play
-- Play it in any device
+- [Have it encoded and packaged by node-play]({{ "./content/Encode" | prepend: site.baseurl }})
+- [Play it in any device]({{ "./content/Play" | prepend: site.baseurl }})
 
