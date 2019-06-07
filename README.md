@@ -1,6 +1,6 @@
 # node-play
 
-[![Build Status](https://travis-ci.org/mediagoom/node-play.svg?branch=master)](https://travis-ci.org/mediagoom/node-play) [![Coverage Status](https://coveralls.io/repos/github/mediagoom/node-play/badge.svg?branch=master)](https://coveralls.io/github/mediagoom/node-play?branch=master) [![codecov](https://codecov.io/gh/mediagoom/node-play/branch/master/graph/badge.svg)](https://codecov.io/gh/mediagoom/node-play)
+[![Build Status](https://travis-ci.org/mediagoom/node-play.svg?branch=master)](https://travis-ci.org/mediagoom/node-play) [![Coverage Status](https://coveralls.io/repos/github/mediagoom/node-play/badge.svg?branch=master)](https://coveralls.io/github/mediagoom/node-play?branch=master) [![codecov](https://codecov.io/gh/mediagoom/node-play/branch/master/graph/badge.svg)](https://codecov.io/gh/mediagoom/node-play) [![Greenkeeper badge](https://badges.greenkeeper.io/mediagoom/node-play.svg)](https://greenkeeper.io/)
 
 
 
