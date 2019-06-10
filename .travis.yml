@@ -30,9 +30,9 @@ script:
 - ls ./.nyc_output
 - "./node_modules/.bin/nyc report --reporter=text-lcov | coveralls"
 - "./node_modules/.bin/nyc report --reporter=text-lcov > coverage.lcov && codecov"
-- docker build -t "mediagoom/node-play:$TRAVIS_BRANCH" .
+- if [[ $TRAVIS_BRANCH =~ (master)|(dev) ]] ; then docker build -t "mediagoom/node-play:$TRAVIS_BRANCH" .; fi
 after_script:
-- docker push "mediagoom/node-play:$TRAVIS_BRANCH"
+- if [[ $TRAVIS_BRANCH =~ (master)|(dev) ]] ; then docker push "mediagoom/node-play:$TRAVIS_BRANCH"; fi
 deploy:
 - provider: npm
   email: info@mediagoom.com
