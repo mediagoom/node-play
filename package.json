@@ -62,7 +62,7 @@
     "@mediagoom/opflow": "0.0.31",
     "@mediagoom/chunk-upload": "0.0.19",
     "debug": "^4.1.0",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "parse-spawn-args": "^1.0.2"
   },
   "engines": {
